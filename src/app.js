@@ -39,30 +39,36 @@ const QAs = [
     note: '',
   },
 ]
-const toggleOneInArrObj = (targetAttr, arrObj, conditionFN) => {
-  const tarObj = arrObj.filter(conditionFN)[0]
-   let newArrObj = [ 
-    ...arrObj.filter(!conditionFN),
+
+
+const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
+  const tarObj = arrObj.filter(a => a.id === id)[0]
+  return [ 
+    ...arrObj.filter(a => a.id !== id),
     {
       ...tarObj,
-      [targetAttr]: tarObj[targetAttr] ? false : true
+      [targetAttr]: 
+        typeof(value) === 'boolean' ? 
+          (tarObj[targetAttr] ? false : true) : 
+          value
     }
   ]
-  console.log(newArrObj)
-  return newArrObj
 }
-
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       myAnswer: [],
+      updatedQAs: LS.getItem('QAstorge') ? JSON.parse(LS.getItem('QAstorge')) : QAs,
       isHandIn: false,
-    };
+    }
   }
   componentWillMount = () => {
     // const updateFromLS_QAs = QAs.map(qa => qa = qa)
-    const Q = QAs.map(q => q = {
+    if(!LS.getItem('QAstorge')) {
+      LS.setItem('QAstorge', JSON.stringify(QAs))
+    }
+    const Q = this.state.updatedQAs.map(q => q = {
       id: q.id, 
       answer: '', 
       correctAnswer: q.answer, 
@@ -74,9 +80,7 @@ export default class App extends React.Component {
       myAnswer: Q
     })
     
-    if(!LS.getItem('QAstorge')) {
-      LS.setItem('QAstorge', JSON.stringify(QAs))
-    }
+    
     //init localStorage
     // starLS = starLS ? starLS : localStorage.setItem('starID', '')
 
@@ -97,36 +101,25 @@ export default class App extends React.Component {
   _handleChangeAnswer = (e) => {
     const { myAnswer, isHandIn } = this.state
     const { name, value } = e.target
-    const changedAns = myAnswer.filter(a => a.id === name)[0]
+    const changedAns = setValueOfArrObj(myAnswer, name, 'answer', value)
     if(!isHandIn) {
       this.setState({
-        myAnswer: [
-          ...myAnswer.filter(a => a.id !== name),
-          {
-            ...changedAns,
-            answer: value,
-          },
-        ]
+        myAnswer: changedAns
       })
     }
   }
   _handelStar = (e) => {
-    const { myAnswer } = this.state
+    const { myAnswer, updatedQAs } = this.state
     const { name } = e.target
-    // const starAnswer = myAnswer.filter(a => a.id === name)[0]
-    // const staredMyAnswer = [ 
-    //   ...myAnswer.filter(a => a.id !== name),
-    //   {
-    //     ...starAnswer,
-    //     star: starAnswer.star ? false : true
-    //   }
-    // ]
-    const staredMyAnswer = toggleOneInArrObj('star', myAnswer, a => a.id === name)
+
+    const staredMyAnswer = setValueOfArrObj(myAnswer, name, 'star', false)
+    const staredQAs = setValueOfArrObj(updatedQAs, name, 'star', false)
     this.setState({
       myAnswer: staredMyAnswer,
+      updatedQAs: staredQAs,
     })
-    console.log(this.state.myAnswer)
-    localStorage.setItem('QAstorge', QAs)
+    console.log(staredQAs)
+    localStorage.setItem('QAstorge', JSON.stringify(staredQAs))
   }
 
   render() {
