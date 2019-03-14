@@ -1,5 +1,5 @@
 import React from 'react'
-import { SingleQA } from './singleQA'
+import { SingleQA, AddCount_TxtBTN, MinusCount_TxtBTN } from './singleQA'
 
 // let starLS = localStorage.getItem('starID')
 // let noteLS = localStorage.getItem('IdNote')
@@ -79,13 +79,6 @@ export default class App extends React.Component {
     this.setState({
       myAnswer: Q
     })
-    
-    
-    //init localStorage
-    // starLS = starLS ? starLS : localStorage.setItem('starID', '')
-
-    // noteLS = noteLS ? noteLS : localStorage.setItem('IdNote', JSON.stringify({id: 'Q1', note: 'aaa'}))
-
   }
   
   _handleCheckAnswer = () => {
@@ -129,6 +122,7 @@ export default class App extends React.Component {
         Hi
         {QAs.map(qa => 
           <SingleQA
+            ley={qa.id}
             changeAnswer ={this._handleChangeAnswer}
             starIt={this._handelStar}
             myAnswer={myAnswer}
@@ -139,6 +133,8 @@ export default class App extends React.Component {
           />
         )}
         <hr />
+        <AddCount_TxtBTN title={'a'} />
+        <MinusCount_TxtBTN  title={'minus It'} />
         <button onClick={this._handleCheckAnswer}>Check Answer!</button>
         <h4>SCORE: 
           <span>
