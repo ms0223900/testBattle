@@ -1,44 +1,12 @@
 import React from 'react'
-import { SingleQA, AddCount_TxtBTN, MinusCount_TxtBTN } from './singleQA'
+import { SingleQA } from './singleQA'
+import { testQAs } from './QAs'
 
 // let starLS = localStorage.getItem('starID')
 // let noteLS = localStorage.getItem('IdNote')
 // console.log(JSON.parse(noteLS))
 const LS = localStorage
-const QAs = [
-  {
-    id: 'Q1',
-    question: 'aaaaa?',
-    answer: 'abc',
-    options: ['abc', 'def', 'ghi', 'jkl'],
-    star: false,
-    note: '',
-  },
-  {
-    id: 'Q2',
-    question: 'bbbb?',
-    answer: 'def',
-    options: ['abc', 'def', 'ghi', 'jkl'],
-    star: false,
-    note: '',
-  },
-  {
-    id: 'Q3',
-    question: 'bbbb?',
-    answer: 'ghi',
-    options: ['abc', 'def', 'ghi', 'jkl'],
-    star: false,
-    note: '',
-  },
-  {
-    id: 'Q4',
-    question: 'sadasdbbbb?',
-    answer: 'jkl',
-    options: ['abc', 'def', 'ghi', 'jkl'],
-    star: false,
-    note: '',
-  },
-]
+
 
 
 const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
@@ -59,14 +27,14 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       myAnswer: [],
-      updatedQAs: LS.getItem('QAstorge') ? JSON.parse(LS.getItem('QAstorge')) : QAs,
+      updatedQAs: LS.getItem('QAstorge') ? JSON.parse(LS.getItem('QAstorge')) : testQAs,
       isHandIn: false,
     }
   }
   componentWillMount = () => {
     // const updateFromLS_QAs = QAs.map(qa => qa = qa)
     if(!LS.getItem('QAstorge')) {
-      LS.setItem('QAstorge', JSON.stringify(QAs))
+      LS.setItem('QAstorge', JSON.stringify(testQAs))
     }
     const Q = this.state.updatedQAs.map(q => q = {
       id: q.id, 
@@ -81,6 +49,15 @@ export default class App extends React.Component {
     })
   }
   
+  _handelEditNote = (e) => {
+    const { myAnswer, updatedQAs } = this.state
+    const { name, value } = e.target
+    const notedQAs = setValueOfArrObj(updatedQAs, name, 'note', value)
+    this.setState({
+      myAnswer:  setValueOfArrObj(myAnswer, name, 'note', value)
+    })
+    localStorage.setItem('QAstorge', JSON.stringify(notedQAs))
+  }
   _handleCheckAnswer = () => {
     const { myAnswer } = this.state
     const checkedAnswer = myAnswer.map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })
@@ -120,9 +97,9 @@ export default class App extends React.Component {
     return (
       <div>
         Hi
-        {QAs.map(qa => 
+        {testQAs.map(qa => 
           <SingleQA
-            ley={qa.id}
+            key={qa.id}
             changeAnswer ={this._handleChangeAnswer}
             starIt={this._handelStar}
             myAnswer={myAnswer}
@@ -130,11 +107,11 @@ export default class App extends React.Component {
             question={qa.question}
             options={qa.options}
             isHandIn={isHandIn}
+            editNote={this._handelEditNote}
           />
         )}
         <hr />
-        <AddCount_TxtBTN title={'a'} />
-        <MinusCount_TxtBTN  title={'minus It'} />
+       
         <button onClick={this._handleCheckAnswer}>Check Answer!</button>
         <h4>SCORE: 
           <span>

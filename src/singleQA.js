@@ -1,19 +1,20 @@
 import React from 'react'
 import { styles } from '../config'
 
-
-
-
-
 export class SingleQA extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      isEditNote: false,
+    };
+  }
+  _handleOpenNote = () => {
+    this.setState((state) => ({
+      isEditNote: !state.isEditNote
+    }))
   }
   render() {
     const { starBTN } = styles
-
-
     const { 
       changeAnswer,
       starIt, 
@@ -22,12 +23,19 @@ export class SingleQA extends React.Component {
       question='', 
       options=[], 
       isHandIn=false,
+      // noteContext='nothing',
+      editNote,
     } = this.props
-    console.log(isHandIn)
+    const { isEditNote } = this.state
     const thisAnswer = myAnswer.filter(a => a.id === id)[0]
+    console.log(thisAnswer)
     return (
       <div>
-        <form onChange={changeAnswer} id={id} onSubmit={e => e.preventDefault()}>
+        <form 
+          onChange={changeAnswer} 
+          id={id} 
+          onSubmit={e => e.preventDefault()}
+        >
           <h3>{id} <span>{thisAnswer.checked !== 'notYet' ? (thisAnswer.checked ? '✔' : '✘') : ''}</span> </h3>
           <p>{question}</p>
           <span>{thisAnswer.answer}</span>
@@ -42,78 +50,23 @@ export class SingleQA extends React.Component {
             </label>
           )}
           <button onClick={starIt} name={id} style={ thisAnswer.star ? starBTN.active : starBTN.normal} >STAR</button>
-          <button>NOTE</button>
+          
+          <button onClick={this._handleOpenNote} name={id} >NOTE</button>
+        </form>
+        <form>
+          <textarea 
+            name={id}
+            onChange={editNote}
+            value={thisAnswer.note}
+            style={{display: isEditNote ? 'block' : 'none',  width: 400, height: 100 }}
+          />
         </form>
       </div>
     );
   }
 }
 
-export class TxtDiv extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      count: 0,
-    };
-  }
-  render() {
-    const { title='default Title', context='default Context', count=0 } = this.props
-    return (
-      <div>
-        <h2>{ title }</h2>
-        <p>{ context }</p>
-        <p>click count: { count }</p>
-      </div>
-    );
-  }
-}
-export class AvataDiv extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      count: 1000,
-    };
-  }
-  render() {
-    const { tel='00-1234', account='aaa000', email='aaa@bbb.com' } = this.props
-    return (
-      <div>
-        <h2>{ 'Your Infomation' }</h2>
-        <ul>
-          <li>{ tel } </li>
-          <li>{ account } </li>
-          <li>{ email } </li>
-        </ul>
-        <p>click count: { this.state.count }</p>
-      </div>
-    );
-  }
-}
 
-const WithButtonHOC = (MyComponent,BTNWord, clickFn) => class  extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      count: 100,
-    };
-  }
-  _handleCount = () => {
-    this.setState({
-      count: clickFn(this.state.count)
-    })
-  }
 
-  render() {
-    return (
-      <div>
-        <MyComponent  {...this.props} {...this.state} />
-        <button onClick={this._handleCount}>{BTNWord}</button>
-      </div>
-    );
-  }
-}
-const clickToAdd = c => c + 1
-const clickToMinus = c => c - 1
-export const AddCount_TxtBTN = WithButtonHOC(TxtDiv, 'add', clickToAdd)
-export const MinusCount_TxtBTN = WithButtonHOC(TxtDiv, 'minus', clickToMinus)
+
 // export const TxtWithBTN = WithButtonHOC(TxtDiv, 'Hello', clickAlert)
