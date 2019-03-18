@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { styles } from '../config'
 
 export class SingleQA extends React.Component {
@@ -30,29 +30,38 @@ export class SingleQA extends React.Component {
     const thisAnswer = myAnswer.filter(a => a.id === id)[0]
     console.log(thisAnswer)
     return (
-      <div>
-        <form 
-          onChange={changeAnswer} 
-          id={id} 
-          onSubmit={e => e.preventDefault()}
-        >
-          <h3>{id} <span>{thisAnswer.checked !== 'notYet' ? (thisAnswer.checked ? '✔' : '✘') : ''}</span> </h3>
-          <p>{question}</p>
-          <span>{thisAnswer.answer}</span>
-          {options.map(op => 
-            <label>
-              <input 
-                type='radio' 
-                name={id} 
-                value={op}
-                disabled={isHandIn} 
-              /> {op}
-            </label>
-          )}
-          <button onClick={starIt} name={id} style={ thisAnswer.star ? starBTN.active : starBTN.normal} >STAR</button>
-          
-          <button onClick={this._handleOpenNote} name={id} >NOTE</button>
-        </form>
+      <Fragment>
+        <div className='question-container'>
+          <div className='answer-part'>
+            <span className={thisAnswer.answer ? 'answer-active' : 'answer-default' }>
+              {thisAnswer.answer || 'your answer'}
+            </span>  
+          </div>
+          <div className='question-part'>
+            <form 
+              onChange={changeAnswer} 
+              id={id} 
+              onSubmit={e => e.preventDefault()}
+            >
+              <h3>{id} <span>{thisAnswer.checked !== 'notYet' ? (thisAnswer.checked ? '✔' : '✘') : ''}</span> </h3>
+              <p className='question'>{question}</p>
+              
+              {options.map(op => 
+                <label className='options'>
+                  <input 
+                    type='radio' 
+                    name={id} 
+                    value={op}
+                    disabled={isHandIn} 
+                  /> {op}
+                </label>
+              )}
+              <button onClick={starIt} name={id} style={ thisAnswer.star === 'TRUE' ? starBTN.active : starBTN.normal} >STAR</button>
+              
+              <button onClick={this._handleOpenNote} name={id} >NOTE</button>
+            </form>
+          </div>
+        </div>
         <form>
           <textarea 
             name={id}
@@ -61,7 +70,7 @@ export class SingleQA extends React.Component {
             style={{display: isEditNote ? 'block' : 'none',  width: 400, height: 100 }}
           />
         </form>
-      </div>
+    </Fragment>
     );
   }
 }

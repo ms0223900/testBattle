@@ -1,6 +1,7 @@
 import React from 'react'
 import { SingleQA } from './singleQA'
 import { testQAs } from './QAs'
+import '../styles/style.scss'
 
 // let starLS = localStorage.getItem('starID')
 // let noteLS = localStorage.getItem('IdNote')
@@ -9,10 +10,11 @@ const LS = localStorage
 
 
 
-const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
-  const tarObj = arrObj.filter(a => a.id === id)[0]
+export const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
+  const ID = id * 1
+  const tarObj = arrObj.filter(a => a.id === ID)[0]
   return [ 
-    ...arrObj.filter(a => a.id !== id),
+    ...arrObj.filter(a => a.id !== ID),
     {
       ...tarObj,
       [targetAttr]: 
@@ -29,26 +31,59 @@ export default class App extends React.Component {
       myAnswer: [],
       updatedQAs: LS.getItem('QAstorge') ? JSON.parse(LS.getItem('QAstorge')) : testQAs,
       isHandIn: false,
+      testQA: [],
+      testAmount: 100,
     }
+  }
+  fetchQA = () => {
+    fetch('../src/QAfiles/QA01.json')
+      .then(txt => txt.json())
+      .then(json => this.setState({
+        testQA: json,
+      }))
   }
   componentWillMount = () => {
     // const updateFromLS_QAs = QAs.map(qa => qa = qa)
+    fetch('../src/QAfiles/QA01.json')
+      .then(txt => txt.json())
+      .then(json => {
+        const Q = json.map(q => q = {
+          id: q.id, 
+          answer: '', 
+          correctAnswer: q.answer, 
+          checked: 'notYet',
+          star: q.star,
+          note: q.note,
+        })
+        this.setState({
+          testQA: json,
+          myAnswer: Q
+        })
+      })
     if(!LS.getItem('QAstorge')) {
       LS.setItem('QAstorge', JSON.stringify(testQAs))
     }
-    const Q = this.state.updatedQAs.map(q => q = {
-      id: q.id, 
-      answer: '', 
-      correctAnswer: q.answer, 
-      checked: 'notYet',
-      star: q.star,
-      note: q.note,
-    })
-    this.setState({
-      myAnswer: Q
-    })
+  }
+  componentDidMount = () => {
   }
   
+  generateTestPaper = (e) => {
+    const { id } = e.target
+    const { testAmount, testQA } = this.state
+    let QAs
+    if(id === 'testAll') {
+      QAs = testQA.slice(0, testAmount)
+    } else if(id === 'testStar') {
+      QAs = testQA.filter(qa => qa.star === true).slice(0, testAmount)
+    }
+    this.setState({
+      testQA: QAs,
+    })
+  }
+
+  _handelStaredQuestion = () => {
+    
+  }
   _handelEditNote = (e) => {
     const { myAnswer, updatedQAs } = this.state
     const { name, value } = e.target
@@ -67,11 +102,12 @@ export default class App extends React.Component {
       myAnswer: checkedAnswer
     })
   }
-
   _handleChangeAnswer = (e) => {
     const { myAnswer, isHandIn } = this.state
     const { name, value } = e.target
+    console.log(name, value)
     const changedAns = setValueOfArrObj(myAnswer, name, 'answer', value)
+    console.log(changedAns)
     if(!isHandIn) {
       this.setState({
         myAnswer: changedAns
@@ -93,29 +129,47 @@ export default class App extends React.Component {
   }
 
   render() {
+    console.log(this.state.myAnswer)
     const { myAnswer, isHandIn,  } = this.state
     return (
       <div>
-        Hi
-        {testQAs.map(qa => 
-          <SingleQA
-            key={qa.id}
-            changeAnswer ={this._handleChangeAnswer}
-            starIt={this._handelStar}
-            myAnswer={myAnswer}
-            id={qa.id}
-            question={qa.question}
-            options={qa.options}
-            isHandIn={isHandIn}
-            editNote={this._handelEditNote}
-          />
-        )}
+        <div className='tab-menu'>
+          <button id='testAll'>從收藏出題</button>
+          <button id='testStar'>從全部考題出題</button>
+          <span>   </span>
+          <button>查看我的筆記</button>
+        </div>
         <hr />
-       
-        <button onClick={this._handleCheckAnswer}>Check Answer!</button>
-        <h4>SCORE: 
-          <span>
-          { isHandIn ? ~~(myAnswer.filter(a => a.checked).length / myAnswer.length * 100) : '' }</span> </h4>
+        <div id='test-paper' className='half paper'>
+          {this.state.testQA.map(qa =>
+            <React.Fragment> 
+              <SingleQA
+                key={qa.id}
+                changeAnswer ={this._handleChangeAnswer}
+                starIt={this._handelStar}
+                myAnswer={myAnswer}
+                id={qa.id}
+                question={qa.question}
+                options={qa.options}
+                isHandIn={isHandIn}
+                editNote={this._handelEditNote}
+              />
+              <hr />
+            </React.Fragment>
+          )}
+          {/* <hr /> */}
+        
+          <button onClick={this._handleCheckAnswer}>Check Answer!</button>
+          <h4>SCORE: 
+            <span>
+            { isHandIn ? ~~(myAnswer.filter(a => a.checked).length / myAnswer.length * 100) : '' }</span> </h4>
+        </div>
+        <div className='half'>
+          <h2>My Note</h2>
+          <textarea>
+
+          </textarea>
+        </div>
       </div>
     );
   }
