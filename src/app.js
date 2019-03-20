@@ -1,5 +1,5 @@
 import React from 'react'
-import { SingleQA } from './singleQA'
+import { SingleQA, DataButtons } from './singleQA'
 import { testQAs } from './QAs'
 import '../styles/style.scss'
 
@@ -12,17 +12,31 @@ const LS = localStorage
 
 export const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
   const ID = id * 1
+  const arrObjLength = arrObj.length
   const tarObj = arrObj.filter(a => a.id === ID)[0]
-  return [ 
-    ...arrObj.filter(a => a.id !== ID),
-    {
-      ...tarObj,
-      [targetAttr]: 
-        typeof(value) === 'boolean' ? 
-          (tarObj[targetAttr] ? false : true) : 
-          value
-    }
-  ]
+  const arrObjOnlyId = arrObj.map(arr => arr = arr.id)
+  const tarIndex = arrObjOnlyId.indexOf(ID)
+  const valuedObj = { ...tarObj, [targetAttr]: typeof(value) === 'boolean' ? 
+    (tarObj[targetAttr] ? false : true) : 
+    value
+  }
+  if(tarIndex === 0) {
+    return [
+      valuedObj,
+      ...arrObj.slice(1,arrObjLength)
+    ]
+  } else if(tarIndex === arrObjLength) {
+    return [
+      ...arrObj.slice(0, arrObjLength - 1),
+      valuedObj
+    ]
+  } else {
+    return [
+      ...arrObj.slice(0, tarIndex),
+      valuedObj,
+      ...arrObj.slice(tarIndex + 1, arrObjLength)
+    ]
+  }
 }
 export default class App extends React.Component {
   constructor(props) {
@@ -32,7 +46,7 @@ export default class App extends React.Component {
       updatedQAs: LS.getItem('QAstorge') ? JSON.parse(LS.getItem('QAstorge')) : testQAs,
       isHandIn: false,
       testQA: [],
-      testAmount: 100,
+      testAmount: 20,
     }
   }
   fetchQA = () => {
@@ -114,29 +128,36 @@ export default class App extends React.Component {
       })
     }
   }
-  _handelStar = (e) => {
-    const { myAnswer, updatedQAs } = this.state
-    const { name } = e.target
-
-    const staredMyAnswer = setValueOfArrObj(myAnswer, name, 'star', false)
-    const staredQAs = setValueOfArrObj(updatedQAs, name, 'star', false)
+  _handleChangeAmout = (e) => {
     this.setState({
-      myAnswer: staredMyAnswer,
-      updatedQAs: staredQAs,
+      testAmount: e.target.value
     })
-    console.log(staredQAs)
-    localStorage.setItem('QAstorge', JSON.stringify(staredQAs))
   }
+  // _handelStar = (e) => {
+  //   const { myAnswer, updatedQAs } = this.state
+  //   const { name } = e.target
+
+
+  //   const staredMyAnswer = setValueOfArrObj(myAnswer, name, 'star', false)
+  //   const staredQAs = setValueOfArrObj(updatedQAs, name, 'star', false)
+  //   this.setState({
+  //     myAnswer: staredMyAnswer,
+  //     updatedQAs: staredQAs,
+  //   })
+  //   console.log(staredQAs)
+  //   localStorage.setItem('QAstorge', JSON.stringify(staredQAs))
+  // }
 
   render() {
     console.log(this.state.myAnswer)
-    const { myAnswer, isHandIn,  } = this.state
+    const { myAnswer, isHandIn, testAmount, questionData } = this.state
     return (
       <div>
         <div className='tab-menu'>
           <button id='testAll'>從收藏出題</button>
           <button id='testStar'>從全部考題出題</button>
           <span>   </span>
+          <input type='number' value={ testAmount } onChange={this._handleChangeAmout} />
           <button>查看我的筆記</button>
         </div>
         <hr />
@@ -148,12 +169,14 @@ export default class App extends React.Component {
                 changeAnswer ={this._handleChangeAnswer}
                 starIt={this._handelStar}
                 myAnswer={myAnswer}
+                questionData={questionData}
                 id={qa.id}
                 question={qa.question}
                 options={qa.options}
                 isHandIn={isHandIn}
                 editNote={this._handelEditNote}
               />
+              <DataButtons id={qa.id} />
               <hr />
             </React.Fragment>
           )}
