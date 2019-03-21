@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-// import { setValueOfArrObj } from './app'
+import { setValueOfArrObj } from './app'
 import { styles } from '../config'
 const { starBTN } = styles
 
@@ -21,7 +21,10 @@ export const getDataFromLocalStorage = (id) => {
     return setDefaultData
   }
 }
-
+export const setDataToLocalStorage = (id, prop, data) => {
+  const originLS = JSON.parse(localStorage.getItem('starAndNote'))
+  localStorage.setItem('starAndNote', JSON.stringify(setValueOfArrObj(originLS, id, prop, data)))
+}
 export class SingleQA extends React.Component {
   constructor(props) {
     super(props);
@@ -144,18 +147,23 @@ export class DataButtons extends React.Component {
       star: thisData.star,
       noteContext: thisData.noteContext,
     })
+    console.log(thisData)
   }
   
   _handleStar = () => {
+    const { id, star, } = this.state
     this.setState({
       star: !this.state.star
     })
+    setDataToLocalStorage(id, 'star', !star)
   }
   _handleEditNote = (e) => {
+    const { id, } = this.state
     const { value } = e.target
     this.setState({
       noteContext: value,
     })
+    setDataToLocalStorage(id, 'noteContext', value)
   }
   render() {
     const { id, star, noteContext } = this.state
