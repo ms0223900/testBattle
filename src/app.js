@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import { SingleQA, DataButtons } from './singleQA'
+import ReactDOM from 'react-dom'
+import { TestPaper } from './TestPaper'
 import { 
   getAllOrStarData,
   setValueOfArrObj,
@@ -9,12 +10,14 @@ import {
 import { testQAs } from './QAs'
 import '../styles/style.scss'
 
-// let starLS = localStorage.getItem('starID')
-// let noteLS = localStorage.getItem('IdNote')
-// console.log(JSON.parse(noteLS))
-const LS = localStorage
-
-
+const defaultKeyId = 0
+export const getRandomId = (prevId=0) => {
+  let id = Math.random()
+  while(id === prevId) {
+    id = Math.random()
+  }
+  return id
+}
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -23,8 +26,10 @@ export default class App extends React.Component {
       isHandIn: false,
       allTestQA: [],
       testQA: [],
-      testAmount: 20,
+      testAmount: 5,
       testMode: 'all',
+      isNew: false,
+      keyId: 0,
     }
   }
   componentWillMount = () => {
@@ -41,12 +46,10 @@ export default class App extends React.Component {
         const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
         let setData = json
         if(LSdata) {
-          console.log(LSdata)
           for (let i = 0; i < LSdata.length; i++) {
             setData = setValueOfArrObj(setData, LSdata[i].id, 'star', LSdata[i].star)
           }
         }
-        console.log(setData)
         this.setState({
           allTestQA: setData,
           myAnswer: Q
@@ -64,23 +67,18 @@ export default class App extends React.Component {
         testMode: mode,
       })
     }
-    console.log(mode)
   }
   _handleTestPaper = () => {
     const { testMode, testAmount, allTestQA } = this.state
     const star = testMode === 'star' ? true : false
-    this.setState({
+    this.setState(state =>({
+      keyId: getRandomId(state.keyId), 
       testQA: getAllOrStarData(star, testAmount, allTestQA, true)
-    })
-  }
-
-  _handelStaredQuestion = () => {
-    
+    }))
   }
   _handleCheckAnswer = () => {
     const { myAnswer } = this.state
     const checkedAnswer = myAnswer.map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })
-    console.log(checkedAnswer)
     this.setState({
       isHandIn: true,
       myAnswer: checkedAnswer
@@ -89,9 +87,8 @@ export default class App extends React.Component {
   _handleChangeAnswer = (e) => {
     const { myAnswer, isHandIn } = this.state
     const { name, value } = e.target
-    console.log(name, value)
+    console.log(name)
     const changedAns = setValueOfArrObj(myAnswer, name, 'answer', value)
-    console.log(changedAns)
     if(!isHandIn) {
       this.setState({
         myAnswer: changedAns
@@ -105,8 +102,8 @@ export default class App extends React.Component {
   }
 
   render() {
-    console.log(this.state.myAnswer)
-    const { myAnswer, isHandIn, testAmount, questionData, testQA=[] } = this.state
+    const { myAnswer, isHandIn, testAmount, keyId, testQA=[] } = this.state
+    console.log('//------')
     return (
       <div>
         <div className='tab-menu'>
@@ -128,26 +125,15 @@ export default class App extends React.Component {
           <button>查看我的筆記</button>
         </div>
         <hr />
-        <div id='test-paper' className='half paper'>
-          {testQA.map(qa =>
-            <React.Fragment> 
-              <SingleQA
-                key={qa.id}
-                changeAnswer ={this._handleChangeAnswer}
-                starIt={this._handelStar}
-                myAnswer={myAnswer}
-                questionData={questionData}
-                id={qa.id}
-                question={qa.question}
-                options={qa.options}
-                isHandIn={isHandIn}
-              />
-              <DataButtons id={qa.id} />
-              <hr />
-            </React.Fragment>
-          )}
-          {/* <hr /> */}
-        
+        <div>
+          <TestPaper
+            key={keyId} 
+            ref={el => this.testPaper = el}
+            testQA={testQA} 
+            myAnswer={myAnswer} 
+            isHandIn={isHandIn} 
+            changedAnswer={this._handleChangeAnswer} /> 
+          <hr />
           <button onClick={this._handleCheckAnswer}>Check Answer!</button>
           <h4>SCORE: 
             <span>

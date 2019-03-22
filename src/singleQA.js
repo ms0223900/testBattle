@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { Fragment } from 'react'
 import { setValueOfArrObj } from './functions'
 import { styles } from '../config'
@@ -42,7 +43,6 @@ export class SingleQA extends React.Component {
       isHandIn=false,
     } = this.props
     const thisAnswer = myAnswer.filter(a => a.id === id)[0]
-    console.log(thisAnswer)
     return (
       <Fragment>
         <div className='question-container'>
@@ -129,7 +129,7 @@ export class NoteButton extends React.Component {
     );
   }
 }
-export class DataButtons extends React.Component {
+export class DataButtons extends React.PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -138,7 +138,7 @@ export class DataButtons extends React.Component {
       noteContext: '',
     }
   }
-  componentWillMount = () => {
+  setDataFromLS = () => {
     const { id } = this.props
     const thisData = getDataFromLocalStorage(id)
     // get data from local storage
@@ -147,9 +147,18 @@ export class DataButtons extends React.Component {
       star: thisData.star,
       noteContext: thisData.noteContext,
     })
-    console.log(thisData)
+    // console.log(thisData)
+  }
+  componentWillMount = () => {
+    this.setDataFromLS()
+  }
+  componentDidUpdate = (prevProps, prevState) => {
+    if(prevProps.id !== this.state.id) {
+      this.setDataFromLS()
+    }
   }
   
+
   _handleStar = () => {
     const { id, star, } = this.state
     this.setState({

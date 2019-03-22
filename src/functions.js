@@ -48,10 +48,11 @@ export const genArr = (num=10) => {
 }
 export const getAllOrStarData = (star=false, amount=10, allData=[], isRandom=false) => {
   const starData = allData.filter(d => d.star)
+  const Length = (length) => length > 1 ? length : 1
   let resultArr = []
   const randomArr = star ? 
-    genRandom(amount, 0, starData.length - 1) : 
-    genRandom(amount, 0, allData.length - 1)
+    genRandom(amount, 0, Length(starData.length) - 1) : 
+    genRandom(amount, 0, Length(allData.length) - 1)
   if(isRandom) {
     for (const i of randomArr) {
       resultArr = star ? 
@@ -60,7 +61,7 @@ export const getAllOrStarData = (star=false, amount=10, allData=[], isRandom=fal
   }else {
     resultArr = star ? starData.slice(0, amount) : allData.slice(0, amount)
   }
-  return resultArr
+  return typeof(resultArr[0]) === 'undefined' ? [] : resultArr 
 }
 export const activeButton = (compareId='' , btnId='') => {
   const activeStyle = {
