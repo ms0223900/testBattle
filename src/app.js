@@ -1,5 +1,11 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
 import { SingleQA, DataButtons } from './singleQA'
+import { 
+  getAllOrStarData,
+  setValueOfArrObj,
+  activeButton,
+  } from './functions'
 import { testQAs } from './QAs'
 import '../styles/style.scss'
 
@@ -14,10 +20,11 @@ export default class App extends React.Component {
     super(props);
     this.state = {
       myAnswer: [],
-      updatedQAs: LS.getItem('QAstorge') ? JSON.parse(LS.getItem('QAstorge')) : testQAs,
       isHandIn: false,
+      allTestQA: [],
       testQA: [],
       testAmount: 20,
+      testMode: 'all',
     }
   }
   componentWillMount = () => {
@@ -30,47 +37,45 @@ export default class App extends React.Component {
           answer: '', 
           correctAnswer: q.answer, 
           checked: 'notYet',
-          star: q.star,
-          note: q.note,
         })
+        const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
+        let setData = json
+        if(LSdata) {
+          console.log(LSdata)
+          for (let i = 0; i < LSdata.length; i++) {
+            setData = setValueOfArrObj(setData, LSdata[i].id, 'star', LSdata[i].star)
+          }
+        }
+        console.log(setData)
         this.setState({
-          testQA: json,
+          allTestQA: setData,
           myAnswer: Q
         })
       })
       .catch(err => {})
-    if(!LS.getItem('QAstorge')) {
-      LS.setItem('QAstorge', JSON.stringify(testQAs))
-    }
   }
   componentDidMount = () => {
   }
-  
-  generateTestPaper = (e) => {
+  _handleChangeMode = (e) => {
     const { id } = e.target
-    const { testAmount, testQA } = this.state
-    let QAs
-    if(id === 'testAll') {
-      QAs = testQA.slice(0, testAmount)
-    } else if(id === 'testStar') {
-      QAs = testQA.filter(qa => qa.star === true).slice(0, testAmount)
+    const mode = id.slice(9)
+    if(mode !== this.state.testMode) {
+      this.setState({
+        testMode: mode,
+      })
     }
+    console.log(mode)
+  }
+  _handleTestPaper = () => {
+    const { testMode, testAmount, allTestQA } = this.state
+    const star = testMode === 'star' ? true : false
     this.setState({
-      testQA: QAs,
+      testQA: getAllOrStarData(star, testAmount, allTestQA, true)
     })
   }
 
   _handelStaredQuestion = () => {
     
-  }
-  _handelEditNote = (e) => {
-    const { myAnswer, updatedQAs } = this.state
-    const { name, value } = e.target
-    const notedQAs = setValueOfArrObj(updatedQAs, name, 'note', value)
-    this.setState({
-      myAnswer:  setValueOfArrObj(myAnswer, name, 'note', value)
-    })
-    localStorage.setItem('QAstorge', JSON.stringify(notedQAs))
   }
   _handleCheckAnswer = () => {
     const { myAnswer } = this.state
@@ -98,36 +103,33 @@ export default class App extends React.Component {
       testAmount: e.target.value
     })
   }
-  // _handelStar = (e) => {
-  //   const { myAnswer, updatedQAs } = this.state
-  //   const { name } = e.target
-
-
-  //   const staredMyAnswer = setValueOfArrObj(myAnswer, name, 'star', false)
-  //   const staredQAs = setValueOfArrObj(updatedQAs, name, 'star', false)
-  //   this.setState({
-  //     myAnswer: staredMyAnswer,
-  //     updatedQAs: staredQAs,
-  //   })
-  //   console.log(staredQAs)
-  //   localStorage.setItem('QAstorge', JSON.stringify(staredQAs))
-  // }
 
   render() {
     console.log(this.state.myAnswer)
-    const { myAnswer, isHandIn, testAmount, questionData } = this.state
+    const { myAnswer, isHandIn, testAmount, questionData, testQA=[] } = this.state
     return (
       <div>
         <div className='tab-menu'>
-          <button id='testAll'>從收藏出題</button>
-          <button id='testStar'>從全部考題出題</button>
+          <button 
+            id='testMode-all' 
+            style={activeButton(this.state.testMode, 'all')}
+            onClick={this._handleChangeMode} >
+            從全部考題出題
+          </button>
+          <button 
+            id='testMode-star' 
+            style={activeButton(this.state.testMode, 'star')}
+            onClick={this._handleChangeMode} >
+            從收藏出題
+          </button>
           <span>   </span>
           <input type='number' value={ testAmount } onChange={this._handleChangeAmout} />
+          <button onClick={this._handleTestPaper}>出題！！</button>
           <button>查看我的筆記</button>
         </div>
         <hr />
         <div id='test-paper' className='half paper'>
-          {this.state.testQA.map(qa =>
+          {testQA.map(qa =>
             <React.Fragment> 
               <SingleQA
                 key={qa.id}
@@ -139,7 +141,6 @@ export default class App extends React.Component {
                 question={qa.question}
                 options={qa.options}
                 isHandIn={isHandIn}
-                editNote={this._handelEditNote}
               />
               <DataButtons id={qa.id} />
               <hr />

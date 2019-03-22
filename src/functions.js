@@ -19,9 +19,7 @@ export const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
   const tarObj = arrObj.filter(a => a.id === ID)[0]
   const arrObjOnlyId = arrObj.map(arr => arr = arr.id)
   const tarIndex = arrObjOnlyId.indexOf(ID)
-  const valuedObj = { ...tarObj, [targetAttr]: typeof(value) === 'boolean' ? 
-    (tarObj[targetAttr] ? false : true) : 
-    value
+  const valuedObj = { ...tarObj, [targetAttr]: value
   }
   if(tarIndex === 0) {
     return [
@@ -63,4 +61,13 @@ export const getAllOrStarData = (star=false, amount=10, allData=[], isRandom=fal
     resultArr = star ? starData.slice(0, amount) : allData.slice(0, amount)
   }
   return resultArr
+}
+export const activeButton = (compareId='' , btnId='') => {
+  const activeStyle = {
+    backgroundColor: '#111', color: '#fff',
+  }
+  const normalStyle = {
+    backgroundColor: '#ddd', color: '#111'
+  }
+  return compareId === btnId ? activeStyle : normalStyle
 }

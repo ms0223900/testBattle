@@ -3,6 +3,7 @@ import {
   genRandom,
   setValueOfArrObj,
   getAllOrStarData,
+  activeButton,
  } from '../src/functions'
 
 describe('test functions', () => {
@@ -41,6 +42,16 @@ describe('test functions', () => {
     console.log(getStarData_random)
     expect(getStarData_random).toHaveLength(2)
     
+  })
+  it('test style button function', () => {
+    const activeStyle = {
+      backgroundColor: '#111', color: '#fff',
+    }
+    const normalStyle = {
+      backgroundColor: '#ddd', color: '#111'
+    }
+    expect(activeButton('aa', 'bb')).toEqual(normalStyle)
+    expect(activeButton('aa', 'aa')).toEqual(activeStyle)
   })
 })
  

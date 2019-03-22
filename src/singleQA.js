@@ -57,7 +57,7 @@ export class SingleQA extends React.Component {
               id={id} 
               onSubmit={e => e.preventDefault()}
             >
-              <h3>{id} <span>{thisAnswer.checked !== 'notYet' ? (thisAnswer.checked ? '✔' : '✘') : ''}</span> </h3>
+              <h3> <span>{thisAnswer.checked !== 'notYet' ? (thisAnswer.checked ? '✔' : '✘') : ''}</span> </h3>
               <p className='question'>{question}</p>
               
               {options.map(op => 
