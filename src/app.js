@@ -9,35 +9,6 @@ import '../styles/style.scss'
 const LS = localStorage
 
 
-
-export const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
-  const ID = id * 1
-  const arrObjLength = arrObj.length
-  const tarObj = arrObj.filter(a => a.id === ID)[0]
-  const arrObjOnlyId = arrObj.map(arr => arr = arr.id)
-  const tarIndex = arrObjOnlyId.indexOf(ID)
-  const valuedObj = { ...tarObj, [targetAttr]: typeof(value) === 'boolean' ? 
-    (tarObj[targetAttr] ? false : true) : 
-    value
-  }
-  if(tarIndex === 0) {
-    return [
-      valuedObj,
-      ...arrObj.slice(1,arrObjLength)
-    ]
-  } else if(tarIndex === arrObjLength) {
-    return [
-      ...arrObj.slice(0, arrObjLength - 1),
-      valuedObj
-    ]
-  } else {
-    return [
-      ...arrObj.slice(0, tarIndex),
-      valuedObj,
-      ...arrObj.slice(tarIndex + 1, arrObjLength)
-    ]
-  }
-}
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -48,13 +19,6 @@ export default class App extends React.Component {
       testQA: [],
       testAmount: 20,
     }
-  }
-  fetchQA = () => {
-    fetch('../src/QAfiles/QA01.json')
-      .then(txt => txt.json())
-      .then(json => this.setState({
-        testQA: json,
-      }))
   }
   componentWillMount = () => {
     // const updateFromLS_QAs = QAs.map(qa => qa = qa)
@@ -74,6 +38,7 @@ export default class App extends React.Component {
           myAnswer: Q
         })
       })
+      .catch(err => {})
     if(!LS.getItem('QAstorge')) {
       LS.setItem('QAstorge', JSON.stringify(testQAs))
     }

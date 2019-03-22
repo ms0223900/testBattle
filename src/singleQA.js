@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react'
-import { setValueOfArrObj } from './app'
+import { setValueOfArrObj } from './functions'
 import { styles } from '../config'
 const { starBTN } = styles
 
