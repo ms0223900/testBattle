@@ -22,7 +22,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      myAnswer: [],
+      myAnswer: [{ }],
       isHandIn: false,
       allTestQA: [],
       testQA: [],
@@ -37,12 +37,7 @@ export default class App extends React.Component {
     fetch('../src/QAfiles/QA01.json')
       .then(txt => txt.json())
       .then(json => {
-        const Q = json.map(q => q = {
-          id: q.id, 
-          answer: '', 
-          correctAnswer: q.answer, 
-          checked: 'notYet',
-        })
+        
         const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
         let setData = json
         if(LSdata) {
@@ -50,6 +45,12 @@ export default class App extends React.Component {
             setData = setValueOfArrObj(setData, LSdata[i].id, 'star', LSdata[i].star)
           }
         }
+        const Q = setData.map(q => q = {
+          id: q.id, 
+          answer: '', 
+          correctAnswer: q.correctAnswer, 
+          checked: 'notYet',
+        })
         this.setState({
           allTestQA: setData,
           myAnswer: Q
@@ -69,12 +70,23 @@ export default class App extends React.Component {
     }
   }
   _handleTestPaper = () => {
-    const { testMode, testAmount, allTestQA } = this.state
+    const { testMode, testAmount, allTestQA, myAnswer } = this.state
+    console.log('myAnswer: ', myAnswer[0].answer)
     const star = testMode === 'star' ? true : false
     this.setState(state =>({
+      isHandIn: false,
       keyId: getRandomId(state.keyId), 
-      testQA: getAllOrStarData(star, testAmount, allTestQA, true)
+      testQA: getAllOrStarData(star, testAmount, allTestQA, true),
     }))
+    if(myAnswer.filter(a => a.answer !== '').length > 0 ) {
+      this.setState({ 
+        myAnswer: myAnswer.map(a => a = {
+           ...a, 
+           answer: '',
+           checked: 'notYet'
+        }),
+      })
+    }
   }
   _handleCheckAnswer = () => {
     const { myAnswer } = this.state
@@ -89,6 +101,7 @@ export default class App extends React.Component {
     const { name, value } = e.target
     console.log(name)
     const changedAns = setValueOfArrObj(myAnswer, name, 'answer', value)
+    console.log(changedAns)
     if(!isHandIn) {
       this.setState({
         myAnswer: changedAns
@@ -103,7 +116,6 @@ export default class App extends React.Component {
 
   render() {
     const { myAnswer, isHandIn, testAmount, keyId, testQA=[] } = this.state
-    console.log('//------')
     return (
       <div>
         <div className='tab-menu'>
@@ -132,7 +144,7 @@ export default class App extends React.Component {
             testQA={testQA} 
             myAnswer={myAnswer} 
             isHandIn={isHandIn} 
-            changedAnswer={this._handleChangeAnswer} /> 
+            changeAnswer={this._handleChangeAnswer} /> 
           <hr />
           <button onClick={this._handleCheckAnswer}>Check Answer!</button>
           <h4>SCORE: 

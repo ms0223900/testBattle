@@ -73,7 +73,8 @@ export class SingleQA extends React.Component {
             </form>
           </div>
         </div>
-    </Fragment>
+        <hr />
+      </Fragment>
     );
   }
 }
