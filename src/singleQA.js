@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { Fragment } from 'react'
-import { setValueOfArrObj } from './functions'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { setValueOfArrObj, genOptionsWithABCD } from './functions'
 import { styles } from '../config'
 const { starBTN } = styles
 
@@ -31,11 +32,18 @@ export class SingleQA extends React.Component {
     super(props);
     this.state = {
       isEditNote: false,
+      yourAnswer: '',
     };
+  }
+  _handleOptionTitle = (e) => {
+    const optionTitle = e.target.getAttribute('answer')
+    this.setState({
+      yourAnswer: optionTitle,
+    })
+    this.props.changeAnswer(e)
   }
   render() {
     const { 
-      changeAnswer,
       myAnswer=[], 
       id=1, 
       question='', 
@@ -43,31 +51,35 @@ export class SingleQA extends React.Component {
       isHandIn=false,
     } = this.props
     const thisAnswer = myAnswer.filter(a => a.id === id)[0]
+    const withABCDoptions = genOptionsWithABCD(options)
     return (
       <Fragment>
         <div className='question-container'>
           <div className='answer-part'>
             <span className={thisAnswer.answer ? 'answer-active' : 'answer-default' }>
-              {thisAnswer.answer || 'your answer'}
+              {this.state.yourAnswer || 'your answer'}
             </span>  
           </div>
           <div className='question-part'>
             <form 
-              onChange={changeAnswer} 
+              onChange={this._handleOptionTitle} 
               id={id} 
               onSubmit={e => e.preventDefault()}
             >
               <h3> <span>{thisAnswer.checked !== 'notYet' ? (thisAnswer.checked ? '✔' : '✘') : ''}</span> </h3>
               <p className='question'>{question}</p>
               
-              {options.map(op => 
+              {withABCDoptions.map(op => 
                 <label className='options'>
                   <input 
                     type='radio' 
                     name={id} 
-                    value={op}
+                    value={op.options}
+                    answer={op.id}
                     disabled={isHandIn} 
-                  /> {op}
+                  /> 
+                  <span style={{ color: 'blue' }}>{op.id}</span>
+                  {' ' + op.options}
                 </label>
               )}
             </form>
@@ -86,15 +98,9 @@ export class StarButton extends React.Component {
   render() {
     const { id=0, star=false, starFn=() => {} } = this.props
     return (
-      <Fragment>
-        <button 
-          onClick={starFn} 
-          name={id} 
-          style={ star === true ? starBTN.active : starBTN.normal} 
-        >
-          STAR
-        </button>
-      </Fragment>
+      <span onClick={starFn} name={id} className={star ? 'starBTN active' : 'starBTN'}>
+        <FontAwesomeIcon icon='star' />
+      </span>
     )
   }
 }
@@ -113,11 +119,13 @@ export class NoteButton extends React.Component {
   }
 
   render() {
-    const { id=0, noteContext='', noteFn=() => {} } = this.props
+    const { id=0, noteContext='', noteFn=() => {}, isHandIn } = this.props
     const { isEditNote } = this.state
     return (
       <Fragment>
-        <button onClick={this._handleOpenNote} name={id} >NOTE</button>
+        <span className='noteBTN'>
+          <FontAwesomeIcon onClick={ isHandIn ? this._handleOpenNote : () => {window.alert('交卷後才能記筆記~')}} name={id} icon='edit' />
+        </span>
         <form>
           <textarea 
             name={id}
@@ -158,8 +166,6 @@ export class DataButtons extends React.PureComponent {
       this.setDataFromLS()
     }
   }
-  
-
   _handleStar = () => {
     const { id, star, } = this.state
     this.setState({
@@ -177,8 +183,9 @@ export class DataButtons extends React.PureComponent {
   }
   render() {
     const { id, star, noteContext } = this.state
+    const { isHandIn } = this.props
     return (
-      <div>
+      <div className='star-note-buttons'>
         <StarButton
           id={id}
           star={star}
@@ -188,6 +195,7 @@ export class DataButtons extends React.PureComponent {
           id={id}
           noteContext={noteContext}
           noteFn={this._handleEditNote}
+          isHandIn={isHandIn}
         />
       </div>
     );

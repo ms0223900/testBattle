@@ -39,10 +39,12 @@ export const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
     ]
   }
 }
-export const genArr = (num=10) => {
+export const genArr = (num=10, from0or1=0) => {
   let arr = []
-  for (let i = 0; i < num; i++) {
+  let i = from0or1 === 0 ? 0 : 1
+  while(i < num) {
     arr = [...arr, i]
+    i += 1
   }
   return arr
 }
@@ -71,4 +73,15 @@ export const activeButton = (compareId='' , btnId='') => {
     backgroundColor: '#ddd', color: '#111'
   }
   return compareId === btnId ? activeStyle : normalStyle
+}
+export const genOptionsWithABCD = (options) => {
+  let arr = []
+  const ABCD = ['A', 'B', 'C', 'D']
+  for (let i = 0; i < options.length; i++) {
+    arr[i] = {
+      id: ABCD[i],
+      options: options[i]
+    }
+  }
+  return arr
 }

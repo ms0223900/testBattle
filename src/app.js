@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faStar, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { TestPaper } from './TestPaper'
 import { 
   getAllOrStarData,
@@ -10,7 +12,9 @@ import {
 import { testQAs } from './QAs'
 import '../styles/style.scss'
 
-const defaultKeyId = 0
+library.add(faStar, faEdit)
+
+
 export const getRandomId = (prevId=0) => {
   let id = Math.random()
   while(id === prevId) {
@@ -30,6 +34,7 @@ export default class App extends React.Component {
       testMode: 'all',
       isNew: false,
       keyId: 0,
+      viewMyNote: false,
     }
   }
   componentWillMount = () => {
@@ -78,7 +83,7 @@ export default class App extends React.Component {
       keyId: getRandomId(state.keyId), 
       testQA: getAllOrStarData(star, testAmount, allTestQA, true),
     }))
-    if(myAnswer.filter(a => a.answer !== '').length > 0 ) {
+    if(this.testPaper) {
       this.setState({ 
         myAnswer: myAnswer.map(a => a = {
            ...a, 
@@ -99,7 +104,8 @@ export default class App extends React.Component {
   _handleChangeAnswer = (e) => {
     const { myAnswer, isHandIn } = this.state
     const { name, value } = e.target
-    console.log(name)
+    console.log(e.target.getAttribute('answer'))
+    // console.log(answer)
     const changedAns = setValueOfArrObj(myAnswer, name, 'answer', value)
     console.log(changedAns)
     if(!isHandIn) {
@@ -115,7 +121,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { myAnswer, isHandIn, testAmount, keyId, testQA=[] } = this.state
+    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote } = this.state
     return (
       <div>
         <div className='tab-menu'>
@@ -137,21 +143,17 @@ export default class App extends React.Component {
           <button>查看我的筆記</button>
         </div>
         <hr />
-        <div>
+        <div >
           <TestPaper
             key={keyId} 
             ref={el => this.testPaper = el}
             testQA={testQA} 
             myAnswer={myAnswer} 
             isHandIn={isHandIn} 
-            changeAnswer={this._handleChangeAnswer} /> 
-          <hr />
-          <button onClick={this._handleCheckAnswer}>Check Answer!</button>
-          <h4>SCORE: 
-            <span>
-            { isHandIn ? ~~(myAnswer.filter(a => a.checked).length / myAnswer.length * 100) : '' }</span> </h4>
+            changeAnswer={this._handleChangeAnswer}
+            checkAnswer={this._handleCheckAnswer} />
         </div>
-        <div className='half'>
+        <div className='half' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note</h2>
           <textarea>
 

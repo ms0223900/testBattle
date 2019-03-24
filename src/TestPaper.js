@@ -1,5 +1,6 @@
 import React from 'react'
 import { SingleQA, DataButtons } from './singleQA'
+// import { genArr } from './functions'
 
 export class TestPaper extends React.PureComponent {
   constructor(props) {
@@ -7,13 +8,19 @@ export class TestPaper extends React.PureComponent {
     this.state = {};
   }
   render() {
-    const { testQA=[], myAnswer, isHandIn, changeAnswer } = this.props
-    console.log(testQA)
+    const { testQA=[], myAnswer, isHandIn, changeAnswer, checkAnswer } = this.props
+    // const questionTitle = genArr(myAnswer.length, 1)
     return (
       <div id='test-paper' className='half paper'>
+        <h4 id='score'>SCORE: 
+          <span>
+          { isHandIn ? ~~(myAnswer.filter(a => a.checked).length / testQA.length * 100) : '' }</span>
+        </h4>
+        <hr />
         {testQA.length > 0 ? 
           testQA.map(qa =>
             <React.Fragment> 
+              <DataButtons id={qa.id} isHandIn={isHandIn} />
               <SingleQA
                 key={qa.id}
                 changeAnswer={changeAnswer}
@@ -23,9 +30,10 @@ export class TestPaper extends React.PureComponent {
                 options={qa.options}
                 isHandIn={isHandIn}
               />
-              <DataButtons id={qa.id} />
             </React.Fragment>
-          ) : '尚無收藏題目' }
+          ) : '尚無題目' }
+          <hr />
+          <button onClick={checkAnswer}>Check Answer!</button>
       </div>
     );
   }

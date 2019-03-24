@@ -4,6 +4,7 @@ import {
   setValueOfArrObj,
   getAllOrStarData,
   activeButton,
+  genOptionsWithABCD
  } from '../src/functions'
 
 describe('test functions', () => {
@@ -52,6 +53,15 @@ describe('test functions', () => {
     }
     expect(activeButton('aa', 'bb')).toEqual(normalStyle)
     expect(activeButton('aa', 'aa')).toEqual(activeStyle)
+  })
+  it('test generate ABCD options', () => {
+    const mockOptions = ['aa', 'bb', 'cc']
+    const mockOptionsResult = [
+      { id: 'A', options: 'aa' },
+      { id: 'B', options: 'bb' },
+      { id: 'C', options: 'cc' },
+    ]
+    expect(genOptionsWithABCD(mockOptions)).toEqual(mockOptionsResult)
   })
 })
  
