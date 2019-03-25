@@ -5,6 +5,8 @@ import { setValueOfArrObj, genOptionsWithABCD } from './functions'
 import { styles } from '../config'
 const { starBTN } = styles
 
+const ABCDOptions = ['A', 'B', 'C', 'D', 'E', 'F']
+
 export const getDataFromLocalStorage = (id) => {
   const setDefaultData = {
     id: id,
@@ -56,7 +58,7 @@ export class SingleQA_WithButton extends React.Component {
     })
   }
   render() {
-    const { id, changeAnswer, myAnswer, question, options, isHandIn } = this.props
+    const { id, changeAnswer, myAnswer, question, options, isHandIn, isCheckCorrectAns } = this.props
     return (
       <Fragment>
         <DataButtons
@@ -72,6 +74,7 @@ export class SingleQA_WithButton extends React.Component {
           options={options}
           isHandIn={isHandIn}
           isNoteOpen={this.state.isNoteOpen}
+          isCheckCorrectAns={isCheckCorrectAns}
           openNote={this._handleOpenNote}
         />
       </Fragment>
@@ -122,17 +125,27 @@ export class SingleQA extends React.Component {
       options=[], 
       isHandIn=false,
       isNoteOpen=false,
+      isCheckCorrectAns=false,
       openNote=() => {}
     } = this.props
+
     const { noteContext } = this.state
     const thisAnswer = myAnswer.filter(a => a.id === id)[0]
     const withABCDoptions = genOptionsWithABCD(options)
+    const correctAnswerWithABCD = () => {
+      const index = options.indexOf(thisAnswer.correctAnswer)
+      return ABCDOptions[index]
+    }
+
     return (
       <Fragment>
         <div className='question-container'>
           <div className='answer-part'>
             <span className={thisAnswer.answer ? 'answer-active' : 'answer-default' }>
               {this.state.yourAnswer || 'your answer'}
+            </span>
+            <span className='corrected-answer'>
+              {isCheckCorrectAns ? correctAnswerWithABCD(): ''}
             </span>  
           </div>
           <div className='question-part'>

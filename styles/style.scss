@@ -1,4 +1,9 @@
 $main-color: rgba(14, 61, 250, 0.687);
+$secondary-color: rgb(173, 216, 254);
+@mixin secondBTN {
+  background-color: $secondary-color;
+  color: rgb(6, 0, 41);
+}
 * {
   margin: 0;
   padding: 0;
@@ -6,6 +11,7 @@ $main-color: rgba(14, 61, 250, 0.687);
   word-break: normal;
 }
 button {
+  cursor: pointer;
   outline: none;
   box-shadow: none;
   background-color: $main-color;
@@ -13,6 +19,15 @@ button {
   padding: 6px;
   border-radius: 3px;
   margin: 0px 5px 0px 5px;
+  font-weight: 500;
+  transition: .2s;
+  &:hover {
+    opacity: .7;
+    transition: .2s;
+  }
+}
+.secondBTN {
+  @include secondBTN()
 }
 .half {
   width: calc(50% - 20px);

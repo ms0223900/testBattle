@@ -9,7 +9,7 @@ export class TestPaper extends React.PureComponent {
     };
   }
   render() {
-    const { testQA=[], myAnswer, isHandIn, changeAnswer, checkAnswer } = this.props
+    const { testQA=[], myAnswer, isHandIn, changeAnswer, checkAnswer, isCheckCorrectAns, checkCorrectAnswer } = this.props
     // const questionTitle = genArr(myAnswer.length, 1)
     return (
       <div id='test-paper' className='half paper'>
@@ -29,11 +29,13 @@ export class TestPaper extends React.PureComponent {
                 myAnswer={myAnswer}
                 changeAnswer={changeAnswer}
                 isHandIn={isHandIn}
+                isCheckCorrectAns={isCheckCorrectAns}
               />
             </React.Fragment>
           ) : '尚無題目' }
           <hr />
           <button onClick={checkAnswer}>Check Answer!</button>
+          <button className='secondBTN' style={{ display: isHandIn ? 'inline-block' : 'none' }} onClick={checkCorrectAnswer}>Check Correct Answer!</button>
       </div>
     );
   }

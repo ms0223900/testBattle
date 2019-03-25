@@ -29,11 +29,11 @@ export default class App extends React.Component {
     this.state = {
       myAnswer: [{ }],
       isHandIn: false,
+      isCheckCorrectAns: false,
       allTestQA: [],
       testQA: [],
       testAmount: 5,
       testMode: 'all',
-      isNew: false,
       keyId: 0,
       viewMyNote: false,
       noteContent: '',
@@ -78,9 +78,11 @@ export default class App extends React.Component {
   
   _handleOpenNote = () => {
     this.focusNoteArea()
-    this.setState(state => ({
-      viewMyNote: !state.viewMyNote,
-    }))
+    if(this.state.isHandIn) {
+      this.setState(state => ({
+        viewMyNote: !state.viewMyNote,
+      }))
+    }
     // console.log(this.state.viewMyNote)
   }
   _handleChangeNote = (e) => {
@@ -144,13 +146,17 @@ export default class App extends React.Component {
       testAmount: e.target.value
     })
   }
+  _handleCheckCorrectAnswer = () => {
+    this.setState(state => ({
+      isCheckCorrectAns: !state.isCheckCorrectAns,
+    }))
+  }
   focusNoteArea = () => {
     console.log(this.noteArea)
     this.noteArea.focus()
-    
   }
   render() {
-    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent } = this.state
+    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns } = this.state
     return (
       <div>
         <div className='tab-menu'>
@@ -183,8 +189,10 @@ export default class App extends React.Component {
             testQA={testQA} 
             myAnswer={myAnswer} 
             isHandIn={isHandIn} 
+            isCheckCorrectAns={isCheckCorrectAns}
             changeAnswer={this._handleChangeAnswer}
-            checkAnswer={this._handleCheckAnswer} />
+            checkAnswer={this._handleCheckAnswer}
+            checkCorrectAnswer={this._handleCheckCorrectAnswer} />
         </div>
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  
