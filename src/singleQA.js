@@ -43,13 +43,69 @@ export const HOCwithHint = (Component, hint='I am hint!', hinted='') => class ex
     );
   }
 }
+export class SingleQA_WithButton extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isNoteOpen: false,
+    };
+  }
+  _handleOpenNote = () => {
+    this.setState({
+      isNoteOpen: !this.state.isNoteOpen
+    })
+  }
+  render() {
+    const { id, changeAnswer, myAnswer, question, options, isHandIn } = this.props
+    return (
+      <Fragment>
+        <DataButtons
+          id={id}
+          isHandIn={isHandIn}
+          openNote={this._handleOpenNote}
+        />
+        <SingleQA
+          changeAnswer={changeAnswer}
+          myAnswer={myAnswer}
+          id={id}
+          question={question}
+          options={options}
+          isHandIn={isHandIn}
+          isNoteOpen={this.state.isNoteOpen}
+          openNote={this._handleOpenNote}
+        />
+      </Fragment>
+    );
+  }
+}
 export class SingleQA extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEditNote: false,
       yourAnswer: '',
+      noteContext: '',
     };
+  }
+  componentWillMount = () => {
+    const { id } = this.props
+    this.setState({
+      noteContext: getDataFromLocalStorage(id).noteContext
+    })
+  }
+  
+  componentDidMount = () => {
+    this.questionNote.focus()
+  }
+  
+  _handleEditNote = (e) => {
+    const { value } = e.target
+    const { id } = this.props
+    const thisData = getDataFromLocalStorage(id)
+    // get data from local storage
+    this.setState({
+      noteContext: value,
+    })
+    setDataToLocalStorage(id, 'noteContext', value)
   }
   _handleOptionTitle = (e) => {
     const optionTitle = e.target.getAttribute('answer')
@@ -65,7 +121,10 @@ export class SingleQA extends React.Component {
       question='', 
       options=[], 
       isHandIn=false,
+      isNoteOpen=false,
+      openNote=() => {}
     } = this.props
+    const { noteContext } = this.state
     const thisAnswer = myAnswer.filter(a => a.id === id)[0]
     const withABCDoptions = genOptionsWithABCD(options)
     return (
@@ -82,7 +141,11 @@ export class SingleQA extends React.Component {
               id={id} 
               onSubmit={e => e.preventDefault()}
             >
-              <h3> <span>{thisAnswer.checked !== 'notYet' ? (thisAnswer.checked ? '✔' : '✘') : ''}</span> </h3>
+              {thisAnswer.checked !== 'notYet' ? (thisAnswer.checked ? 
+                <span className='checked-text correct-text'>✔</span> : 
+                <span className='checked-text false-text'>✘</span> ) 
+                : ''
+              }
               <p className='question'>{question}</p>
               
               {withABCDoptions.map(op => 
@@ -102,6 +165,10 @@ export class SingleQA extends React.Component {
           </div>
         </div>
         <hr />
+        <div className='question-note' style={{ display: isNoteOpen ? 'block' : 'none'}}>
+          <textarea onChange={this._handleEditNote} value={noteContext} placeholder='Take your note here.' ref={el => this.questionNote = el}></textarea>
+          <button onClick={openNote}>confirm</button>
+        </div>
       </Fragment>
     );
   }
@@ -128,28 +195,24 @@ export class NoteButton extends React.Component {
       note: '',
     }
   }
-  _handleOpenNote = () => {
-    this.setState((state) => ({
-      isEditNote: !state.isEditNote
-    }))
-  }
 
   render() {
-    const { id=0, noteContext='', noteFn=() => {}, isHandIn } = this.props
+    const { id=0, noteContext='', noteFn=() => {}, isHandIn, openNote } = this.props
     const { isEditNote } = this.state
     return (
       <Fragment>
         <span className='noteBTN'>
-          <FontAwesomeIcon onClick={ isHandIn ? this._handleOpenNote : () => {window.alert('交卷後才能記筆記~')}} name={id} icon='edit' />
+          <FontAwesomeIcon onClick={ isHandIn ? openNote : () => {window.alert('交卷後才能記筆記~')}} name={id} icon='edit' />
         </span>
-        <form>
+        <div className='noteBTN-container' style={{display: isEditNote ? 'block' : 'none',  width: 400 }}>
           <textarea 
             name={id}
+            className='note-noteBTN'
             onChange={noteFn}
             value={noteContext}
-            style={{display: isEditNote ? 'block' : 'none',  width: 400, height: 100 }}
           />
-        </form>
+          <button onClick={openNote}>confirm</button>
+        </div>
       </Fragment>
     );
   }
@@ -193,17 +256,9 @@ export class DataButtons extends React.PureComponent {
     })
     setDataToLocalStorage(id, 'star', !star)
   }
-  _handleEditNote = (e) => {
-    const { id, } = this.state
-    const { value } = e.target
-    this.setState({
-      noteContext: value,
-    })
-    setDataToLocalStorage(id, 'noteContext', value)
-  }
   render() {
     const { id, star, noteContext } = this.state
-    const { isHandIn } = this.props
+    const { isHandIn, openNote } = this.props
     return (
       <div className='star-note-buttons'>
         <StarWithHint
@@ -217,6 +272,7 @@ export class DataButtons extends React.PureComponent {
           noteContext={noteContext}
           noteFn={this._handleEditNote}
           isHandIn={isHandIn}
+          openNote={openNote}
         />
       </div>
     );

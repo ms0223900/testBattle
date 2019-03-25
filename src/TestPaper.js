@@ -1,11 +1,12 @@
 import React from 'react'
-import { SingleQA, DataButtons } from './singleQA'
+import { SingleQA_WithButton } from './singleQA'
 // import { genArr } from './functions'
 
 export class TestPaper extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+    };
   }
   render() {
     const { testQA=[], myAnswer, isHandIn, changeAnswer, checkAnswer } = this.props
@@ -19,15 +20,14 @@ export class TestPaper extends React.PureComponent {
         <hr />
         {testQA.length > 0 ? 
           testQA.map(qa =>
-            <React.Fragment key={qa.id}> 
-              <DataButtons id={qa.id} isHandIn={isHandIn} />
-              <SingleQA
+            <React.Fragment key={qa.id}>
+              <SingleQA_WithButton
                 key={qa.id}
-                changeAnswer={changeAnswer}
-                myAnswer={myAnswer}
                 id={qa.id}
                 question={qa.question}
                 options={qa.options}
+                myAnswer={myAnswer}
+                changeAnswer={changeAnswer}
                 isHandIn={isHandIn}
               />
             </React.Fragment>

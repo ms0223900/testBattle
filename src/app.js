@@ -3,6 +3,7 @@ import React from 'react'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar, faEdit, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { setDataToLocalStorage } from './singleQA'
 import { TestPaper } from './TestPaper'
 import { 
   getAllOrStarData,
@@ -10,6 +11,7 @@ import {
   activeButton,
   } from './functions'
 import '../styles/style.scss'
+import { labeledStatement } from '@babel/types';
 
 library.add(faStar, faEdit, faArrowRight)
 
@@ -34,14 +36,15 @@ export default class App extends React.Component {
       isNew: false,
       keyId: 0,
       viewMyNote: false,
+      noteContent: '',
     }
+    this.noteArea = null
   }
   componentWillMount = () => {
     // const updateFromLS_QAs = QAs.map(qa => qa = qa)
     fetch('../src/QAfiles/QA01.json')
       .then(txt => txt.json())
       .then(json => {
-        
         const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
         let setData = json
         if(LSdata) {
@@ -61,12 +64,31 @@ export default class App extends React.Component {
         })
       })
       .catch(err => {})
+      if(!localStorage.getItem('noteContent')) {
+        localStorage.setItem('noteContent', '')
+      }
+      const latestNoteContent = localStorage.getItem('noteContent')
+      this.setState({
+        noteContent: latestNoteContent,
+      })
   }
+  componentDidMount = () => {
+    this.noteArea.focus()
+  }
+  
   _handleOpenNote = () => {
+    this.focusNoteArea()
     this.setState(state => ({
       viewMyNote: !state.viewMyNote,
     }))
     // console.log(this.state.viewMyNote)
+  }
+  _handleChangeNote = (e) => {
+    const { value } = e.target
+    this.setState({
+      noteContent: value
+    })
+    localStorage.setItem('noteContent', value)
   }
   _handleChangeMode = (e) => {
     const { id } = e.target
@@ -122,9 +144,13 @@ export default class App extends React.Component {
       testAmount: e.target.value
     })
   }
-
+  focusNoteArea = () => {
+    console.log(this.noteArea)
+    this.noteArea.focus()
+    
+  }
   render() {
-    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote } = this.state
+    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent } = this.state
     return (
       <div>
         <div className='tab-menu'>
@@ -164,7 +190,7 @@ export default class App extends React.Component {
           <h2>My Note  
             <span className='back-icon' onClick={this._handleOpenNote}><FontAwesomeIcon icon={'arrow-right'} /></span>
           </h2>
-          <textarea placeholder='write your note here~' value={''}>
+          <textarea onChange={this._handleChangeNote} placeholder='write your note here~' value={noteContent} ref={el => this.noteArea = el}>
 
           </textarea>
         </div>
