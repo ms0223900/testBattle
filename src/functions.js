@@ -76,7 +76,7 @@ export const activeButton = (compareId='' , btnId='') => {
 }
 export const genOptionsWithABCD = (options) => {
   let arr = []
-  const ABCD = ['A', 'B', 'C', 'D']
+  const ABCD = ['A', 'B', 'C', 'D', 'E']
   for (let i = 0; i < options.length; i++) {
     arr[i] = {
       id: ABCD[i],

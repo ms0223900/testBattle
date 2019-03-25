@@ -2,17 +2,16 @@
 import React from 'react'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faStar, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faStar, faEdit, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { TestPaper } from './TestPaper'
 import { 
   getAllOrStarData,
   setValueOfArrObj,
   activeButton,
   } from './functions'
-import { testQAs } from './QAs'
 import '../styles/style.scss'
 
-library.add(faStar, faEdit)
+library.add(faStar, faEdit, faArrowRight)
 
 
 export const getRandomId = (prevId=0) => {
@@ -63,7 +62,11 @@ export default class App extends React.Component {
       })
       .catch(err => {})
   }
-  componentDidMount = () => {
+  _handleOpenNote = () => {
+    this.setState(state => ({
+      viewMyNote: !state.viewMyNote,
+    }))
+    // console.log(this.state.viewMyNote)
   }
   _handleChangeMode = (e) => {
     const { id } = e.target
@@ -125,22 +128,26 @@ export default class App extends React.Component {
     return (
       <div>
         <div className='tab-menu'>
-          <button 
-            id='testMode-all' 
-            style={activeButton(this.state.testMode, 'all')}
-            onClick={this._handleChangeMode} >
-            從全部考題出題
-          </button>
-          <button 
-            id='testMode-star' 
-            style={activeButton(this.state.testMode, 'star')}
-            onClick={this._handleChangeMode} >
-            從收藏出題
-          </button>
-          <span>   </span>
-          <input type='number' value={ testAmount } onChange={this._handleChangeAmout} />
-          <button onClick={this._handleTestPaper}>出題！！</button>
-          <button>查看我的筆記</button>
+          <div>
+            <button 
+              id='testMode-all' 
+              style={activeButton(this.state.testMode, 'all')}
+              onClick={this._handleChangeMode} >
+              從全部考題出題
+            </button>
+            <button 
+              id='testMode-star' 
+              style={activeButton(this.state.testMode, 'star')}
+              onClick={this._handleChangeMode} >
+              從收藏出題
+            </button>
+            <span>   </span>
+            <input type='number' value={ testAmount } onChange={this._handleChangeAmout} />
+            <button onClick={this._handleTestPaper}>出題！！</button>
+          </div>
+          <div>
+            <button onClick={this._handleOpenNote}>查看我的筆記</button>
+          </div>
         </div>
         <hr />
         <div >
@@ -153,9 +160,11 @@ export default class App extends React.Component {
             changeAnswer={this._handleChangeAnswer}
             checkAnswer={this._handleCheckAnswer} />
         </div>
-        <div className='half' style={{ display: viewMyNote ? 'block' : 'none' }}>
-          <h2>My Note</h2>
-          <textarea>
+        <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
+          <h2>My Note  
+            <span className='back-icon' onClick={this._handleOpenNote}><FontAwesomeIcon icon={'arrow-right'} /></span>
+          </h2>
+          <textarea placeholder='write your note here~' value={''}>
 
           </textarea>
         </div>

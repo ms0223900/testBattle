@@ -19,7 +19,7 @@ export class TestPaper extends React.PureComponent {
         <hr />
         {testQA.length > 0 ? 
           testQA.map(qa =>
-            <React.Fragment> 
+            <React.Fragment key={qa.id}> 
               <DataButtons id={qa.id} isHandIn={isHandIn} />
               <SingleQA
                 key={qa.id}

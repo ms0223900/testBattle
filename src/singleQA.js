@@ -27,6 +27,22 @@ export const setDataToLocalStorage = (id, prop, data) => {
   const originLS = JSON.parse(localStorage.getItem('starAndNote'))
   localStorage.setItem('starAndNote', JSON.stringify(setValueOfArrObj(originLS, id, prop, data)))
 }
+export const HOCwithHint = (Component, hint='I am hint!', hinted='') => class extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+  render() {
+    const { isActive=false } = this.props
+    return (
+      <div className='component-withHint'>
+        <Component {...this.props} />
+        <div className='hint-dialog'>
+          {isActive ? hinted : hint}
+        </div>
+      </div>
+    );
+  }
+}
 export class SingleQA extends React.Component {
   constructor(props) {
     super(props);
@@ -70,7 +86,7 @@ export class SingleQA extends React.Component {
               <p className='question'>{question}</p>
               
               {withABCDoptions.map(op => 
-                <label className='options'>
+                <label className='options' key={op.id}>
                   <input 
                     type='radio' 
                     name={id} 
@@ -138,6 +154,10 @@ export class NoteButton extends React.Component {
     );
   }
 }
+
+const StarWithHint = HOCwithHint(StarButton, '收藏題目', '已收藏')
+const NoteWithHint = HOCwithHint(NoteButton, '紀錄筆記')
+
 export class DataButtons extends React.PureComponent {
   constructor(props) {
     super(props)
@@ -186,12 +206,13 @@ export class DataButtons extends React.PureComponent {
     const { isHandIn } = this.props
     return (
       <div className='star-note-buttons'>
-        <StarButton
+        <StarWithHint
           id={id}
           star={star}
+          isActive={star}
           starFn={this._handleStar}
         />
-        <NoteButton
+        <NoteWithHint
           id={id}
           noteContext={noteContext}
           noteFn={this._handleEditNote}
@@ -201,6 +222,7 @@ export class DataButtons extends React.PureComponent {
     );
   }
 }
+
 
 
 // export const TxtWithBTN = WithButtonHOC(TxtDiv, 'Hello', clickAlert)

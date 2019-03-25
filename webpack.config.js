@@ -47,16 +47,17 @@ module.exports = {
 	},
 	optimization: { //split the static or larger code to vendor file
 		splitChunks: {
+			chunks: 'all',
 			cacheGroups: {
-				commons: {
+				vendor: {
 					test: /[\\/]node_modules[\\/]/,
 					name: 'vendors',
-					chunks: 'all'
 				}
 			}
 		},
 	},
 	devServer: {
+		// contentBase: path.resolve(__dirname, './public/'),
 		port: 9200,
 		stats: 'errors-only',
 	},
