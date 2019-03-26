@@ -3,7 +3,7 @@ import { DownloadJSONLink } from './TestPaper'
 import { setValueOfArrObj } from './functions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-export const SingleOption = ({id='option-0-0', changeFn, value='', placeholder=''}) => (
+export const SingleOption = ({id='option-0-0', changeFn, value='', placeholder='option here'}) => (
   <input id={id} onChange={changeFn} value={value} placeholder={placeholder}></input>
 )
 
@@ -20,7 +20,7 @@ export class SingleCreateQA extends React.Component {
         <textarea value={question} id={'question-' + id} onChange={changeFn}></textarea>
         <h3>Options</h3>
         {options.map(op => (
-          <SingleOption key={`${id}-${op.id}`} id={`option-${id}-${op.id}`} value={op.option} changeFn={changeFn}/>
+          <SingleOption key={`a-${id}-${op.id}`} id={`option-${id}-${op.id}`} value={op.option} changeFn={changeFn}/>
         ))}
       <hr />
       </form>
@@ -38,14 +38,19 @@ export default class CreateQAPanel extends React.Component {
       {id: 3, option: ''},
     ]})
     this.state = {
-      createQAData: [
-        this.qaPlate(),
-      ],
+      createQAData: [this.qaPlate()],
+      lastIdOfOldData: 0,
     }
   }
-  componentWillMount = () => {
-    
+  componentDidUpdate = (prevProps) => {
+    if(prevProps.oldData !== this.props.oldData) {
+      const { oldData=[{id: -1}] } = this.props
+      this.setState({
+        lastIdOfOldData: oldData[oldData.length - 1].id + 1
+      })
+    }
   }
+  
   _handleChange = (e) => {
     const { id, value } = e.target
     const { createQAData } = this.state
@@ -73,14 +78,23 @@ export default class CreateQAPanel extends React.Component {
       createQAData: latestData,
     })
   }
+  convertDataToJSON = (objArr) => {
+    const { lastIdOfOldData } = this.state
+    const resultPlusLastId = objArr.map(ob => ob = {...ob, id: (ob.id + lastIdOfOldData),})
+    const result = resultPlusLastId.map(re => re = {...re, options: re.options.map(op => op = op.option)})
+    return result
+  }
   render() {
     const { createQAData } = this.state
+    const { oldData=[] } = this.props
+    const resultJSON = this.convertDataToJSON(createQAData)
+    console.log(resultJSON)
     return (
       <div id='createQaArea'>
         <h2>Create Your Own Questions And Aswers</h2>
         {createQAData.map(cr => (
           <SingleCreateQA 
-            key={cr.id}
+            key={'form' + cr.id}
             id={cr.id}
             question={cr.question}
             options={cr.options}
@@ -92,7 +106,7 @@ export default class CreateQAPanel extends React.Component {
         </button>
         <hr />
         <button>
-          <DownloadJSONLink obj={createQAData} />
+          <DownloadJSONLink obj={ [...oldData, ...resultJSON] } />
         </button>
       </div>);
   }

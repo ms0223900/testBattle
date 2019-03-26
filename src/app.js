@@ -211,7 +211,7 @@ export default class App extends React.Component {
             checkAnswer={this._handleCheckAnswer}
             checkCorrectAnswer={this._handleCheckCorrectAnswer} />
         </div>
-        <CreateQAPanel />
+        <CreateQAPanel oldData={this.state.allTestQA} />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  
             <span className='back-icon' onClick={this._handleOpenNote}><FontAwesomeIcon icon={'arrow-right'} /></span>
