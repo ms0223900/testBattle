@@ -2,18 +2,19 @@
 import React from 'react'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faStar, faEdit, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faStar, faEdit, faArrowRight, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { TestPaper } from './TestPaper'
 import { 
   getAllOrStarData,
   setValueOfArrObj,
   activeButton,
   filterArrWithProperty,
+  filterArrObjWithArr
   } from './functions'
+import CreateQAPanel from './createQA'
 import '../styles/style.scss'
-import { labeledStatement } from '@babel/types';
 
-library.add(faStar, faEdit, faArrowRight)
+library.add(faStar, faEdit, faArrowRight, faPlusCircle)
 
 
 export const getRandomId = (prevId=0) => {
@@ -23,6 +24,27 @@ export const getRandomId = (prevId=0) => {
   }
   return id
 }
+
+export const getDataByMode = (testMode='all', testAmount=5, testQAData=[], ) => {
+  const recordFromLS = JSON.parse(localStorage.getItem('starAndNote')) || [{}]
+  let recordQuestions = recordFromLS ? recordFromLS : []
+  const filterWithRecordArr = filterArrWithProperty(testQAData, recordQuestions, 'id')
+
+  switch (testMode) {
+    case 'star':
+      return getAllOrStarData(true, testAmount, testQAData, true)
+    case 'all':
+      return getAllOrStarData(false, testAmount, testQAData, true)
+    case 'notSame': {
+      const filteredTestQAByRecord = filterArrObjWithArr(testQAData, filterWithRecordArr, 'id', true)
+      console.log(filteredTestQAByRecord)
+      return getAllOrStarData(false, testAmount, filteredTestQAByRecord, true)
+    }
+    default:
+      return getAllOrStarData(false, testAmount, testQAData, true)
+  }
+}
+
 export const ChangeModeBTN = ({ id, clickFn, stateOfMode, btnText='' }) => (
   <button 
     id={`testMode-${id}`} 
@@ -31,6 +53,7 @@ export const ChangeModeBTN = ({ id, clickFn, stateOfMode, btnText='' }) => (
     {btnText}
   </button>
 )
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -102,6 +125,7 @@ export default class App extends React.Component {
   _handleChangeMode = (e) => {
     const { id } = e.target
     const mode = id.slice(9)
+    console.log(mode)
     if(mode !== this.state.testMode) {
       this.setState({
         testMode: mode,
@@ -110,11 +134,6 @@ export default class App extends React.Component {
   }
   _handleTestPaper = () => {
     const { testMode, testAmount, allTestQA, myAnswer } = this.state
-    const recordFromLS = JSON.parse(localStorage.getItem('starAndNote'))
-    let recordQuestions = recordFromLS ? recordFromLS : []
-    const filterWithRecord = filterArrWithProperty(allTestQA, recordQuestions, 'id')
-    console.log(filterWithRecord)
-
     if(this.testPaper) {
       this.setState({ 
         myAnswer: myAnswer.map(a => a = {
@@ -124,21 +143,7 @@ export default class App extends React.Component {
         }),
       })
     }
-    let testQAdata
-    switch (testMode) {
-      case 'star':
-        testQAdata = getAllOrStarData(true, testAmount, allTestQA, true) 
-        break
-      case 'all':
-        testQAdata = getAllOrStarData(false, testAmount, allTestQA, true) 
-        break
-      // case 'notSame':
-      //   testQAdata = getAllOrStarData(false, testAmount, allTestQA, true).filter(ge => ge.id !== filterWithRecord) 
-      //   break
-      default:
-        testQAdata = getAllOrStarData(false, testAmount, allTestQA, true)
-        break
-    }
+    const testQAdata = getDataByMode(testMode, testAmount, allTestQA)
     this.setState(state =>({
       isHandIn: false,
       keyId: getRandomId(state.keyId), 
@@ -206,6 +211,7 @@ export default class App extends React.Component {
             checkAnswer={this._handleCheckAnswer}
             checkCorrectAnswer={this._handleCheckCorrectAnswer} />
         </div>
+        <CreateQAPanel />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  
             <span className='back-icon' onClick={this._handleOpenNote}><FontAwesomeIcon icon={'arrow-right'} /></span>

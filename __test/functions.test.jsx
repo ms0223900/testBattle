@@ -6,6 +6,7 @@ import {
   activeButton,
   genOptionsWithABCD,
   filterArrWithProperty,
+  filterArrObjWithArr,
  } from '../src/functions'
 
 describe('test functions', () => {
@@ -77,6 +78,27 @@ describe('test functions', () => {
     ]
     const mockResultArr = [1, 2]
     expect(filterArrWithProperty(mockTargetArr, mockFilterArr, 'id')).toEqual(mockResultArr)
+  })
+  it('test filter arrObject with array function', () => {
+    const mockTargetArr = [
+      { id: 0, data: 'aaa' },
+      { id: 1, data: 'aaa' },
+      { id: 2, data: 'aaa' },
+      { id: 3, data: 'aaa' },
+      { id: 4, data: 'aaa' },
+    ]
+    const mockResultArr = [
+      { id: 2, data: 'aaa' },
+      { id: 4, data: 'aaa' },
+    ]
+    const mockResultArr2 = [
+      { id: 0, data: 'aaa' },
+      { id: 1, data: 'aaa' },
+      { id: 3, data: 'aaa' },
+    ]
+    const mockArr = [2, 4]
+    expect(filterArrObjWithArr(mockTargetArr, mockArr, 'id', false)).toEqual(mockResultArr)
+    expect(filterArrObjWithArr(mockTargetArr, mockArr, 'id', true)).toEqual(mockResultArr2)
   })
 })
  

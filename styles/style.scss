@@ -25,6 +25,10 @@ button {
     opacity: .7;
     transition: .2s;
   }
+  a {
+    text-decoration: none;
+    color: #fff;
+  }
 }
 .secondBTN {
   @include secondBTN()
@@ -155,6 +159,7 @@ button {
 .tab-menu {
   display: flex;
   justify-content: space-between;
+  padding: 10px;
 }
 .noteBTN-container {
   position: absolute;
@@ -208,4 +213,8 @@ button {
   &.false-text {
     color: red;
   }
+}
+#createQaArea {
+  margin: auto;
+  text-align: center;
 }

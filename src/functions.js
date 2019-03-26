@@ -100,10 +100,11 @@ export const filterArrWithProperty = (targetArr=[], filterArr=[], property='') =
   }
   return resultArr
 }
-export const filterArrObjWithArr = (arrObj=[{}], arr=[], property='') => {
+export const filterArrObjWithArr = (arrObj=[{}], arr=[], property='', filterItOrNot=false) => {
   let resultArr = []
   for (let i = 0; i < arrObj.length; i++) {
-    if(arr.indexOf(arrObj[i][property] !== -1)) {
+    // if filterItOrNot is true, it should abort the matched arrObj
+    if(filterItOrNot ? arr.indexOf(arrObj[i][property]) === -1 : arr.indexOf(arrObj[i][property]) !== -1) {
       resultArr = [...resultArr, arrObj[i]]
     }
   }
