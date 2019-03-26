@@ -4,7 +4,7 @@ import { setValueOfArrObj } from './functions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export const SingleOption = ({id='option-0-0', changeFn, value='', placeholder='option here'}) => (
-  <input id={id} onChange={changeFn} value={value} placeholder={placeholder}></input>
+  <input id={id} onChange={changeFn} value={value} placeholder={placeholder} type='text'></input>
 )
 
 export class SingleCreateQA extends React.Component {

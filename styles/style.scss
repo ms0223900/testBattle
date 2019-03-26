@@ -1,8 +1,13 @@
-$main-color: rgba(14, 61, 250, 0.687);
-$secondary-color: rgb(173, 216, 254);
+$main-color: rgb(0, 38, 192);
+$secondary-color: rgb(0, 160, 235);
 @mixin secondBTN {
   background-color: $secondary-color;
-  color: rgb(6, 0, 41);
+  // color: rgb(6, 0, 41);
+  color: #fff;
+}
+@mixin focusStyle {
+  // border-radius: 2000px;
+  box-shadow: 0px 0px 10px rgb(0, 34, 224)
 }
 * {
   margin: 0;
@@ -17,6 +22,7 @@ button {
   background-color: $main-color;
   color: #fff;
   padding: 6px;
+  border: none;
   border-radius: 3px;
   margin: 0px 5px 0px 5px;
   font-weight: 500;
@@ -29,6 +35,30 @@ button {
     text-decoration: none;
     color: #fff;
   }
+}
+input[type="text"],
+textarea,
+button {
+  &:focus {
+    @include focusStyle()
+  }
+  &[type='radio']:focus {
+    border-radius: 20000px;
+  }
+}
+input[type="radio"] {
+  position: relative;
+}
+input[type="radio"]:focus:before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  @include focusStyle();
+  border-radius: 2000px;
+  // box-shadow: 0px 0px 20px #f00;
 }
 .secondBTN {
   @include secondBTN()

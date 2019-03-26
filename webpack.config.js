@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+var HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 const webpack = require('webpack')
 
@@ -49,10 +50,11 @@ module.exports = {
 		splitChunks: {
 			chunks: 'all',
 			cacheGroups: {
-				vendor: {
-					test: /[\\/]node_modules[\\/]/,
-					name: 'vendors',
-				}
+				commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all'
+        }
 			}
 		},
 	},
@@ -68,5 +70,5 @@ module.exports = {
 	node: {
 		fs: 'empty',
 	},
-	
+	plugins: [new HtmlWebpackPlugin()]
 }
