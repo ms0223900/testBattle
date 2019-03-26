@@ -13,6 +13,7 @@ export const genRandom = (amount=1, min=1, max=10) => {
   }
   return randomArr
 }
+
 export const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
   const ID = id * 1
   const arrObjLength = arrObj.length
@@ -39,6 +40,7 @@ export const setValueOfArrObj = (arrObj=[], id='', targetAttr='', value='') => {
     ]
   }
 }
+
 export const genArr = (num=10, from0or1=0) => {
   let arr = []
   let i = from0or1 === 0 ? 0 : 1
@@ -48,6 +50,7 @@ export const genArr = (num=10, from0or1=0) => {
   }
   return arr
 }
+
 export const getAllOrStarData = (star=false, amount=10, allData=[], isRandom=false) => {
   const starData = allData.filter(d => d.star)
   const Length = (length) => length > 1 ? length : 1
@@ -65,6 +68,7 @@ export const getAllOrStarData = (star=false, amount=10, allData=[], isRandom=fal
   }
   return typeof(resultArr[0]) === 'undefined' ? [] : resultArr 
 }
+
 export const activeButton = (compareId='' , btnId='') => {
   const activeStyle = {
     backgroundColor: '#111', color: '#fff',
@@ -84,4 +88,24 @@ export const genOptionsWithABCD = (options) => {
     }
   }
   return arr
+}
+
+export const filterArrWithProperty = (targetArr=[], filterArr=[], property='') => {
+  let resultArr = []
+  for (let i = 0; i < targetArr.length; i++) {
+    const filteredArr = filterArr.filter(fi => fi[property] === targetArr[i][property])[0]
+    if(typeof(filteredArr) === 'object') {
+      resultArr = [...resultArr, filteredArr[property]] 
+    }
+  }
+  return resultArr
+}
+export const filterArrObjWithArr = (arrObj=[{}], arr=[], property='') => {
+  let resultArr = []
+  for (let i = 0; i < arrObj.length; i++) {
+    if(arr.indexOf(arrObj[i][property] !== -1)) {
+      resultArr = [...resultArr, arrObj[i]]
+    }
+  }
+  return resultArr
 }

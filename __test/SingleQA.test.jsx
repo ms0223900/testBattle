@@ -4,7 +4,6 @@ import React from 'react'
 import { 
   getDataFromLocalStorage,
   StarButton,
-  NoteButton,
   DataButtons,
   setDataToLocalStorage,
  } from '../src/singleQA'
@@ -16,13 +15,6 @@ import { shallow } from 'enzyme'
     const starButton = shallow(<StarButton starFn={fn}/>)
     starButton.find('span').simulate('click')
     expect(fn).toBeCalled()
-  })
-  it('test note button', () => {
-    const starButton = shallow(<NoteButton />)
-    starButton.instance()._handleOpenNote()
-    expect(starButton.find('textarea').get(0).props.style.display).toBe('block')
-    starButton.instance()._handleOpenNote()
-    expect(starButton.find('textarea').get(0).props.style.display).toBe('none')
   })
   it('test get local storage data function', () => {
     const mockData = {
@@ -49,12 +41,6 @@ import { shallow } from 'enzyme'
     expect(dataButtons.instance().state.star).toBeTruthy()
     dataButtons.instance()._handleStar()
     expect(dataButtons.instance().state.star).toBeFalsy()
-  })
-  it('test handle note function', () => {
-    const e = { target: { value: 'aa', } }
-    const dataButtons = shallow(<DataButtons />)
-    dataButtons.instance()._handleEditNote(e)
-    expect(dataButtons.instance().state.noteContext).toBe('aa')
   })
  })
  describe('test localStorage functions', () => {

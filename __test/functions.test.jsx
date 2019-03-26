@@ -4,7 +4,8 @@ import {
   setValueOfArrObj,
   getAllOrStarData,
   activeButton,
-  genOptionsWithABCD
+  genOptionsWithABCD,
+  filterArrWithProperty,
  } from '../src/functions'
 
 describe('test functions', () => {
@@ -62,6 +63,20 @@ describe('test functions', () => {
       { id: 'C', options: 'cc' },
     ]
     expect(genOptionsWithABCD(mockOptions)).toEqual(mockOptionsResult)
+  })
+  it('test filter array with property function', () => {
+    const mockTargetArr = [
+      { id: 0, data: 'aaa' },
+      { id: 1, data: 'aaa' },
+      { id: 2, data: 'aaa' },
+    ]
+    const mockFilterArr = [
+      { id: 1, data: 'aaa' },
+      { id: 2, data: 'aaa' },
+      { id: 3, data: 'aaa' },
+    ]
+    const mockResultArr = [1, 2]
+    expect(filterArrWithProperty(mockTargetArr, mockFilterArr, 'id')).toEqual(mockResultArr)
   })
 })
  

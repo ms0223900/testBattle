@@ -3,12 +3,12 @@ import React from 'react'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar, faEdit, faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import { setDataToLocalStorage } from './singleQA'
 import { TestPaper } from './TestPaper'
 import { 
   getAllOrStarData,
   setValueOfArrObj,
   activeButton,
+  filterArrWithProperty,
   } from './functions'
 import '../styles/style.scss'
 import { labeledStatement } from '@babel/types';
@@ -23,6 +23,14 @@ export const getRandomId = (prevId=0) => {
   }
   return id
 }
+export const ChangeModeBTN = ({ id, clickFn, stateOfMode, btnText='' }) => (
+  <button 
+    id={`testMode-${id}`} 
+    style={activeButton(stateOfMode, id)}
+    onClick={clickFn} >
+    {btnText}
+  </button>
+)
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -73,11 +81,10 @@ export default class App extends React.Component {
       })
   }
   componentDidMount = () => {
-    this.noteArea.focus()
+    
   }
   
   _handleOpenNote = () => {
-    this.focusNoteArea()
     if(this.state.isHandIn) {
       this.setState(state => ({
         viewMyNote: !state.viewMyNote,
@@ -103,13 +110,11 @@ export default class App extends React.Component {
   }
   _handleTestPaper = () => {
     const { testMode, testAmount, allTestQA, myAnswer } = this.state
-    console.log('myAnswer: ', myAnswer[0].answer)
-    const star = testMode === 'star' ? true : false
-    this.setState(state =>({
-      isHandIn: false,
-      keyId: getRandomId(state.keyId), 
-      testQA: getAllOrStarData(star, testAmount, allTestQA, true),
-    }))
+    const recordFromLS = JSON.parse(localStorage.getItem('starAndNote'))
+    let recordQuestions = recordFromLS ? recordFromLS : []
+    const filterWithRecord = filterArrWithProperty(allTestQA, recordQuestions, 'id')
+    console.log(filterWithRecord)
+
     if(this.testPaper) {
       this.setState({ 
         myAnswer: myAnswer.map(a => a = {
@@ -119,6 +124,26 @@ export default class App extends React.Component {
         }),
       })
     }
+    let testQAdata
+    switch (testMode) {
+      case 'star':
+        testQAdata = getAllOrStarData(true, testAmount, allTestQA, true) 
+        break
+      case 'all':
+        testQAdata = getAllOrStarData(false, testAmount, allTestQA, true) 
+        break
+      // case 'notSame':
+      //   testQAdata = getAllOrStarData(false, testAmount, allTestQA, true).filter(ge => ge.id !== filterWithRecord) 
+      //   break
+      default:
+        testQAdata = getAllOrStarData(false, testAmount, allTestQA, true)
+        break
+    }
+    this.setState(state =>({
+      isHandIn: false,
+      keyId: getRandomId(state.keyId), 
+      testQA: testQAdata,
+    }))
   }
   _handleCheckAnswer = () => {
     const { myAnswer } = this.state
@@ -151,28 +176,15 @@ export default class App extends React.Component {
       isCheckCorrectAns: !state.isCheckCorrectAns,
     }))
   }
-  focusNoteArea = () => {
-    console.log(this.noteArea)
-    this.noteArea.focus()
-  }
   render() {
     const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns } = this.state
     return (
       <div>
         <div className='tab-menu'>
           <div>
-            <button 
-              id='testMode-all' 
-              style={activeButton(this.state.testMode, 'all')}
-              onClick={this._handleChangeMode} >
-              從全部考題出題
-            </button>
-            <button 
-              id='testMode-star' 
-              style={activeButton(this.state.testMode, 'star')}
-              onClick={this._handleChangeMode} >
-              從收藏出題
-            </button>
+            <ChangeModeBTN id={'all'} clickFn={this._handleChangeMode} stateOfMode={this.state.testMode} btnText={'從全部考題隨機出題'}  />
+            <ChangeModeBTN id={'notSame'} clickFn={this._handleChangeMode} stateOfMode={this.state.testMode} btnText={'從沒出過的考題隨機出題'}  />
+            <ChangeModeBTN id={'star'} clickFn={this._handleChangeMode} stateOfMode={this.state.testMode} btnText={'從收藏出題'}  />
             <span>   </span>
             <input type='number' value={ testAmount } onChange={this._handleChangeAmout} />
             <button onClick={this._handleTestPaper}>出題！！</button>
