@@ -21,9 +21,9 @@ import { SingleQA_WithButton } from './singleQA'
 //   },
 // ]
  
-export const DownloadJSONLink = (obj) => {
+export const DownloadJSONLink = ({obj=[], clickFn=() => {}}) => {
   const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj))
-  return (<a href={jsonStr} download={'download.json'}>Download JSON file</a>)
+  return (<a href={jsonStr} onClick={clickFn} download={'download.json'}>Download JSON file</a>)
 }
 
 export class TestPaper extends React.PureComponent {

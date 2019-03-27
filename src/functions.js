@@ -110,3 +110,13 @@ export const filterArrObjWithArr = (arrObj=[{}], arr=[], property='', filterItOr
   }
   return resultArr
 }
+export const convertABCDtoNum = (ABCD='A') => {
+  const ABCDArr = [
+    { ABCD: 'A', num: 0, },
+    { ABCD: 'B', num: 1, },
+    { ABCD: 'C', num: 2, },
+    { ABCD: 'D', num: 3, },
+    { ABCD: 'E', num: 4, },
+  ]
+  return ABCDArr.filter(a => a.ABCD.toUpperCase() === ABCD || a.ABCD.toLowerCase() === ABCD)[0].num
+}

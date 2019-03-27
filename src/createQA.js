@@ -1,10 +1,13 @@
 import React from 'react'
 import { DownloadJSONLink } from './TestPaper'
-import { setValueOfArrObj } from './functions'
+import { setValueOfArrObj, convertABCDtoNum } from './functions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-export const SingleOption = ({id='option-0-0', changeFn, value='', placeholder='option here'}) => (
-  <input id={id} onChange={changeFn} value={value} placeholder={placeholder} type='text'></input>
+export const SingleOption = ({id='option-0-0', changeFn, choice='A', value='', placeholder='option here'}) => (
+  <div className={'single-option-container'}>
+    <span>{choice}</span>
+    <input id={id} onChange={changeFn} value={value} placeholder={placeholder} type='text'></input>
+  </div>
 )
 
 export class SingleCreateQA extends React.Component {
@@ -20,7 +23,7 @@ export class SingleCreateQA extends React.Component {
         <textarea value={question} id={'question-' + id} onChange={changeFn}></textarea>
         <h3>Options</h3>
         {options.map(op => (
-          <SingleOption key={`a-${id}-${op.id}`} id={`option-${id}-${op.id}`} value={op.option} changeFn={changeFn}/>
+          <SingleOption key={`a-${id}-${op.id}`} id={`option-${id}-${op.id}`} choice={op.choice} value={op.option} changeFn={changeFn}/>
         ))}
       <hr />
       </form>
@@ -28,18 +31,21 @@ export class SingleCreateQA extends React.Component {
     );
   }
 }
+
+
 export default class CreateQAPanel extends React.Component {
   constructor(props) {
     super(props)
-    this.qaPlate = (idNum=0) => ({id: idNum, question: '', options: [
-      {id: 0, option: ''},
-      {id: 1, option: ''},
-      {id: 2, option: ''},
-      {id: 3, option: ''},
+    this.qaPlate = (idNum=0) => ({id: idNum, question: '', correctAnswer:'', options: [
+      {id: 0, choice: 'A', option: ''},
+      {id: 1, choice: 'B', option: ''},
+      {id: 2, choice: 'C', option: ''},
+      {id: 3, choice: 'D', option: ''},
     ]})
     this.state = {
       createQAData: [this.qaPlate()],
       lastIdOfOldData: 0,
+      answer: '',
     }
   }
   componentDidUpdate = (prevProps) => {
@@ -77,37 +83,79 @@ export default class CreateQAPanel extends React.Component {
     this.setState({
       createQAData: latestData,
     })
+    this.bottom.scrollIntoView({behavior: 'smooth'})
+  }
+  _handleChangeAnswer = (e) => {
+    const { value } = e.target
+    const { answer } = this.state
+    let handledValue
+    if(value.length > answer.length) {
+      handledValue = (value.length - 5) % 6 === 0 && value.length > 0 ? value.toUpperCase() + '\n' : value.toUpperCase()
+    } else {
+      handledValue = value
+    }
+    
+    this.setState({
+      answer: handledValue,
+    })
+  }
+  _checkAmoutOfQA = (e) => {
+    const { answer, createQAData } = this.state
+    const answerLength = answer.replace('\n', '').length
+    if(answerLength !== createQAData.length) {
+      e.preventDefault()
+      window.alert('題數與解答的數量不符~')
+    }
+    console.log(this.answerContainer.getBoundingClientRect().top)
   }
   convertDataToJSON = (objArr) => {
-    const { lastIdOfOldData } = this.state
+    const { lastIdOfOldData, answer } = this.state
     const resultPlusLastId = objArr.map(ob => ob = {...ob, id: (ob.id + lastIdOfOldData),})
     const result = resultPlusLastId.map(re => re = {...re, options: re.options.map(op => op = op.option)})
+    let addAnswerResult = []
+    const answerArr = answer.replace('\n', '').split('').map(a => a = convertABCDtoNum(a))
+    console.log(answerArr)
+    for (let i = 0; i < answerArr.length; i++) {
+      addAnswerResult[i] = { ...result[i], correctAnswer: result[i].options[answerArr[i]].option }
+    }
+    console.log(addAnswerResult)
     return result
   }
   render() {
     const { createQAData } = this.state
     const { oldData=[] } = this.props
     const resultJSON = this.convertDataToJSON(createQAData)
-    console.log(resultJSON)
     return (
-      <div id='createQaArea'>
-        <h2>Create Your Own Questions And Aswers</h2>
-        {createQAData.map(cr => (
-          <SingleCreateQA 
-            key={'form' + cr.id}
-            id={cr.id}
-            question={cr.question}
-            options={cr.options}
-            changeFn={this._handleChange}
-          />
-        ))}
-        <button onClick={this._handleAddQuestion}>
-          <FontAwesomeIcon icon='plus-circle' />
-        </button>
-        <hr />
-        <button>
-          <DownloadJSONLink obj={ [...oldData, ...resultJSON] } />
-        </button>
+      <div>
+        <div id='createQaArea' className='clearfix'>
+          <h2>Create Your Own Questions And Aswers</h2>
+          <hr />
+          <div className='createQA-container question'>
+            {createQAData.map(cr => (
+              <SingleCreateQA 
+                key={'form' + cr.id}
+                id={cr.id}
+                question={cr.question}
+                options={cr.options}
+                changeFn={this._handleChange}
+              />
+            ))}
+            <button onClick={this._handleAddQuestion}>
+              <FontAwesomeIcon icon='plus-circle' />
+            </button>
+          </div>
+          <div className='createQA-container answer' ref={el => this.answerContainer = el}>
+            <h3>Correct Answer Here</h3>
+            <textarea onChange={this._handleChangeAnswer} value={this.state.answer}></textarea>
+          </div>
+          <div className='createQA-container' >
+            <hr />
+            <button>
+              <DownloadJSONLink obj={ [...oldData, ...resultJSON] } clickFn={this._checkAmoutOfQA} />
+            </button>
+          </div>
+        </div>
+        <div ref={el => this.bottom = el} style={{ width: '100px', height: '20px' }}></div>
       </div>);
   }
 }

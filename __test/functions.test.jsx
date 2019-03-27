@@ -7,6 +7,7 @@ import {
   genOptionsWithABCD,
   filterArrWithProperty,
   filterArrObjWithArr,
+  convertABCDtoNum,
  } from '../src/functions'
 
 describe('test functions', () => {
@@ -99,6 +100,10 @@ describe('test functions', () => {
     const mockArr = [2, 4]
     expect(filterArrObjWithArr(mockTargetArr, mockArr, 'id', false)).toEqual(mockResultArr)
     expect(filterArrObjWithArr(mockTargetArr, mockArr, 'id', true)).toEqual(mockResultArr2)
+  })
+  it('test convert ABCD to numbers', () => {
+    expect(convertABCDtoNum('A')).toBe(0)
+    expect(convertABCDtoNum('D')).toBe(3)
   })
 })
  

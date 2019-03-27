@@ -60,6 +60,32 @@ input[type="radio"]:focus:before {
   border-radius: 2000px;
   // box-shadow: 0px 0px 20px #f00;
 }
+textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  resize: none;
+  border: 2px solid $secondary-color;
+  border-radius: 10px;
+}
+input[type="text"] {
+  margin:  6px;
+  padding: 6px;
+  border-radius: 3px;
+  border: 2px solid $secondary-color;
+}
+hr {
+  margin: 10px 0px;
+}
+.clearfix:after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 100%;
+  clear: both;
+}
+
+
 .secondBTN {
   @include secondBTN()
 }
@@ -245,6 +271,37 @@ input[type="radio"]:focus:before {
   }
 }
 #createQaArea {
-  margin: auto;
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 10px;
   text-align: center;
+  background-color: #eee;
+  border-radius: 10px;
+  
+}
+.createQA-container {
+  float: left;
+  width: calc(100% - 20px);
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  &.question {
+    background-color: #fff;
+    width: calc(70% - 20px);
+    .single-option-container {
+      display: inline-block;
+      margin: 0px 10px;
+    }
+  }
+  &.answer {
+    background-color: #fff;
+    width: calc(30% - 20px);
+    textarea {
+      text-align: center;
+      overflow-x: hidden;
+      height: 300px;
+    }
+  }
 }
