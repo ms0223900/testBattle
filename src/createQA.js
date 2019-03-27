@@ -1,6 +1,10 @@
 import React from 'react'
 import { DownloadJSONLink } from './TestPaper'
-import { setValueOfArrObj, convertABCDtoNum } from './functions'
+import { 
+  setValueOfArrObj, 
+  convertABCDtoNum,
+  checkAnyOfObjArrIsEmpty,
+ } from './functions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export const SingleOption = ({id='option-0-0', changeFn, choice='A', value='', placeholder='option here'}) => (
@@ -46,6 +50,7 @@ export default class CreateQAPanel extends React.Component {
       createQAData: [this.qaPlate()],
       lastIdOfOldData: 0,
       answer: '',
+      resultJSON: [{}],
     }
   }
   componentDidUpdate = (prevProps) => {
@@ -102,11 +107,21 @@ export default class CreateQAPanel extends React.Component {
   _checkAmoutOfQA = (e) => {
     const { answer, createQAData } = this.state
     const answerLength = answer.replace('\n', '').length
+    // e.preventDefault()
+
     if(answerLength !== createQAData.length) {
       e.preventDefault()
       window.alert('題數與解答的數量不符~')
+    } else if(checkAnyOfObjArrIsEmpty(createQAData.map(c => c = {...c , correctAnswer: 'mockAnswer'})) === false) {
+      e.preventDefault()
+      console.log(createQAData)
+      window.alert('題目或是選項還有未填寫的喔～')
+    }else {
+      this.setState({
+        resultJSON: this.convertDataToJSON(createQAData),
+      })
     }
-    console.log(this.answerContainer.getBoundingClientRect().top)
+    
   }
   convertDataToJSON = (objArr) => {
     const { lastIdOfOldData, answer } = this.state
@@ -116,19 +131,18 @@ export default class CreateQAPanel extends React.Component {
     const answerArr = answer.replace('\n', '').split('').map(a => a = convertABCDtoNum(a))
     console.log(answerArr)
     for (let i = 0; i < answerArr.length; i++) {
-      addAnswerResult[i] = { ...result[i], correctAnswer: result[i].options[answerArr[i]].option }
+      addAnswerResult[i] = { ...result[i], correctAnswer: result[i].options[answerArr[i]] }
     }
     console.log(addAnswerResult)
-    return result
+    return addAnswerResult
   }
   render() {
     const { createQAData } = this.state
     const { oldData=[] } = this.props
-    const resultJSON = this.convertDataToJSON(createQAData)
     return (
       <div>
         <div id='createQaArea' className='clearfix'>
-          <h2>Create Your Own Questions And Aswers</h2>
+          <h2>Create Your Own Questions And Answers</h2>
           <hr />
           <div className='createQA-container question'>
             {createQAData.map(cr => (
@@ -151,7 +165,7 @@ export default class CreateQAPanel extends React.Component {
           <div className='createQA-container' >
             <hr />
             <button>
-              <DownloadJSONLink obj={ [...oldData, ...resultJSON] } clickFn={this._checkAmoutOfQA} />
+              <DownloadJSONLink obj={ [...oldData, ...this.state.resultJSON] } clickFn={this._checkAmoutOfQA} />
             </button>
           </div>
         </div>

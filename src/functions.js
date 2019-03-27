@@ -120,3 +120,36 @@ export const convertABCDtoNum = (ABCD='A') => {
   ]
   return ABCDArr.filter(a => a.ABCD.toUpperCase() === ABCD || a.ABCD.toLowerCase() === ABCD)[0].num
 }
+// export const checkAnyOfObjArrIsEmpty = (objArr=[{ id: 0, }]) => {
+//   const objKeys = Object.keys(objArr[0])
+//   for (let i = 0; i < objArr.length; i++) {
+//     for (let j = 0; j < objKeys.length; j++) {
+//       if(objArr[i][objKeys[j]] === '') {
+//         return false
+//       } else if(typeof(objArr[i][objKeys[j]]) === 'object') {
+//         const objKeyInObj = Object.keys(objArr[i][objKeys[j]])
+//         for (let k = 0; k < objKeyInObj.length; k++) {
+//           if(objArr[i][objKeys[j]][objKeyInObj[k]] === '') {
+//             return false
+//           }
+//         }
+//       } else if( Array.isArray(objArr[i][objKeys[j]]) ) {
+//         const objKeyInObjArr = Object.keys(objArr[i][objKeys[j]][0])
+//         for (let l = 0; l < objArr[i][objKeys[j]].length; l++) {
+//         }
+//       }
+//     }
+//   }
+// } 
+export const checkAnyOfObjArrIsEmpty = (objArr=[{ id: 0, }]) => {
+  for (let i = 0; i < objArr.length; i++) {
+    for (const j in objArr[i]) {
+      if(objArr[i][j] === '') {
+        return false
+      } else if(Array.isArray(objArr[i][j]) && typeof(objArr[i][j][0]) === 'object' ) {
+        return checkAnyOfObjArrIsEmpty(objArr[i][j])
+      }
+    }
+  }
+  return true
+} 

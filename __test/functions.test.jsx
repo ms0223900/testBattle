@@ -8,6 +8,7 @@ import {
   filterArrWithProperty,
   filterArrObjWithArr,
   convertABCDtoNum,
+  checkAnyOfObjArrIsEmpty,
  } from '../src/functions'
 
 describe('test functions', () => {
@@ -104,6 +105,18 @@ describe('test functions', () => {
   it('test convert ABCD to numbers', () => {
     expect(convertABCDtoNum('A')).toBe(0)
     expect(convertABCDtoNum('D')).toBe(3)
+  })
+  it('test check there is empty string in a object array', () => {
+    const mockData = [
+      { id: 0, data: 'a' },
+      { id: 1, data: 'b' },
+    ]
+    const mockData2 = [
+      { id: 0, data: 'a', arr: [ { id: 9, data: '' } ] },
+      { id: 1, data: 'b', arr: [ { id: 9, data: '' } ] },
+    ]
+    expect(checkAnyOfObjArrIsEmpty(mockData)).toBeTruthy()
+    expect(checkAnyOfObjArrIsEmpty(mockData2)).toBeFalsy()
   })
 })
  
