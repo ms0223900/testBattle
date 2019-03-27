@@ -112,7 +112,7 @@ describe('test functions', () => {
       { id: 1, data: 'b' },
     ]
     const mockData2 = [
-      { id: 0, data: 'a', arr: [ { id: 9, data: '' } ] },
+      { id: 0, data: 'a', arr: [ { id: 9, data: 'a' } ] },
       { id: 1, data: 'b', arr: [ { id: 9, data: '' } ] },
     ]
     expect(checkAnyOfObjArrIsEmpty(mockData)).toBeTruthy()
