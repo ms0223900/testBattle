@@ -126,12 +126,15 @@ export const checkAnyOfObjArrIsEmpty = (objArr=[{ id: 0, }]) => {
     for (const j in objArr[i]) {
       if(objArr[i][j] === '') {
         return false
-      } else if(Array.isArray(objArr[i][j]) && typeof(objArr[i][j][0]) === 'object' ) {
-        innerResult =  [...innerResult, checkAnyOfObjArrIsEmpty(objArr[i][j])]
+      } else if(Array.isArray(objArr[i][j])) {
+        if(typeof(objArr[i][j][0]) === 'object') {
+          innerResult =  [...innerResult, checkAnyOfObjArrIsEmpty(objArr[i][j])]
+        } else if(objArr[i][j].indexOf('' !== -1)) {
+          return false
+        }
       }
     }
   }
-  console.log(innerResult)
   if(innerResult.indexOf(false) === -1) {
     return true
   } else {

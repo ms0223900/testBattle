@@ -1,26 +1,6 @@
 import React from 'react'
 import { SingleQA_WithButton } from './singleQA'
-// import { genArr } from './functions'
 
-// const testJSON = [
-//   {
-//     'id': 100,
-//     'question': 'aasjkasf ajsf;laksf j k;lasjfkj kjds;ldfj ',
-//     'correctAnswer': '商品化',
-//     'options': ['商品化', 'b', '布加拉提', 'd'],
-//     'star': '',
-//     'note': ''
-//   },
-//   {
-//     'id': 101,
-//     'question': 'It is just do a test for json file.',
-//     'correctAnswer': '商品化',
-//     'options': ['商品化', 'b', '布加拉提', 'd'],
-//     'star': '',
-//     'note': ''
-//   },
-// ]
- 
 export const DownloadJSONLink = ({obj=[], clickFn=() => {}}) => {
   const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj))
   return (<a href={jsonStr} onClick={clickFn} download={'download.json'}>Download JSON file</a>)
@@ -31,12 +11,20 @@ export class TestPaper extends React.PureComponent {
     super(props);
     this.state = {
     };
+    this.getAnswerLength = (myAnswer) => (myAnswer.filter(my => my.answer !== '').length)
   }
   render() {
     const { testQA=[], myAnswer, isHandIn, changeAnswer, checkAnswer, isCheckCorrectAns, checkCorrectAnswer } = this.props
     // const questionTitle = genArr(myAnswer.length, 1)
     return (
       <div id='test-paper' className='half paper'>
+        <h4>完成題數:  
+          <span>
+            {this.getAnswerLength(myAnswer)} /
+            {testQA.length}
+          </span>
+          <span>{testQA.length > 0 && testQA.length === this.getAnswerLength(myAnswer) ? '所有題目都完成了！' : `還有${testQA.length - this.getAnswerLength(myAnswer)}題未完成`}</span>
+        </h4>
         <h4 id='score'>SCORE: 
           <span>
           { isHandIn ? ~~(myAnswer.filter(a => a.checked).length / testQA.length * 100) : '' }</span>

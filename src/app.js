@@ -65,6 +65,11 @@ export default class App extends React.Component {
       testQA: [],
       testAmount: 5,
       testMode: 'all',
+      answerMode: 'single',
+      singleAnswerModeState: {
+        index: 0,
+        idArr: []
+      },
       keyId: 0,
       viewMyNote: false,
       noteContent: '',
@@ -148,13 +153,24 @@ export default class App extends React.Component {
       isHandIn: false,
       keyId: getRandomId(state.keyId), 
       testQA: testQAdata,
+      singleAnswerModeState: {
+        index: 0,
+        idArr: testQAdata.map(t => t = t.id),
+      }
     }))
   }
   _handleCheckAnswer = () => {
-    const { myAnswer } = this.state
-    const checkedAnswer = myAnswer.map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })
+    const { myAnswer, answerMode, singleAnswerModeState } = this.state
+    let checkedAnswer
+    if(answerMode === 'all') { 
+      checkedAnswer = myAnswer.map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })
+    } else if(answerMode === 'single') {
+      checkedAnswer = [ ...myAnswer.filter(m => m.id !== singleAnswerModeState.idArr[singleAnswerModeState.index] ), myAnswer.filter(m => m.id === singleAnswerModeState.idArr[singleAnswerModeState.index] ).map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })[0] ] 
+      console.log(checkedAnswer)
+    }
+    
     this.setState({
-      isHandIn: true,
+      // isHandIn: true,
       myAnswer: checkedAnswer
     })
   }
@@ -180,6 +196,15 @@ export default class App extends React.Component {
     this.setState(state => ({
       isCheckCorrectAns: !state.isCheckCorrectAns,
     }))
+  }
+  _handleToNextQuestion = () => {
+    this.setState({
+      singleAnswerModeState: {
+        ...this.state.singleAnswerModeState,
+        index: this.state.singleAnswerModeState.index + 1,
+      }
+    })
+    console.log(this.state.singleAnswerModeState.index)
   }
   render() {
     const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns } = this.state
@@ -211,6 +236,7 @@ export default class App extends React.Component {
             checkAnswer={this._handleCheckAnswer}
             checkCorrectAnswer={this._handleCheckCorrectAnswer} />
         </div>
+        <button onClick={this._handleToNextQuestion}>To Next Question</button>
         <CreateQAPanel oldData={this.state.allTestQA} />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  
