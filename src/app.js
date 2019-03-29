@@ -3,7 +3,7 @@ import React from 'react'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar, faEdit, faArrowRight, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { TestPaper } from './TestPaper'
+import { WholeTestPaper, SingleTestPaper } from './TestPaper'
 import { 
   getAllOrStarData,
   setValueOfArrObj,
@@ -16,6 +16,8 @@ import '../styles/style.scss'
 
 library.add(faStar, faEdit, faArrowRight, faPlusCircle)
 
+
+const intervalBetweenQuestions = 1000
 
 export const getRandomId = (prevId=0) => {
   let id = Math.random()
@@ -44,15 +46,32 @@ export const getDataByMode = (testMode='all', testAmount=5, testQAData=[], ) => 
       return getAllOrStarData(false, testAmount, testQAData, true)
   }
 }
-
-export const ChangeModeBTN = ({ id, clickFn, stateOfMode, btnText='' }) => (
-  <button 
-    id={`testMode-${id}`} 
-    style={activeButton(stateOfMode, id)}
-    onClick={clickFn} >
-    {btnText}
-  </button>
+export const filterCorrectAns = (ans) => (
+  ans.map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })
 )
+export const ChangeModeBTN = ({ id, clickFn, stateOfMode, btnText='', filterText='' }) => {
+  const text = filterText === '' ? id : id.replace(filterText, '')
+  return (
+    <button 
+      id={id} 
+      style={activeButton(stateOfMode, text)}
+      onClick={clickFn} >
+      {btnText}
+    </button>
+  )
+}
+export const TabMenu = ({testModeState, testModeFn, answerModeState, answerModeFn, testAmount, changeAmountFn}) => (
+  <div>
+    <ChangeModeBTN id={'all'} clickFn={testModeFn} stateOfMode={testModeState} btnText={'從全部考題隨機出題'}  />
+    <ChangeModeBTN id={'notSame'} clickFn={testModeFn} stateOfMode={testModeState} btnText={'從沒出過的考題隨機出題'}  />
+    <ChangeModeBTN id={'star'} clickFn={testModeFn} stateOfMode={testModeState} btnText={'從收藏出題'}  />
+    <span>   </span>
+    <input type='number' value={ testAmount } onChange={changeAmountFn} />
+    <ChangeModeBTN id={'answer-single'} clickFn={answerModeFn} stateOfMode={answerModeState} btnText={'單題模式'} filterText={'answer-'} />
+    <ChangeModeBTN id={'answer-all'} clickFn={answerModeFn} stateOfMode={answerModeState} btnText={'試卷模式'} filterText={'answer-'} />
+  </div>
+)
+
 
 export default class App extends React.Component {
   constructor(props) {
@@ -108,8 +127,13 @@ export default class App extends React.Component {
         noteContent: latestNoteContent,
       })
   }
-  componentDidMount = () => {
-    
+  _handleChangeAnswerMode = (e, state) => {
+    const { id } = e.target
+    const mode = id.replace('answer-', '')
+    this.setState({
+      answerMode: mode,
+      testQA: [],
+    })
   }
   
   _handleOpenNote = () => {
@@ -129,30 +153,30 @@ export default class App extends React.Component {
   }
   _handleChangeMode = (e) => {
     const { id } = e.target
-    const mode = id.slice(9)
-    console.log(mode)
-    if(mode !== this.state.testMode) {
+    if(id !== this.state.testMode) {
       this.setState({
-        testMode: mode,
+        testMode: id,
       })
     }
   }
   _handleTestPaper = () => {
     const { testMode, testAmount, allTestQA, myAnswer } = this.state
-    if(this.testPaper) {
-      this.setState({ 
-        myAnswer: myAnswer.map(a => a = {
-           ...a, 
-           answer: '',
-           checked: 'notYet'
-        }),
-      })
-    }
+    // if(this.testPaper) {
+    //   this.setState({ 
+    //     myAnswer: myAnswer.map(a => a = {
+    //        ...a, 
+    //        answer: '',
+    //        checked: 'notYet'
+    //     }),
+    //   })
+    // }
     const testQAdata = getDataByMode(testMode, testAmount, allTestQA)
     this.setState(state =>({
       isHandIn: false,
       keyId: getRandomId(state.keyId), 
       testQA: testQAdata,
+      myAnswer: myAnswer.map(my => my = { ...my,  
+        answer: '', checked: 'notYet', }),
       singleAnswerModeState: {
         index: 0,
         idArr: testQAdata.map(t => t = t.id),
@@ -161,18 +185,24 @@ export default class App extends React.Component {
   }
   _handleCheckAnswer = () => {
     const { myAnswer, answerMode, singleAnswerModeState } = this.state
+    const singleAnswerModeId = singleAnswerModeState.idArr[singleAnswerModeState.index]
     let checkedAnswer
     if(answerMode === 'all') { 
-      checkedAnswer = myAnswer.map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })
+      checkedAnswer = filterCorrectAns(myAnswer)
+      this.setState({
+        isHandIn: true,
+        myAnswer: checkedAnswer
+      })
     } else if(answerMode === 'single') {
-      checkedAnswer = [ ...myAnswer.filter(m => m.id !== singleAnswerModeState.idArr[singleAnswerModeState.index] ), myAnswer.filter(m => m.id === singleAnswerModeState.idArr[singleAnswerModeState.index] ).map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })[0] ] 
-      console.log(checkedAnswer)
+      if(singleAnswerModeState.index < singleAnswerModeState.idArr.length) {
+        checkedAnswer = [ ...myAnswer.filter(m => m.id !== singleAnswerModeId ), filterCorrectAns(myAnswer.filter(m => m.id === singleAnswerModeId ))[0] ]
+        this._handleToNextQuestion()
+        this.setState({
+          myAnswer: checkedAnswer
+        })
+      }
     }
     
-    this.setState({
-      // isHandIn: true,
-      myAnswer: checkedAnswer
-    })
   }
   _handleChangeAnswer = (e) => {
     const { myAnswer, isHandIn } = this.state
@@ -198,25 +228,39 @@ export default class App extends React.Component {
     }))
   }
   _handleToNextQuestion = () => {
-    this.setState({
-      singleAnswerModeState: {
-        ...this.state.singleAnswerModeState,
-        index: this.state.singleAnswerModeState.index + 1,
+    const { singleAnswerModeState } = this.state
+    setTimeout(() => {
+      const nextIndex = singleAnswerModeState.index + 1
+      if(nextIndex > singleAnswerModeState.idArr.length - 1) {
+        this.setState({
+          isHandIn: true,
+        })
+      } else {
+        this.setState({
+          singleAnswerModeState: {
+            ...singleAnswerModeState,
+            index: nextIndex,
+          }
+        })
       }
-    })
+    }, intervalBetweenQuestions);
+    
     console.log(this.state.singleAnswerModeState.index)
   }
   render() {
-    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns } = this.state
+    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode } = this.state
     return (
       <div>
         <div className='tab-menu'>
           <div>
-            <ChangeModeBTN id={'all'} clickFn={this._handleChangeMode} stateOfMode={this.state.testMode} btnText={'從全部考題隨機出題'}  />
-            <ChangeModeBTN id={'notSame'} clickFn={this._handleChangeMode} stateOfMode={this.state.testMode} btnText={'從沒出過的考題隨機出題'}  />
-            <ChangeModeBTN id={'star'} clickFn={this._handleChangeMode} stateOfMode={this.state.testMode} btnText={'從收藏出題'}  />
-            <span>   </span>
-            <input type='number' value={ testAmount } onChange={this._handleChangeAmout} />
+            <TabMenu
+              testModeState={testMode}
+              testModeFn={this._handleChangeMode}
+              answerModeState={answerMode}
+              answerModeFn={this._handleChangeAnswerMode}
+              testAmount={testAmount}
+              changeAmountFn={this._handleChangeAmout}
+            />
             <button onClick={this._handleTestPaper}>出題！！</button>
           </div>
           <div>
@@ -225,18 +269,32 @@ export default class App extends React.Component {
         </div>
         <hr />
         <div >
-          <TestPaper
-            key={keyId} 
-            ref={el => this.testPaper = el}
-            testQA={testQA} 
-            myAnswer={myAnswer} 
-            isHandIn={isHandIn} 
-            isCheckCorrectAns={isCheckCorrectAns}
-            changeAnswer={this._handleChangeAnswer}
-            checkAnswer={this._handleCheckAnswer}
-            checkCorrectAnswer={this._handleCheckCorrectAnswer} />
+          {answerMode === 'single' ? (
+            <SingleTestPaper
+              key={keyId} 
+              testQA={testQA} 
+              myAnswer={myAnswer} 
+              isHandIn={isHandIn} 
+              isCheckCorrectAns={isCheckCorrectAns}
+              changeAnswer={this._handleChangeAnswer}
+              checkAnswer={this._handleCheckAnswer}
+              checkCorrectAnswer={this._handleCheckCorrectAnswer}
+              singleAnswerModeState={singleAnswerModeState}
+            />
+          ) : (
+            <WholeTestPaper
+              key={keyId} 
+              testQA={testQA} 
+              myAnswer={myAnswer} 
+              isHandIn={isHandIn} 
+              isCheckCorrectAns={isCheckCorrectAns}
+              changeAnswer={this._handleChangeAnswer}
+              checkAnswer={this._handleCheckAnswer}
+              checkCorrectAnswer={this._handleCheckCorrectAnswer} 
+            />
+          ) }
+         
         </div>
-        <button onClick={this._handleToNextQuestion}>To Next Question</button>
         <CreateQAPanel oldData={this.state.allTestQA} />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  
