@@ -132,7 +132,7 @@ export default class App extends React.Component {
     const mode = id.replace('answer-', '')
     this.setState({
       answerMode: mode,
-      testQA: [],
+      // testQA: [],
     })
   }
   
@@ -173,6 +173,7 @@ export default class App extends React.Component {
     const testQAdata = getDataByMode(testMode, testAmount, allTestQA)
     this.setState(state =>({
       isHandIn: false,
+      isCheckCorrectAns: false,
       keyId: getRandomId(state.keyId), 
       testQA: testQAdata,
       myAnswer: myAnswer.map(my => my = { ...my,  
@@ -249,6 +250,7 @@ export default class App extends React.Component {
   }
   render() {
     const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode } = this.state
+    console.log(myAnswer)
     return (
       <div>
         <div className='tab-menu'>

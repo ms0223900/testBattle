@@ -29,6 +29,10 @@ export const setDataToLocalStorage = (id, prop, data) => {
   const originLS = JSON.parse(localStorage.getItem('starAndNote'))
   localStorage.setItem('starAndNote', JSON.stringify(setValueOfArrObj(originLS, id, prop, data)))
 }
+export const getOptionABCDFromAns = (correctAns='', allAns=[]) => {
+  const index = allAns.indexOf(correctAns)
+  return ABCDOptions[index]
+}
 export const HOCwithHint = (Component, hint='I am hint!', hinted='') => class extends React.Component {
   constructor(props) {
     super(props)
@@ -142,7 +146,7 @@ export class SingleQA extends React.Component {
         <div className='question-container'>
           <div className='answer-part'>
             <span className={thisAnswer.answer ? 'answer-active' : 'answer-default' }>
-              {this.state.yourAnswer || 'your answer'}
+              {getOptionABCDFromAns(thisAnswer.answer, options) || 'your answer'}
             </span>
             <span className='corrected-answer'>
               {isCheckCorrectAns ? correctAnswerWithABCD(): ''}
