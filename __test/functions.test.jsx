@@ -9,6 +9,7 @@ import {
   filterArrObjWithArr,
   convertABCDtoNum,
   checkAnyOfObjArrIsEmpty,
+  getNoSameArr,
  } from '../src/functions'
 
 describe('test functions', () => {
@@ -117,6 +118,11 @@ describe('test functions', () => {
     ]
     expect(checkAnyOfObjArrIsEmpty(mockData)).toBeTruthy()
     expect(checkAnyOfObjArrIsEmpty(mockData2)).toBeFalsy()
+  })
+  it('test getNoSameArr funtion', () => {
+    const arr = [1, 2, 3, 2, 3, 5]
+    const expectArr = [1, 2, 3, 5]
+    expect(getNoSameArr(arr)).toEqual(expectArr)
   })
 })
  

@@ -9,14 +9,16 @@ import {
   setValueOfArrObj,
   activeButton,
   filterArrWithProperty,
-  filterArrObjWithArr
+  filterArrObjWithArr,
+  getNoSameArr,
   } from './functions'
+import { SelectMenuBar } from './selectDatabase'
 import CreateQAPanel from './createQA'
 import '../styles/style.scss'
 
 library.add(faStar, faEdit, faArrowRight, faPlusCircle)
 
-
+const QAfileDir = '../src/QAfiles/QA01.json'
 const intervalBetweenQuestions = 1000
 
 export const getRandomId = (prevId=0) => {
@@ -26,7 +28,6 @@ export const getRandomId = (prevId=0) => {
   }
   return id
 }
-
 export const getDataByMode = (testMode='all', testAmount=5, testQAData=[], ) => {
   const recordFromLS = JSON.parse(localStorage.getItem('starAndNote')) || [{}]
   let recordQuestions = recordFromLS ? recordFromLS : []
@@ -49,6 +50,17 @@ export const getDataByMode = (testMode='all', testAmount=5, testQAData=[], ) => 
 export const filterCorrectAns = (ans) => (
   ans.map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })
 )
+export const getFetchQA = (QAfile) => (
+  fetch('../src/QAfiles/QA01.json')
+  .then(txt => txt.json())
+  .then(json => new Promise(
+    res => res(json),
+    rej => console.log(rej)
+  ))
+  .catch(err => {})
+)
+
+
 export const ChangeModeBTN = ({ id, clickFn, stateOfMode, btnText='', filterText='' }) => {
   const text = filterText === '' ? id : id.replace(filterText, '')
   return (
@@ -81,6 +93,8 @@ export default class App extends React.Component {
       isHandIn: false,
       isCheckCorrectAns: false,
       allTestQA: [],
+      allTestFilterConditions: [],
+      nowFIlterCondition: [],
       testQA: [],
       testAmount: 5,
       testMode: 'all',
@@ -97,8 +111,7 @@ export default class App extends React.Component {
   }
   componentWillMount = () => {
     // const updateFromLS_QAs = QAs.map(qa => qa = qa)
-    fetch('../src/QAfiles/QA01.json')
-      .then(txt => txt.json())
+    getFetchQA(QAfileDir)
       .then(json => {
         const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
         let setData = json
@@ -115,17 +128,19 @@ export default class App extends React.Component {
         })
         this.setState({
           allTestQA: setData,
-          myAnswer: Q
+          myAnswer: Q,
+          allTestFilterConditions: getNoSameArr(setData.map(s => s = s.databaseSort || ''))
         })
+        console.log(getNoSameArr(setData.map(s => s = s.databaseSort || '')))
       })
-      .catch(err => {})
-      if(!localStorage.getItem('noteContent')) {
-        localStorage.setItem('noteContent', '')
-      }
-      const latestNoteContent = localStorage.getItem('noteContent')
-      this.setState({
-        noteContent: latestNoteContent,
-      })
+   
+    if(!localStorage.getItem('noteContent')) {
+      localStorage.setItem('noteContent', '')
+    }
+    const latestNoteContent = localStorage.getItem('noteContent')
+    this.setState({
+      noteContent: latestNoteContent,
+    })
   }
   _handleChangeAnswerMode = (e, state) => {
     const { id } = e.target
@@ -248,8 +263,26 @@ export default class App extends React.Component {
     
     console.log(this.state.singleAnswerModeState.index)
   }
+  _handleChangeSelectDatabase = (e) => {
+    const { nowFIlterCondition } = this.state
+    const { value } = e.target
+    console.log(value)
+    if(nowFIlterCondition.indexOf(value) === -1) {
+      this.setState(state => ({
+        nowFIlterCondition: [...state.nowFIlterCondition, value]
+      }))
+    }
+  }
+  _handleDeleteSelectDatabase = (e) => {
+    const name = e.target.getAttribute('name')
+    console.log(name)
+    const deletedArr = this.state.nowFIlterCondition.filter(s => s !== name)
+    this.setState({
+      nowFIlterCondition: deletedArr,
+    })
+  }
   render() {
-    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode } = this.state
+    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition } = this.state
     console.log(myAnswer)
     return (
       <div>
@@ -297,6 +330,12 @@ export default class App extends React.Component {
           ) }
          
         </div>
+        <SelectMenuBar 
+          allTestFilterConditions={allTestFilterConditions} 
+          nowFIlterCondition={nowFIlterCondition} 
+          changeSelectDatabase={this._handleChangeSelectDatabase} 
+          deleteSelectDatabase={this._handleDeleteSelectDatabase} 
+        />
         <CreateQAPanel oldData={this.state.allTestQA} />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  

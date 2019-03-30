@@ -141,3 +141,12 @@ export const checkAnyOfObjArrIsEmpty = (objArr=[{ id: 0, }]) => {
     return false
   }
 } 
+export const getNoSameArr = (arr) => {
+  let result = []
+  for (let i = 0; i < arr.length; i++) {
+    if(result.indexOf(arr[i]) === -1) {
+      result = [...result, arr[i]]
+    }
+  }
+  return result
+}
