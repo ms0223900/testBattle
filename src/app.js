@@ -93,6 +93,7 @@ export default class App extends React.Component {
       isHandIn: false,
       isCheckCorrectAns: false,
       allTestQA: [],
+      filterAllTestQA: [],
       allTestFilterConditions: [],
       nowFIlterCondition: [],
       testQA: [],
@@ -128,6 +129,7 @@ export default class App extends React.Component {
         })
         this.setState({
           allTestQA: setData,
+          filterAllTestQA: setData,
           myAnswer: Q,
           allTestFilterConditions: getNoSameArr(setData.map(s => s = s.databaseSort || ''))
         })
@@ -175,7 +177,7 @@ export default class App extends React.Component {
     }
   }
   _handleTestPaper = () => {
-    const { testMode, testAmount, allTestQA, myAnswer } = this.state
+    const { testMode, testAmount, filterAllTestQA, myAnswer } = this.state
     // if(this.testPaper) {
     //   this.setState({ 
     //     myAnswer: myAnswer.map(a => a = {
@@ -185,7 +187,7 @@ export default class App extends React.Component {
     //     }),
     //   })
     // }
-    const testQAdata = getDataByMode(testMode, testAmount, allTestQA)
+    const testQAdata = getDataByMode(testMode, testAmount, filterAllTestQA)
     this.setState(state =>({
       isHandIn: false,
       isCheckCorrectAns: false,
@@ -264,21 +266,27 @@ export default class App extends React.Component {
     console.log(this.state.singleAnswerModeState.index)
   }
   _handleChangeSelectDatabase = (e) => {
-    const { nowFIlterCondition } = this.state
+    const { nowFIlterCondition, allTestQA, filterAllTestQA } = this.state
     const { value } = e.target
-    console.log(value)
+    const result = [...nowFIlterCondition, value]
+    const singleFilterResult = allTestQA.filter(a => a.databaseSort === value)
+    const testFilterResult = nowFIlterCondition.length === 0 ? singleFilterResult :  [...filterAllTestQA , ...singleFilterResult]
+
     if(nowFIlterCondition.indexOf(value) === -1) {
       this.setState(state => ({
-        nowFIlterCondition: [...state.nowFIlterCondition, value]
+        nowFIlterCondition: result,
+        filterAllTestQA: testFilterResult,
       }))
     }
   }
   _handleDeleteSelectDatabase = (e) => {
+    const { nowFIlterCondition, filterAllTestQA } = this.state
     const name = e.target.getAttribute('name')
-    console.log(name)
-    const deletedArr = this.state.nowFIlterCondition.filter(s => s !== name)
+    const deletedArr = nowFIlterCondition.filter(s => s !== name)
+    const testFilterResult = filterAllTestQA.filter(f => f.databaseSort !== name)
     this.setState({
       nowFIlterCondition: deletedArr,
+      filterAllTestQA: testFilterResult,
     })
   }
   render() {
@@ -288,6 +296,13 @@ export default class App extends React.Component {
       <div>
         <div className='tab-menu'>
           <div>
+            <h3>選擇題庫</h3>
+            <SelectMenuBar 
+              allTestFilterConditions={allTestFilterConditions} 
+              nowFIlterCondition={nowFIlterCondition} 
+              changeSelectDatabase={this._handleChangeSelectDatabase} 
+              deleteSelectDatabase={this._handleDeleteSelectDatabase} 
+            />
             <TabMenu
               testModeState={testMode}
               testModeFn={this._handleChangeMode}
@@ -330,12 +345,6 @@ export default class App extends React.Component {
           ) }
          
         </div>
-        <SelectMenuBar 
-          allTestFilterConditions={allTestFilterConditions} 
-          nowFIlterCondition={nowFIlterCondition} 
-          changeSelectDatabase={this._handleChangeSelectDatabase} 
-          deleteSelectDatabase={this._handleDeleteSelectDatabase} 
-        />
         <CreateQAPanel oldData={this.state.allTestQA} />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  

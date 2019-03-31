@@ -6,12 +6,19 @@ import React from 'react'
 export class SelectDatabase extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      optionDefault: 'Choose',
+    }
+  }
+  setToDefault = () => {
+    this.setState({
+      optionDefault: 'Choose'
+    })
   }
   render() {
     const { allTestFilterConditions } = this.props
     return (
-      <select defaultValue={'Choose'} onInput={this.props.changeSelect}>
+      <select value={this.state.optionDefault} onInput={this.props.changeSelect} onChange={this.setToDefault}>
         <option style={{ display: 'none' }} value='Choose'>{'Choose'}</option>
         {allTestFilterConditions.map(all => (
           <option key={all} value={all}>{all}</option>
