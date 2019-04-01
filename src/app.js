@@ -94,6 +94,7 @@ export default class App extends React.Component {
       isCheckCorrectAns: false,
       allTestQA: [],
       filterAllTestQA: [],
+      testRecord:[],
       allTestFilterConditions: [],
       nowFIlterCondition: [],
       testQA: [],
@@ -108,6 +109,13 @@ export default class App extends React.Component {
       viewMyNote: false,
       noteContent: '',
     }
+    this.testRecordTemp = [{
+      testId: 0,
+      testDataRecord: { 
+        idArr: [0], 
+        ansArr: [ {answer: 'A', correctAnswer: ''} ] , 
+      }
+    }]
     this.noteArea = null
   }
   componentWillMount = () => {
@@ -142,6 +150,20 @@ export default class App extends React.Component {
     const latestNoteContent = localStorage.getItem('noteContent')
     this.setState({
       noteContent: latestNoteContent,
+    })
+  }
+  setTestRecord = () => {
+    const { testRecord, testQA, myAnswer } = this.state
+    const lastRecord = testRecord[testRecord.length - 1]
+    const checkedAnswer = filterCorrectAns(myAnswer)
+    this.setState({
+      testRecord: [...testRecord, {
+        testId: testRecord.length === 0 ? 0 : lastRecord.testId + 1,
+        testDataRecord: { 
+          idArr: [...testQA.map(te => te = te.id)], 
+          ansArr: [ ...checkedAnswer ], 
+        }
+      }],
     })
   }
   _handleChangeAnswerMode = (e, state) => {
@@ -202,24 +224,29 @@ export default class App extends React.Component {
     }))
   }
   _handleCheckAnswer = () => {
-    const { myAnswer, answerMode, singleAnswerModeState } = this.state
+    const { isHandIn, testQA, myAnswer, answerMode, singleAnswerModeState, testRecord } = this.state
     const singleAnswerModeId = singleAnswerModeState.idArr[singleAnswerModeState.index]
+    
+    console.log(testRecord.length)
     let checkedAnswer
-    if(answerMode === 'all') { 
-      checkedAnswer = filterCorrectAns(myAnswer)
-      this.setState({
-        isHandIn: true,
-        myAnswer: checkedAnswer
-      })
-    } else if(answerMode === 'single') {
-      if(singleAnswerModeState.index < singleAnswerModeState.idArr.length) {
-        checkedAnswer = [ ...myAnswer.filter(m => m.id !== singleAnswerModeId ), filterCorrectAns(myAnswer.filter(m => m.id === singleAnswerModeId ))[0] ]
-        this._handleToNextQuestion()
+    if(!isHandIn) {
+      if(answerMode === 'all') { 
+        checkedAnswer = filterCorrectAns(myAnswer)
         this.setState({
-          myAnswer: checkedAnswer
+          isHandIn: true,
+          myAnswer: checkedAnswer,
         })
+        this.setTestRecord()
+      } else if(answerMode === 'single') {
+        if(singleAnswerModeState.index < singleAnswerModeState.idArr.length) {
+          checkedAnswer = [ ...myAnswer.filter(m => m.id !== singleAnswerModeId ), filterCorrectAns(myAnswer.filter(m => m.id === singleAnswerModeId ))[0] ]
+          this._handleToNextQuestion()
+          this.setState({
+            myAnswer: checkedAnswer
+          })
+        }
       }
-    }
+    } 
     
   }
   _handleChangeAnswer = (e) => {
@@ -253,6 +280,7 @@ export default class App extends React.Component {
         this.setState({
           isHandIn: true,
         })
+        this.setTestRecord()
       } else {
         this.setState({
           singleAnswerModeState: {
@@ -290,9 +318,25 @@ export default class App extends React.Component {
       filterAllTestQA: filterResult,
     })
   }
+  _handleViewTestRecord = (e) => {
+    const { allTestQA, testRecord } = this.state
+    const thatId = e.target.getAttribute('name') * 1
+    const filterRecord = testRecord.filter(te => te.testId === thatId)[0]
+    console.log(filterRecord)
+    this.setState({
+      answerMode: 'all',
+      testQA: filterArrObjWithArr(allTestQA, filterRecord.testDataRecord.idArr, 'id'),
+      myAnswer: filterRecord.testDataRecord.ansArr,
+      isHandIn: true,
+    })
+
+    // testQA={testQA} 
+    // myAnswer={myAnswer} 
+    // isHandIn={isHandIn} 
+  }
   render() {
-    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition } = this.state
-    console.log(myAnswer)
+    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition, testRecord } = this.state
+    console.log(this.state.testRecord)
     return (
       <div>
         <div className='tab-menu'>
@@ -319,7 +363,7 @@ export default class App extends React.Component {
           </div>
         </div>
         <hr />
-        <div >
+        <div className='test-paper-container'>
           {answerMode === 'single' ? (
             <SingleTestPaper
               key={keyId} 
@@ -344,6 +388,11 @@ export default class App extends React.Component {
               checkCorrectAnswer={this._handleCheckCorrectAnswer} 
             />
           ) }
+        </div>
+        <div className='test-record-container'>
+          {testRecord.map(te => (
+            <div onClick={this._handleViewTestRecord} name={te.testId} key={te.testId}>{'test record ' + te.testId}</div>
+          ))}
         </div>
         <CreateQAPanel 
           oldData={this.state.allTestQA} 
