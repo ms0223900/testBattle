@@ -280,13 +280,14 @@ export default class App extends React.Component {
     }
   }
   _handleDeleteSelectDatabase = (e) => {
-    const { nowFIlterCondition, filterAllTestQA } = this.state
+    const { allTestQA, nowFIlterCondition, filterAllTestQA } = this.state
     const name = e.target.getAttribute('name')
     const deletedArr = nowFIlterCondition.filter(s => s !== name)
     const testFilterResult = filterAllTestQA.filter(f => f.databaseSort !== name)
+    const filterResult = testFilterResult.length === 0 ? allTestQA : testFilterResult
     this.setState({
       nowFIlterCondition: deletedArr,
-      filterAllTestQA: testFilterResult,
+      filterAllTestQA: filterResult,
     })
   }
   render() {
@@ -343,9 +344,10 @@ export default class App extends React.Component {
               checkCorrectAnswer={this._handleCheckCorrectAnswer} 
             />
           ) }
-         
         </div>
-        <CreateQAPanel oldData={this.state.allTestQA} />
+        <CreateQAPanel 
+          oldData={this.state.allTestQA} 
+        />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  
             <span className='back-icon' onClick={this._handleOpenNote}><FontAwesomeIcon icon={'arrow-right'} /></span>

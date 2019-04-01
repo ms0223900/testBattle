@@ -150,3 +150,11 @@ export const getNoSameArr = (arr) => {
   }
   return result
 }
+export const convert1234ToABCD = (val) => {
+  const NUM = ['1', '2', '3', '4']
+  const ABCD = ['A', 'B', 'C', 'D']
+  const lastStr = val.slice(val.length - 1)
+  if(lastStr.search(/[1|2|3|4]$/gi, '') !== -1) {
+    return val.slice(0, val.length - 1) + ABCD[NUM.indexOf(lastStr)]
+  }
+}

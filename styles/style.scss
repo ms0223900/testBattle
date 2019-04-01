@@ -313,3 +313,9 @@ hr {
   border: 2px solid #aaa;
   border-radius: 3px;
 }
+.database-input {
+  width: calc(100% - 12px);
+}
+.single-createQA-title {
+  color: $main-color;
+}

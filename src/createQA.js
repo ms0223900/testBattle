@@ -4,6 +4,7 @@ import {
   setValueOfArrObj, 
   convertABCDtoNum,
   checkAnyOfObjArrIsEmpty,
+  convert1234ToABCD,
  } from './functions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
@@ -23,7 +24,7 @@ export class SingleCreateQA extends React.Component {
     const { id, question, options, changeFn } = this.props
     return (
       <form onChange={changeFn} className='single-QA' id={id}>
-        <h3>Question</h3>
+        <h3 className='single-createQA-title'>Question {id + 1} </h3>
         <textarea value={question} id={'question-' + id} onChange={changeFn}></textarea>
         <h3>Options</h3>
         {options.map(op => (
@@ -48,6 +49,7 @@ export default class CreateQAPanel extends React.Component {
     ]})
     this.state = {
       createQAData: [this.qaPlate()],
+      database: '',
       lastIdOfOldData: 0,
       answer: '',
       resultJSON: [{}],
@@ -79,6 +81,12 @@ export default class CreateQAPanel extends React.Component {
       createQAData: data,
     })
   }
+  _handleChangeDatabaseName = (e) => {
+    const { value } = e.target
+    this.setState({
+      database: value,
+    })
+  }
   _handleAddQuestion = () => {
     const { createQAData } = this.state
     const latestData = [
@@ -93,13 +101,20 @@ export default class CreateQAPanel extends React.Component {
   _handleChangeAnswer = (e) => {
     const { value } = e.target
     const { answer } = this.state
-    let handledValue
-    if(value.length > answer.length) {
-      handledValue = (value.length - 5) % 6 === 0 && value.length > 0 ? value.toUpperCase() + '\n' : value.toUpperCase()
-    } else {
-      handledValue = value
-    }
+    const valueWithCovert = convert1234ToABCD(value) ? convert1234ToABCD(value).toUpperCase() : value.toUpperCase()
+    const valueLength = valueWithCovert.length
+    const lengthCondition = (valueLength - 6)
+    let handledValue = answer
     
+    if(valueLength > answer.length && valueWithCovert.search(/[a|b|c|d]$/gi, '') !== -1) {
+      handledValue = lengthCondition % 6 === 0 ? 
+        valueWithCovert.slice(0, valueLength - 1) 
+          + '\n' 
+          + valueWithCovert.slice(valueLength - 1) : 
+        valueWithCovert
+    } else if(valueLength < answer.length) {
+      handledValue = valueWithCovert
+    }
     this.setState({
       answer: handledValue,
     })
@@ -131,20 +146,40 @@ export default class CreateQAPanel extends React.Component {
     const answerArr = answer.replace('\n', '').split('').map(a => a = convertABCDtoNum(a))
     console.log(answerArr)
     for (let i = 0; i < answerArr.length; i++) {
-      addAnswerResult[i] = { ...result[i], correctAnswer: result[i].options[answerArr[i]] }
+      addAnswerResult[i] = { 
+        ...result[i], 
+        databaseSort: this.database || '未分類',
+        correctAnswer: result[i].options[answerArr[i]],
+       }
     }
     console.log(addAnswerResult)
     return addAnswerResult
   }
   render() {
-    const { createQAData } = this.state
+    const { createQAData, answer } = this.state
     const { oldData=[] } = this.props
+    const answerLength = answer.replace(/[\n]/gi, '').length
+    const compareAnsAndQuestionLength = () => {
+      if(answerLength > createQAData.length) {
+        return 'more than ans'
+      } else if (answerLength < createQAData.length) {
+        return 'less than ans'
+      } return 'No problem~'
+    }
     return (
       <div>
         <div id='createQaArea' className='clearfix'>
           <h2>Create Your Own Questions And Answers</h2>
           <hr />
           <div className='createQA-container question'>
+            <h4>Your Database Name:</h4>
+            <input 
+              type='text'
+              className='database-input' 
+              onChange={this._handleChangeDatabaseName} 
+              value={this.database}
+              placeholder={'填入題庫名稱，如不填則預設為"未分類"'} />
+              <hr />
             {createQAData.map(cr => (
               <SingleCreateQA 
                 key={'form' + cr.id}
@@ -159,8 +194,11 @@ export default class CreateQAPanel extends React.Component {
             </button>
           </div>
           <div className='createQA-container answer' ref={el => this.answerContainer = el}>
-            <h3>Correct Answer Here</h3>
-            <textarea onChange={this._handleChangeAnswer} value={this.state.answer}></textarea>
+            <h3>Correct Answer</h3>
+            {/* <br /> */}
+            <span>{answerLength}個答案</span>
+            <span>{'(' + compareAnsAndQuestionLength()}</span>
+            <textarea onChange={this._handleChangeAnswer} value={answer}></textarea>
           </div>
           <div className='createQA-container' >
             <hr />
