@@ -36,16 +36,21 @@ class Timer extends React.Component {
     this.timer = null
   }
   componentWillMount = () => {
-    this.setState({
-      time: this.props.time
-    })
+    this.resetTime()
   }
   componentDidUpdate = (prevProps, prevState) => {
     if(prevProps.isStart !== this.props.isStart) {
       this._handleTimerStartPause()
     }
+    if(prevProps.isHandIn !== this.props.isHandIn) {
+      this.resetTime()
+    }
   }
-  
+  resetTime = () => {
+    this.setState({
+      time: this.props.time
+    })
+  }
   timerFn = () => {
     const { time, overAndCheckAns, timerStartPause } = this.props
     this.timer = setInterval(() => {

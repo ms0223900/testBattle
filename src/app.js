@@ -21,6 +21,7 @@ library.add(faStar, faEdit, faArrowRight, faPlusCircle)
 
 const QAfileDir = '../src/QAfiles/QA01.json'
 const intervalBetweenQuestions = 1000
+const testTime = 300
 
 export const getRandomId = (prevId=0) => {
   let id = Math.random()
@@ -94,7 +95,7 @@ export default class App extends React.Component {
       isHandIn: false,
       isCheckCorrectAns: false,
       isStart: false,
-      time: 2,
+      time: 300,
       allTestQA: [],
       filterAllTestQA: [],
       testRecord:[],
@@ -216,6 +217,7 @@ export default class App extends React.Component {
     this.setState(state =>({
       isHandIn: false,
       isStart: true,
+      time: testTime,
       isCheckCorrectAns: false,
       keyId: getRandomId(state.keyId), 
       testQA: testQAdata,
@@ -238,6 +240,7 @@ export default class App extends React.Component {
         checkedAnswer = filterCorrectAns(myAnswer)
         this.setState({
           isHandIn: true,
+          isStart: false,
           myAnswer: checkedAnswer,
         })
         this.setTestRecord()
@@ -286,6 +289,7 @@ export default class App extends React.Component {
       if(nextIndex > singleAnswerModeState.idArr.length - 1) {
         this.setState({
           isHandIn: true,
+          isStart: false,
         })
         this.setTestRecord()
       } else {
@@ -378,6 +382,7 @@ export default class App extends React.Component {
         <Timer 
             time={time} 
             isStart={isStart} 
+            isHandIn={isHandIn}
             timerStartPause={this._handleTimerStart}
             overAndCheckAns={this._handleCheckAnswer}
           />
@@ -390,7 +395,7 @@ export default class App extends React.Component {
               isHandIn={isHandIn} 
               isCheckCorrectAns={isCheckCorrectAns}
               changeAnswer={this._handleChangeAnswer}
-              checkAnswer={this._handleCheckAnswer}
+              checkAnswer={this._handleCheckAnswer.bind(this, false)}
               checkCorrectAnswer={this._handleCheckCorrectAnswer}
               singleAnswerModeState={singleAnswerModeState}
             />
