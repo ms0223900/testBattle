@@ -139,7 +139,7 @@ export default class CreateQAPanel extends React.Component {
     
   }
   convertDataToJSON = (objArr) => {
-    const { lastIdOfOldData, answer } = this.state
+    const { lastIdOfOldData, answer, database } = this.state
     const resultPlusLastId = objArr.map(ob => ob = {...ob, id: (ob.id + lastIdOfOldData),})
     const result = resultPlusLastId.map(re => re = {...re, options: re.options.map(op => op = op.option)})
     let addAnswerResult = []
@@ -148,7 +148,7 @@ export default class CreateQAPanel extends React.Component {
     for (let i = 0; i < answerArr.length; i++) {
       addAnswerResult[i] = { 
         ...result[i], 
-        databaseSort: this.database || '未分類',
+        databaseSort: database || '未分類',
         correctAnswer: result[i].options[answerArr[i]],
        }
     }
