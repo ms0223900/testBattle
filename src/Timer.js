@@ -60,7 +60,7 @@ class Timer extends React.Component {
           time: time,
         })
         timerStartPause()
-        overAndCheckAns()
+        overAndCheckAns(true)
         clearInterval(this.timer)
       }
       console.log('timer on')

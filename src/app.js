@@ -227,8 +227,8 @@ export default class App extends React.Component {
       }
     }))
   }
-  _handleCheckAnswer = () => {
-    const { isHandIn, testQA, myAnswer, answerMode, singleAnswerModeState, testRecord } = this.state
+  _handleCheckAnswer = (isOver=false) => {
+    const { isHandIn, testQA, myAnswer, answerMode, singleAnswerModeState, testRecord, isStart } = this.state
     const singleAnswerModeId = singleAnswerModeState.idArr[singleAnswerModeState.index]
     
     console.log(testRecord.length)
@@ -243,10 +243,13 @@ export default class App extends React.Component {
         this.setTestRecord()
       } else if(answerMode === 'single') {
         if(singleAnswerModeState.index < singleAnswerModeState.idArr.length) {
-          checkedAnswer = [ ...myAnswer.filter(m => m.id !== singleAnswerModeId ), filterCorrectAns(myAnswer.filter(m => m.id === singleAnswerModeId ))[0] ]
-          this._handleToNextQuestion()
+          checkedAnswer = isOver ? 
+            filterCorrectAns(myAnswer) : 
+            [ ...myAnswer.filter(m => m.id !== singleAnswerModeId ), filterCorrectAns(myAnswer.filter(m => m.id === singleAnswerModeId ))[0] ]
+          this._handleToNextQuestion(isOver)
           this.setState({
-            myAnswer: checkedAnswer
+            myAnswer: checkedAnswer,
+            isHandIn: isOver ? !isHandIn : isHandIn
           })
         }
       }
@@ -276,10 +279,10 @@ export default class App extends React.Component {
       isCheckCorrectAns: !state.isCheckCorrectAns,
     }))
   }
-  _handleToNextQuestion = () => {
+  _handleToNextQuestion = (isOver=false) => {
     const { singleAnswerModeState } = this.state
     setTimeout(() => {
-      const nextIndex = singleAnswerModeState.index + 1
+      const nextIndex = isOver ? singleAnswerModeState.idArr.length : singleAnswerModeState.index + 1
       if(nextIndex > singleAnswerModeState.idArr.length - 1) {
         this.setState({
           isHandIn: true,
@@ -335,9 +338,12 @@ export default class App extends React.Component {
     })
   }
   _handleTimerStart = () => {
-    this.setState({
-      isStart: !this.state.isStart,
-    })
+    const { isStart, isHandIn, testQA } = this.state
+    if(testQA.length > 0 && !isHandIn) {
+      this.setState({
+        isStart: !isStart,
+      })
+    }
   }
   render() {
     const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition, testRecord, isStart, time } = this.state
