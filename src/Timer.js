@@ -87,7 +87,7 @@ class Timer extends React.Component {
         <Paper elevation={1} className={classes.paper}>
           <Button
             variant='contained' 
-            color={isStart ? 'primary' : ''} 
+            color={isStart ? 'primary' : 'default'} 
             aria-label={'start'} 
             className={classes.button}
             onClick={timerStartPause}

@@ -19,7 +19,7 @@ import '../styles/style.scss'
 
 library.add(faStar, faEdit, faArrowRight, faPlusCircle)
 
-const QAfileDir = 'https://raw.githubusercontent.com/ms0223900/testBattle/master/src/QAfiles/QA01.json'
+const QAfileDir = 'https://raw.githubusercontent.com/ms0223900/testBattle/master/QAfiles/newQA.json'
 const intervalBetweenQuestions = 1000
 const testTime = 300
 
@@ -53,7 +53,7 @@ export const filterCorrectAns = (ans) => (
   ans.map(a => a = {...a, checked: a.answer === a.correctAnswer ? true : false })
 )
 export const getFetchQA = (QAfile) => (
-  fetch('../src/QAfiles/QA01.json')
+  fetch(QAfile)
   .then(txt => txt.json())
   .then(json => new Promise(
     res => res(json),
