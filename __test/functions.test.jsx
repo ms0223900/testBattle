@@ -10,6 +10,7 @@ import {
   convertABCDtoNum,
   checkAnyOfObjArrIsEmpty,
   getNoSameArr,
+  convertSecToMin,
  } from '../src/functions'
 
 describe('test functions', () => {
@@ -123,6 +124,9 @@ describe('test functions', () => {
     const arr = [1, 2, 3, 2, 3, 5]
     const expectArr = [1, 2, 3, 5]
     expect(getNoSameArr(arr)).toEqual(expectArr)
+  })
+  it('test convert seconds to minutes and seconds array function', () => {
+    expect(convertSecToMin(100)).toEqual(['01', '40'])
   })
 })
  

@@ -14,6 +14,7 @@ import {
   } from './functions'
 import { SelectMenuBar } from './selectDatabase'
 import CreateQAPanel from './createQA'
+import Timer from './Timer'
 import '../styles/style.scss'
 
 library.add(faStar, faEdit, faArrowRight, faPlusCircle)
@@ -92,6 +93,8 @@ export default class App extends React.Component {
       myAnswer: [{ }],
       isHandIn: false,
       isCheckCorrectAns: false,
+      isStart: false,
+      time: 2,
       allTestQA: [],
       filterAllTestQA: [],
       testRecord:[],
@@ -212,6 +215,7 @@ export default class App extends React.Component {
     const testQAdata = getDataByMode(testMode, testAmount, filterAllTestQA)
     this.setState(state =>({
       isHandIn: false,
+      isStart: true,
       isCheckCorrectAns: false,
       keyId: getRandomId(state.keyId), 
       testQA: testQAdata,
@@ -329,13 +333,14 @@ export default class App extends React.Component {
       myAnswer: filterRecord.testDataRecord.ansArr,
       isHandIn: true,
     })
-
-    // testQA={testQA} 
-    // myAnswer={myAnswer} 
-    // isHandIn={isHandIn} 
+  }
+  _handleTimerStart = () => {
+    this.setState({
+      isStart: !this.state.isStart,
+    })
   }
   render() {
-    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition, testRecord } = this.state
+    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition, testRecord, isStart, time } = this.state
     console.log(this.state.testRecord)
     return (
       <div>
@@ -363,8 +368,15 @@ export default class App extends React.Component {
           </div>
         </div>
         <hr />
+
+        <Timer 
+            time={time} 
+            isStart={isStart} 
+            timerStartPause={this._handleTimerStart}
+            overAndCheckAns={this._handleCheckAnswer}
+          />
         <div className='test-paper-container'>
-          {answerMode === 'single' ? (
+          { isStart || isHandIn ? answerMode === 'single' ? (
             <SingleTestPaper
               key={keyId} 
               testQA={testQA} 
@@ -387,7 +399,7 @@ export default class App extends React.Component {
               checkAnswer={this._handleCheckAnswer}
               checkCorrectAnswer={this._handleCheckCorrectAnswer} 
             />
-          ) }
+          ) : '不給你看'}
         </div>
         <div className='test-record-container'>
           {testRecord.map(te => (

@@ -158,3 +158,11 @@ export const convert1234ToABCD = (val) => {
     return val.slice(0, val.length - 1) + ABCD[NUM.indexOf(lastStr)]
   }
 }
+export const convertSecToMin = (time=10) => {
+  const min = ~~(time / 60)
+  const sec = time % 60
+  const convertToStr = (minSec) => (
+    minSec < 10 ? '0' + minSec : minSec.toString()
+  )
+  return [convertToStr(min), convertToStr(sec)]
+}

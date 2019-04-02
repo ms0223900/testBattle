@@ -57,10 +57,8 @@ export class WholeTestPaper extends React.PureComponent {
               />
             </React.Fragment>
           ) : '尚無題目' }
-          <hr />
           <button onClick={checkAnswer}>Check Answer!</button>
           <button className='secondBTN' style={{ display: isHandIn ? 'inline-block' : 'none' }} onClick={checkCorrectAnswer}>Check Correct Answer!</button>
-          
       </div>
     );
   }
@@ -92,11 +90,11 @@ export class SingleTestPaper extends React.Component {
               isHandIn={isHandIn}
               isCheckCorrectAns={isCheckCorrectAns}
             />
+            <div></div>
+            {isHandIn ? <ScorePanel myAnswer={myAnswer} allQA={singleAnswerModeState.idArr} /> : ''}
+            <button onClick={checkAnswer}>Check Answer!</button>
           </div>
          : '尚無題目' }
-         <div></div>
-        {isHandIn ? <ScorePanel myAnswer={myAnswer} allQA={singleAnswerModeState.idArr} /> : ''}
-        <button onClick={checkAnswer}>Check Answer!</button>
       </div>
     );
   }
