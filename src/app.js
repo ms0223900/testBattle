@@ -15,6 +15,11 @@ import {
 import { SelectMenuBar } from './selectDatabase'
 import CreateQAPanel from './createQA'
 import Timer from './Timer'
+import { en_US, zh_TW } from './lang'
+import { IntlProvider, FormattedMessage, addLocaleData } from 'react-intl'
+import en from 'react-intl/locale-data/en';
+import zh from 'react-intl/locale-data/zh'
+addLocaleData([...en,...zh])
 import '../styles/style.scss'
 
 library.add(faStar, faEdit, faArrowRight, faPlusCircle)
@@ -428,7 +433,45 @@ export default class App extends React.Component {
 
           </textarea>
         </div>
+        <FormattedMessage 
+          id={'hello'}
+          
+        />
+
+        <button onClick={this.props.changeLang}>Change Lang</button>
       </div>
     );
   }
 }
+export class HOCIntlApp extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      lang: 'zh',
+    };
+  }
+  chooseLang = (lang) => {
+    switch (lang) {
+      case 'en':
+        return en_US
+      case 'zh':
+        return zh_TW
+      default:
+        return en_US
+    }
+  }
+  _handleChangeLang = () => {
+    this.setState({
+      lang: this.state.lang === 'en' ? 'zh' : 'en'
+    })
+  }
+  render() {
+    const { lang } = this.state
+    return (
+      <IntlProvider locale={lang} key={lang} messages={this.chooseLang(lang)}>
+        <App changeLang={this._handleChangeLang}/>
+      </IntlProvider>
+    );
+  }
+}
+// export const HOCApp = <HOCIntlApp></HOCIntlApp>

@@ -6,6 +6,7 @@ import {
   checkAnyOfObjArrIsEmpty,
   convert1234ToABCD,
  } from './functions'
+ import { FormattedMessage } from 'react-intl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export const SingleOption = ({id='option-0-0', changeFn, choice='A', value='', placeholder='option here'}) => (
@@ -169,7 +170,11 @@ export default class CreateQAPanel extends React.Component {
     return (
       <div>
         <div id='createQaArea' className='clearfix'>
-          <h2>Create Your Own Questions And Answers</h2>
+          <FormattedMessage 
+            id={'createQA.bigTitle'} 
+            tagName={'h2'}
+            values={{ someone: 'Hellen' }}
+          />
           <hr />
           <div className='createQA-container question'>
             <h4>Your Database Name:</h4>
