@@ -3,7 +3,6 @@ import React from 'react'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar, faEdit, faArrowRight, faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { WholeTestPaper, SingleTestPaper } from './TestPaper'
 import { 
   getAllOrStarData,
   setValueOfArrObj,
@@ -12,9 +11,12 @@ import {
   filterArrObjWithArr,
   getNoSameArr,
   } from './functions'
+import { WholeTestPaper, SingleTestPaper } from './TestPaper'
 import { SelectMenuBar } from './selectDatabase'
 import CreateQAPanel from './createQA'
 import Timer from './Timer'
+import Avatar from './avatar'
+
 import { en_US, zh_TW } from './lang'
 import { IntlProvider, FormattedMessage, addLocaleData } from 'react-intl'
 import en from 'react-intl/locale-data/en';
@@ -437,7 +439,7 @@ export default class App extends React.Component {
           id={'hello'}
           
         />
-
+        <Avatar />
         <button onClick={this.props.changeLang}>Change Lang</button>
       </div>
     );

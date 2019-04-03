@@ -6,7 +6,7 @@ import {
   checkAnyOfObjArrIsEmpty,
   convert1234ToABCD,
  } from './functions'
- import { FormattedMessage } from 'react-intl'
+ import { FormattedMessage, injectIntl } from 'react-intl'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export const SingleOption = ({id='option-0-0', changeFn, choice='A', value='', placeholder='option here'}) => (
@@ -39,7 +39,7 @@ export class SingleCreateQA extends React.Component {
 }
 
 
-export default class CreateQAPanel extends React.Component {
+class CreateQAPanel extends React.Component {
   constructor(props) {
     super(props)
     this.qaPlate = (idNum=0) => ({id: idNum, question: '', correctAnswer:'', options: [
@@ -183,7 +183,9 @@ export default class CreateQAPanel extends React.Component {
               className='database-input' 
               onChange={this._handleChangeDatabaseName} 
               value={this.database}
-              placeholder={'填入題庫名稱，如不填則預設為"未分類"'} />
+              placeholder={this.props.intl.formatMessage({
+                id: 'createQA.databaseName'
+              })} />
               <hr />
             {createQAData.map(cr => (
               <SingleCreateQA 
@@ -216,3 +218,4 @@ export default class CreateQAPanel extends React.Component {
       </div>);
   }
 }
+export default injectIntl(CreateQAPanel)
