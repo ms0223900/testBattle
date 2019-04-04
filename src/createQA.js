@@ -133,6 +133,7 @@ class CreateQAPanel extends React.Component {
       console.log(createQAData)
       window.alert('題目或是選項還有未填寫的喔～')
     }else {
+      this.props.setCoin(createQAData.length * 100)
       this.setState({
         resultJSON: this.convertDataToJSON(createQAData),
       })
@@ -157,7 +158,7 @@ class CreateQAPanel extends React.Component {
     return addAnswerResult
   }
   render() {
-    const { createQAData, answer } = this.state
+    const { createQAData, answer, database } = this.state
     const { oldData=[] } = this.props
     const answerLength = answer.replace(/[\n]/gi, '').length
     const compareAnsAndQuestionLength = () => {
@@ -210,7 +211,7 @@ class CreateQAPanel extends React.Component {
           <div className='createQA-container' >
             <hr />
             <button>
-              <DownloadJSONLink obj={ [...oldData, ...this.state.resultJSON] } clickFn={this._checkAmoutOfQA} />
+              <DownloadJSONLink downloadName={database} obj={ [...oldData, ...this.state.resultJSON] } clickFn={this._checkAmoutOfQA} />
             </button>
           </div>
         </div>

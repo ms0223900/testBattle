@@ -1,9 +1,9 @@
 import React from 'react'
 import { SingleQA_WithButton } from './singleQA'
 
-export const DownloadJSONLink = ({obj=[], clickFn=() => {}}) => {
+export const DownloadJSONLink = ({obj=[], clickFn=() => {}, downloadName='download'}) => {
   const jsonStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(obj))
-  return (<a href={jsonStr} onClick={clickFn} download={'download.json'}>Download JSON file</a>)
+  return (<a href={jsonStr} onClick={clickFn} download={downloadName + '.json'}>Download JSON file</a>)
 }
 export const ScorePanel = ({myAnswer=[], allQA=[]}) => {
   return (

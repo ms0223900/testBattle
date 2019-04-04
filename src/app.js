@@ -29,6 +29,7 @@ library.add(faStar, faEdit, faArrowRight, faPlusCircle)
 const QAfileDir = 'https://raw.githubusercontent.com/ms0223900/testBattle/master/QAfiles/newQA.json'
 const intervalBetweenQuestions = 1000
 const testTime = 300
+const coinImg = 'https://cdn3.iconfinder.com/data/icons/supermario/PNG/Retro-Coin.png'
 
 export const getRandomId = (prevId=0) => {
   let id = Math.random()
@@ -103,6 +104,7 @@ export default class App extends React.Component {
       isCheckCorrectAns: false,
       isStart: false,
       time: 300,
+      coin: 0,
       allTestQA: [],
       filterAllTestQA: [],
       testRecord:[],
@@ -158,9 +160,14 @@ export default class App extends React.Component {
     if(!localStorage.getItem('noteContent')) {
       localStorage.setItem('noteContent', '')
     }
+    if(!localStorage.getItem('coin')) {
+      localStorage.setItem('coin', 0)
+    }
+    const coin = localStorage.getItem('coin') * 1
     const latestNoteContent = localStorage.getItem('noteContent')
     this.setState({
       noteContent: latestNoteContent,
+      coin: coin,
     })
   }
   setTestRecord = () => {
@@ -175,6 +182,14 @@ export default class App extends React.Component {
           ansArr: [ ...checkedAnswer ], 
         }
       }],
+    })
+  }
+  _handleSetCoin = (coin) => {
+    const { coin: originCoin } = this.state
+    const resultCoin = originCoin * 1 + coin
+    localStorage.setItem('coin', resultCoin)
+    this.setState({
+      coin: resultCoin,
     })
   }
   _handleChangeAnswerMode = (e, state) => {
@@ -357,7 +372,7 @@ export default class App extends React.Component {
     }
   }
   render() {
-    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition, testRecord, isStart, time } = this.state
+    const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition, testRecord, isStart, time, coin } = this.state
     console.log(this.state.testRecord)
     return (
       <div>
@@ -382,6 +397,10 @@ export default class App extends React.Component {
           </div>
           <div>
             <button onClick={this._handleOpenNote}>查看我的筆記</button>
+          </div>
+          <div>
+            <img className={'coin-img'} src={coinImg} />
+            <span> {' X ' + coin} </span>
           </div>
         </div>
         <hr />
@@ -426,6 +445,7 @@ export default class App extends React.Component {
         </div>
         <CreateQAPanel 
           oldData={this.state.allTestQA} 
+          setCoin={this._handleSetCoin}
         />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  
