@@ -158,7 +158,7 @@ class CreateQAPanel extends React.Component {
     return addAnswerResult
   }
   render() {
-    const { createQAData, answer, database } = this.state
+    const { createQAData, answer } = this.state
     const { oldData=[] } = this.props
     const answerLength = answer.replace(/[\n]/gi, '').length
     const compareAnsAndQuestionLength = () => {
@@ -211,7 +211,7 @@ class CreateQAPanel extends React.Component {
           <div className='createQA-container' >
             <hr />
             <button>
-              <DownloadJSONLink downloadName={database} obj={ [...oldData, ...this.state.resultJSON] } clickFn={this._checkAmoutOfQA} />
+              <DownloadJSONLink obj={ [...oldData, ...this.state.resultJSON] } clickFn={this._checkAmoutOfQA} />
             </button>
           </div>
         </div>

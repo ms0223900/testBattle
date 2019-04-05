@@ -26,7 +26,7 @@ import '../styles/style.scss'
 
 library.add(faStar, faEdit, faArrowRight, faPlusCircle)
 
-const QAfileDir = 'https://raw.githubusercontent.com/ms0223900/testBattle/master/QAfiles/newQA.json'
+const QAfileDir = 'https://raw.githubusercontent.com/ms0223900/testBattle/master/QAfiles/Nihongo.json'
 const intervalBetweenQuestions = 1000
 const testTime = 300
 const coinImg = 'https://cdn3.iconfinder.com/data/icons/supermario/PNG/Retro-Coin.png'
