@@ -322,3 +322,16 @@ hr {
 .coin-img {
   width: 30px;
 }
+.single-QA {
+  position: relative;
+}
+.delete-createQA {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  color: $main-color;
+  cursor: pointer;
+  &:hover {
+    opacity: .8;
+  }
+}

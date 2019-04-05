@@ -33,14 +33,14 @@ export const getOptionABCDFromAns = (correctAns='', allAns=[]) => {
   const index = allAns.indexOf(correctAns)
   return ABCDOptions[index]
 }
-export const HOCwithHint = (Component, hint='I am hint!', hinted='') => class extends React.Component {
+export const HOCwithHint = (Component, hint='I am hint!', className='', hinted='') => class extends React.Component {
   constructor(props) {
     super(props)
   }
   render() {
     const { isActive=false } = this.props
     return (
-      <div className='component-withHint'>
+      <div className={`component-withHint ${className}`}>
         <Component {...this.props} />
         <div className='hint-dialog'>
           {isActive ? hinted : hint}

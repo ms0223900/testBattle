@@ -6,8 +6,12 @@ import {
   checkAnyOfObjArrIsEmpty,
   convert1234ToABCD,
  } from './functions'
- import { FormattedMessage, injectIntl } from 'react-intl'
+import { HOCwithHint } from './singleQA'
+import { FormattedMessage, injectIntl } from 'react-intl'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+library.add(faMinusCircle)
 
 export const SingleOption = ({id='option-0-0', changeFn, choice='A', value='', placeholder='option here'}) => (
   <div className={'single-option-container'}>
@@ -15,6 +19,11 @@ export const SingleOption = ({id='option-0-0', changeFn, choice='A', value='', p
     <input id={id} onChange={changeFn} value={value} placeholder={placeholder} type='text'></input>
   </div>
 )
+export const DeleteQuestion = ({id=0, deleteQuestion=()=>{}}) => (
+  <span name={id} onClick={deleteQuestion} className={'delete-createQA'}><FontAwesomeIcon icon={'minus-circle'} /></span>
+)
+export const DeleteQuestionWithHint = HOCwithHint(DeleteQuestion, 'Delete This Question', 'delete-createQA')
+
 
 export class SingleCreateQA extends React.Component {
   constructor(props) {
@@ -22,10 +31,11 @@ export class SingleCreateQA extends React.Component {
     this.state = {};
   }
   render() {
-    const { id, question, options, changeFn } = this.props
+    const { id, question, options, changeFn, deleteQuestion } = this.props
     return (
       <form onChange={changeFn} className='single-QA' id={id}>
         <h3 className='single-createQA-title'>Question {id + 1} </h3>
+        <DeleteQuestionWithHint id={id} deleteQuestion={deleteQuestion}  />
         <textarea value={question} id={'question-' + id} onChange={changeFn}></textarea>
         <h3>Options</h3>
         {options.map(op => (
@@ -98,6 +108,29 @@ class CreateQAPanel extends React.Component {
       createQAData: latestData,
     })
     this.bottom.scrollIntoView({behavior: 'smooth'})
+  }
+  _handleDeleteQuestion = (e) => {
+    const name = e.target.getAttribute('name')
+    console.log(name)
+    const { createQAData } = this.state
+    const afterThisData = createQAData.filter(c => c.id > name * 1)
+    const afterDataMinusOne = afterThisData.map(af => af = {...af, id: af.id - 1})
+    const beforeThisData = createQAData.filter(c => c.id < name * 1)
+    if(createQAData.length > 1) {
+      if(!beforeThisData) {
+        this.setState({
+          createQAData: [...afterDataMinusOne],
+        })
+      } else if(!afterThisData) {
+        this.setState({
+          createQAData: [...beforeThisData],
+        })
+      } else {
+        this.setState({
+          createQAData: [...beforeThisData, ...afterDataMinusOne],
+        })
+      }
+    }
   }
   _handleChangeAnswer = (e) => {
     const { value } = e.target
@@ -195,6 +228,7 @@ class CreateQAPanel extends React.Component {
                 question={cr.question}
                 options={cr.options}
                 changeFn={this._handleChange}
+                deleteQuestion={this._handleDeleteQuestion}
               />
             ))}
             <button onClick={this._handleAddQuestion}>
