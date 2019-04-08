@@ -20,7 +20,7 @@ export const SingleOption = ({id='option-0-0', changeFn, choice='A', value='', p
   </div>
 )
 export const DeleteQuestion = ({id=0, deleteQuestion=()=>{}}) => (
-  <span name={id} onClick={deleteQuestion} className={'delete-createQA'}><FontAwesomeIcon icon={'minus-circle'} /></span>
+  <span name={id} onClick={deleteQuestion.bind(this, id)} className={'delete-createQA'}><FontAwesomeIcon name={id} icon={'minus-circle'} /></span>
 )
 export const DeleteQuestionWithHint = HOCwithHint(DeleteQuestion, 'Delete This Question', 'delete-createQA')
 
@@ -109,13 +109,13 @@ class CreateQAPanel extends React.Component {
     })
     this.bottom.scrollIntoView({behavior: 'smooth'})
   }
-  _handleDeleteQuestion = (e) => {
-    const name = e.target.getAttribute('name')
-    console.log(name)
+  _handleDeleteQuestion = (id) => {
+    // const name = e.target.getAttribute('name')
+    // console.log(name)
     const { createQAData } = this.state
-    const afterThisData = createQAData.filter(c => c.id > name * 1)
+    const afterThisData = createQAData.filter(c => c.id > id * 1)
     const afterDataMinusOne = afterThisData.map(af => af = {...af, id: af.id - 1})
-    const beforeThisData = createQAData.filter(c => c.id < name * 1)
+    const beforeThisData = createQAData.filter(c => c.id < id * 1)
     if(createQAData.length > 1) {
       if(!beforeThisData) {
         this.setState({

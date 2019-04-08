@@ -4,8 +4,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import { convertSecToMin } from './functions'
-import { withStyles } from '@material-ui/core';
-import { classes } from 'istanbul-lib-coverage';
+import { withStyles } from '@material-ui/core'
 
 const styles = {
   button: {
