@@ -166,3 +166,15 @@ export const convertSecToMin = (time=10) => {
   )
   return [convertToStr(min), convertToStr(sec)]
 }
+export const getReverseResult = (now, min, max, dir, unit=1) => {
+  const newNow = now < max && dir ? now + unit : now - unit
+  if(now >= max) {
+    dir = false
+  } else if(now - unit <= min) {
+    dir = true
+  }
+  return {
+    now: newNow,
+    dir: dir
+  }
+}
