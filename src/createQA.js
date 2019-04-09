@@ -74,6 +74,16 @@ class CreateQAPanel extends React.Component {
       })
     }
   }
+  componentDidMount = () => {
+    const getTempSave = localStorage.getItem('tempSave')
+    if(getTempSave) {
+      this.setState({
+        createQAData: JSON.parse(getTempSave),
+      })
+    } else {
+      localStorage.setItem('tempSave', '')
+    }
+  }
   
   _handleChange = (e) => {
     const { id, value } = e.target
@@ -88,6 +98,7 @@ class CreateQAPanel extends React.Component {
       const optionData = setValueOfArrObj(createQAData[dataID].options, optionID, 'option', value)
       data = setValueOfArrObj(createQAData, dataID, 'options', optionData)
     }
+    localStorage.setItem('tempSave', JSON.stringify(data))
     this.setState({
       createQAData: data,
     })
@@ -155,10 +166,11 @@ class CreateQAPanel extends React.Component {
   }
   _checkAmoutOfQA = (e) => {
     const { answer, createQAData } = this.state
-    const answerLength = answer.replace('\n', '').length
+    const answerLength = answer.replace(/\n/gi, '').length
     // e.preventDefault()
 
     if(answerLength !== createQAData.length) {
+      console.log(answerLength, createQAData.length)
       e.preventDefault()
       window.alert('題數與解答的數量不符~')
     } else if(checkAnyOfObjArrIsEmpty(createQAData.map(c => c = {...c , correctAnswer: 'mockAnswer'})) === false) {
@@ -178,7 +190,7 @@ class CreateQAPanel extends React.Component {
     const resultPlusLastId = objArr.map(ob => ob = {...ob, id: (ob.id + lastIdOfOldData),})
     const result = resultPlusLastId.map(re => re = {...re, options: re.options.map(op => op = op.option)})
     let addAnswerResult = []
-    const answerArr = answer.replace('\n', '').split('').map(a => a = convertABCDtoNum(a))
+    const answerArr = answer.replace(/[\n]/gi, '').split('').map(a => a = convertABCDtoNum(a))
     console.log(answerArr)
     for (let i = 0; i < answerArr.length; i++) {
       addAnswerResult[i] = { 
