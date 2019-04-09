@@ -16,7 +16,7 @@ const loadImg = (ctx, imgSrc, imgSpec) => (
     const img = new Image()
     img.src = imgSrc
     // setTimeout(() => {
-      console.log('draw' + img.src)
+      // console.log('draw' + img.src)
       img.onload = () => res( ctx.drawImage(img, imgSpec[0], imgSpec[1], imgSpec[2], imgSpec[3]) )
     // }, 1000) 
     img.onerror = rej
@@ -93,7 +93,6 @@ export class drawStaticImg {
     this.imgSrc = imgSrc
     this.image = new Image()
     this.image.src = this.imgSrc
-    // this.image.onload = this.start()
     this.width = width
     this.height = height
     this.x = x
@@ -168,7 +167,7 @@ export default class Avatar extends React.Component {
     }
     if(prevState.coins.length !== this.state.coins.length) {
       // const myGameTest = new myGame(this.canvas, this.state.coins)
-      this.myGameTest.obj = this.state.coins
+      // this.myGameTest.obj = this.state.coins
       // this.myGameTest.start()
     }
   }
@@ -177,9 +176,19 @@ export default class Avatar extends React.Component {
     const randX = ~~(Math.random() * 300)
     const randY = ~~(Math.random() * 300)
     const newCoin = new drawSpriteImg(this.canvas, 'images/coin-sprite-animation.png', 1000, 100, randX, randY)
-    this.setState({
-      coins: [...coins, newCoin],
-    }) 
+    this.myGameTest.obj = [...this.myGameTest.obj, newCoin]
+    // this.setState({
+    //   coins: [...coins, newCoin],
+    // }) 
+    
+    // this.myGameTest.obj = this.state.coins
+    setTimeout(() => {
+      this.destriyCoins()
+    }, 3000)
+  }
+  destriyCoins = () => {
+    const originObj = this.myGameTest.obj
+    this.myGameTest.obj = originObj.slice(0, originObj.length - 1)
   }
   _handleChangeHat = (e) => {
     const imgSrc = e.target.getAttribute('src')
