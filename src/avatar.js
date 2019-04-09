@@ -23,11 +23,9 @@ const loadImg = (ctx, imgSrc, imgSpec) => (
   })
 )
 
-function drawCanvasAvatar(el, hatImgSrc='') {
-  const ctx = el.getContext('2d')
-  ctx.clearRect(0, 0, 300, 300)
+function drawCanvasAvatar(ctx, hatImgSrc='') {
   loadImg(ctx, AVATARimg, [50, 50, 200, 200])
-    .then(() => setTimePromise(1))
+    .then(() => setTimePromise(0))
     .then(() => loadImg(ctx, hatImgSrc, [70, 20, 150, 100]))
 }
 
@@ -89,6 +87,35 @@ export class drawSpriteImg {
     this.render()
   }
 }
+export class drawStaticImg {
+  constructor(canvas, imgSrc, width, height, x=0, y=0) {
+    this.ctx = canvas.getContext('2d')
+    this.imgSrc = imgSrc
+    this.image = new Image()
+    this.image.src = this.imgSrc
+    // this.image.onload = this.start()
+    this.width = width
+    this.height = height
+    this.x = x
+    this.y = y
+  }
+  render() {
+    // this.ctx.clearRect(this.x, this.y, this.width / this.frameRate, this.height)
+    
+    this.ctx.globalAlpha = 1
+    this.ctx.drawImage(
+      this.image, 
+      this.x, 
+      this.y, 
+      this.width, 
+      this.height
+    )
+  }
+  start() {
+    this.render()
+  }
+}
+
 
 class myGame {
   constructor(canvas, obj=[]) {
@@ -105,8 +132,9 @@ class myGame {
     // } else if(this.testNum === 0) {
     //   this.dir = true
     // }
-    this.testNum = getReverseResult(this.testNum, 0, 30, this.dir).now
-    this.dir = getReverseResult(this.testNum, 0, 30, this.dir).dir
+    // this.testNum = getReverseResult(this.testNum, 0, 30, this.dir).now
+    // this.dir = getReverseResult(this.testNum, 0, 30, this.dir).dir
+    drawCanvasAvatar(this.ctx, HATs[0])
     for (let i = 0; i < this.obj.length; i++) {
       this.obj[i].x = this.testNum
       this.obj[i].start()
@@ -117,7 +145,7 @@ class myGame {
 
 export default class Avatar extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       hat: 'http://www.pngpix.com/wp-content/uploads/2016/07/PNGPIX-COM-Hat-PNG-Transparent-Image-500x377.png',
       coins: [],
@@ -126,10 +154,13 @@ export default class Avatar extends React.Component {
     this.myGameTest = null
   }
   componentDidMount = () => {
-    // const coin1 = new drawSpriteImg(this.canvas, 'images/coin-sprite-animation.png', 1000, 100, 20, 20)
+    const hat = new drawStaticImg(this.canvas, HATs[0], 100, 100, 20, 20)
     // const coin2 = new drawSpriteImg(this.canvas, 'images/coin-sprite-animation.png', 1000, 100, 40, 40)
-    this.myGameTest = new myGame(this.canvas, this.state.coins)
+    this.myGameTest = new myGame(this.canvas, [hat, ...this.state.coins])
     this.myGameTest.start()
+    this.setState({
+      coins: [hat, ...this.state.coins],
+    })
   }
   componentDidUpdate = (prevProps, prevState) => {
     if(prevState.hat !== this.state.hat) {
