@@ -444,6 +444,7 @@ export default class App extends React.Component {
           ))}
         </div>
         <CreateQAPanel 
+          setCoin={this._handleSetCoin}
           oldData={this.state.allTestQA} 
         />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>

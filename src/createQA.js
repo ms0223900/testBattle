@@ -166,6 +166,7 @@ class CreateQAPanel extends React.Component {
   }
   _checkAmoutOfQA = (e) => {
     const { answer, createQAData } = this.state
+    const { oldData=[] } = this.props
     const answerLength = answer.replace(/\n/gi, '').length
     // e.preventDefault()
 
@@ -180,7 +181,7 @@ class CreateQAPanel extends React.Component {
     }else {
       this.props.setCoin(createQAData.length * 100)
       this.setState({
-        resultJSON: this.convertDataToJSON(createQAData),
+        resultJSON: [...oldData, ...this.convertDataToJSON(createQAData)],
       })
     }
     
@@ -204,7 +205,7 @@ class CreateQAPanel extends React.Component {
   }
   render() {
     const { createQAData, answer } = this.state
-    const { oldData=[] } = this.props
+    // const { oldData=[] } = this.props
     const answerLength = answer.replace(/[\n]/gi, '').length
     const compareAnsAndQuestionLength = () => {
       if(answerLength > createQAData.length) {
@@ -257,7 +258,7 @@ class CreateQAPanel extends React.Component {
           <div className='createQA-container' >
             <hr />
             <button>
-              <DownloadJSONLink obj={ [...oldData, ...this.state.resultJSON] } clickFn={this._checkAmoutOfQA} />
+              <DownloadJSONLink obj={ this.state.resultJSON } clickFn={this._checkAmoutOfQA} />
             </button>
           </div>
         </div>
