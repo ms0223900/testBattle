@@ -5,7 +5,9 @@ import { getReverseResult } from './functions'
 
 const coinImg = 'https://cdn3.iconfinder.com/data/icons/supermario/PNG/Retro-Coin.png'
 const AVATARimg = 'https://d1nhio0ox7pgb.cloudfront.net/_img/o_collection_png/green_dark_grey/256x256/plain/user.png'
+const backgroundImage = 'https://1.bp.blogspot.com/-xxPNhLnqRw4/UsZ5378PrgI/AAAAAAAACRE/DmjUGk1p8Lk/s1600/Outdoor+Anime+Landscape+%5BScenery+-+Background%5D+101.png'
 
+const testUIbuttonImage = 'https://cdn4.iconfinder.com/data/icons/game-ui-pack-02/500/play-512.png'
 const HATs = ['http://www.pngpix.com/wp-content/uploads/2016/07/PNGPIX-COM-Hat-PNG-Transparent-Image-500x377.png', 'http://www.pngpix.com/wp-content/uploads/2016/11/PNGPIX-COM-Hat-PNG-Transparent-Image--500x248.png', 'http://www.pngpix.com/wp-content/uploads/2016/07/PNGPIX-COM-Cowboy-Hat-PNG-Transparent-Image-250x187.png']
 
 const setTimePromise = (sec) => (
@@ -40,6 +42,22 @@ export const checkCollideWithPoint = (point={x: 0, y: 0}, collideObj={x: 0, y: 0
     point.y < collideObj.y + collideObj.h && point.y > collideObj.y) {
       return true
   } return false
+}
+export const checkAllCollide = (tapPos={x: 0, y: 0}, allCollideObjs=[], callback=() => {}) => {
+  for (let i = 0; i < allCollideObjs.length; i++) {
+    const thisCollide = allCollideObjs[i]
+    const collideSpec = {
+      x: thisCollide.OBJ.x,
+      y: thisCollide.OBJ.y,
+      w: thisCollide.OBJ.w,
+      h: thisCollide.OBJ.h,
+    }
+    if(checkCollideWithPoint(tapPos, collideSpec)) {
+      // this.destroyObj(thisCoin.id)
+      console.log(allCollideObjs[i].id)
+      callback()
+    }
+  }
 }
 
 export class drawSpriteImg {
@@ -116,6 +134,8 @@ export class drawStaticImg {
     this.height = height
     this.x = x
     this.y = y
+    this.w = this.width
+    this.h = this.height
   }
   render() {
     // this.ctx.clearRect(this.x, this.y, this.width / this.frameRate, this.height)
@@ -134,55 +154,83 @@ export class drawStaticImg {
   }
 }
 
+const testButton = (canvas) => ({
+  id: 7001,
+  OBJ: new drawStaticImg(canvas, testUIbuttonImage, 30, 30, 20, 20)
+})
+
+class myUI {
+  constructor(canvas, ...UIs) {
+    this.ctx = canvas.getContext('2d')
+    this.UIs = UIs
+  }
+  start() {
+    this.ctx.rect(20, 20, 120, 120)
+    this.ctx.stroke()
+    for (let i = 0; i < this.UIs.length; i++) {
+      this.UIs[i].OBJ.start()
+    }
+  }
+}
 
 class myGame {
-  constructor(canvas, obj=[]) {
+  constructor(canvas, back=[], obj=[], UI=[]) {
     this.ctx = canvas.getContext('2d')
+    this.back = back
     this.obj = obj
+    this.UI = UI
     this.testNum = 0
     this.dir = true
   }
   start() {
     this.ctx.clearRect(0, 0, 300, 300)
-    // this.testNum = this.testNum < 30 && this.dir ? this.testNum + 1 : this.testNum - 1
-    // if(this.testNum === 30) {
-    //   this.dir = false
-    // } else if(this.testNum === 0) {
-    //   this.dir = true
-    // }
-    // this.testNum = getReverseResult(this.testNum, 0, 30, this.dir).now
-    // this.dir = getReverseResult(this.testNum, 0, 30, this.dir).dir
-    drawCanvasAvatar(this.ctx, HATs[0])
+    for (let i = 0; i < this.back.length; i++) {
+      this.back[i].OBJ.start()
+    }
     for (let i = 0; i < this.obj.length; i++) {
-      // this.obj[i].OBJ.x = this.testNum
       this.obj[i].OBJ.start()
+    }
+    for (let i = 0; i < this.UI.length; i++) {
+      this.UI[i].OBJ.start()
     }
     requestAnimationFrame(this.start.bind(this))
   }
 }
 
-export default class Avatar extends React.Component {
+export default class Game extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       hat: 'http://www.pngpix.com/wp-content/uploads/2016/07/PNGPIX-COM-Hat-PNG-Transparent-Image-500x377.png',
       coins: [],
       gameOpen: true,
+      coinGenarateSpeed: 1,
     };
     this.setCanvas = el => this.canvas = el
     this.myGameTest = null
+    this.setHat = (hatSrc) => new drawStaticImg(this.canvas, hatSrc, 100, 100, 20, 20)
   }
   componentDidMount = () => {
+    const { coinGenarateSpeed } = this.state
     const hat = {
       id: 0, 
       OBJ: new drawStaticImg(this.canvas, HATs[0], 100, 100, 20, 20),
     }
+    const backTest = {
+      id: -1000,
+      OBJ: new drawStaticImg(this.canvas, backgroundImage, 300, 300, 0, 0),
+    }
+    const UItest = {
+      id: 7000,
+      OBJ: new myUI(this.canvas, testButton(this.canvas))
+    }
     // const coin2 = new drawSpriteImg(this.canvas, 'images/coin-sprite-animation.png', 1000, 100, 40, 40)
-    this.myGameTest = new myGame(this.canvas, [hat, ...this.state.coins])
+    this.myGameTest = new myGame(this.canvas, [backTest], [hat, ...this.state.coins], [UItest])
     this.myGameTest.start()
     this.setState({
       coins: [hat, ...this.state.coins],
     })
+    this.addCoin(coinGenarateSpeed)
   }
   componentDidUpdate = (prevProps, prevState) => {
     if(prevState.hat !== this.state.hat) {
@@ -195,24 +243,29 @@ export default class Avatar extends React.Component {
     }
     // setInterval(() => this.spawnCoins(), 600)
   }
-  spawnCoins = () => {
-    const { coins } = this.state
-    const randX = ~~(Math.random() * 300)
-    const randY = ~~(Math.random() * 300)
+  spawnCoins = (selfDestroy=false) => {
+    const { setCoin } = this.props
+    
+    const randX = ~~(Math.random() * (300 - 100)) 
+    const randY = ~~(Math.random() * (300 - 100))
     const newCoin = new drawSpriteImg(this.canvas, 'images/coin-sprite-animation.png', 1000, 100, randX, randY)
     const newId = this.myGameTest.obj.length + 1
     this.myGameTest.obj = [...this.myGameTest.obj, {
       id: newId,
       OBJ: newCoin,
     }]
-    // this.setState({
-    //   coins: [...coins, newCoin],
-    // }) 
-    
-    // this.myGameTest.obj = this.state.coins
-    // setTimeout(() => {
-    //   this.destroyObj(newId)
-    // }, 1000)
+    setCoin(1)
+    if(selfDestroy) {
+      setTimeout(() => {
+        this.destroyObj(newId)
+      }, 600)
+    }
+  }
+  addCoin = (speed=1) => {
+    const second = 2000/speed
+    setInterval(() => {
+      this.spawnCoins(true)
+    }, second)
   }
   getTap = (e) => {
     const tapX = e.targetTouches ? e.targetTouches[0].clientX : e.clientX
@@ -222,19 +275,8 @@ export default class Avatar extends React.Component {
     const tapPos = {
       x: posX, y: posY
     }
-    for (let i = 1; i < this.myGameTest.obj.length; i++) {
-      const thisCoin = this.myGameTest.obj[i]
-      const coinSpec = {
-        x: thisCoin.OBJ.x,
-        y: thisCoin.OBJ.y,
-        w: thisCoin.OBJ.w,
-        h: thisCoin.OBJ.h,
-      }
-      console.log(tapPos, coinSpec)
-      if(checkCollideWithPoint(tapPos, coinSpec)) {
-        this.destroyObj(thisCoin.id)
-      }
-    }
+    checkAllCollide(tapPos, this.myGameTest.obj)
+    checkAllCollide(tapPos, this.myGameTest.UI[0].OBJ.UIs, this.spawnCoins.bind(this, true))
   }
   destroyObj = (id) => {
     const originObj = this.myGameTest.obj
@@ -242,9 +284,7 @@ export default class Avatar extends React.Component {
   }
   _handleChangeHat = (e) => {
     const imgSrc = e.target.getAttribute('src')
-    this.setState({
-      hat: imgSrc
-    })
+    this.myGameTest.obj[0].OBJ = this.setHat(imgSrc)
   }
   _handleOpenGame = () => {
     this.setState(state => ({
@@ -253,11 +293,18 @@ export default class Avatar extends React.Component {
   }
   render() {
     const { gameOpen } = this.state
+    const { coin=0 } = this.props
     return (
       <div>
         <button onClick={this._handleOpenGame}>Open Game</button>
-        {gameOpen ? (
-          <div id={'game-canvas'} >
+          <div id={'game-canvas'} style={{ display: gameOpen ? 'block' : 'none' }} >
+            <div id={'coin-container'}>
+              <img className={'coin-img'} src={coinImg} />
+              <span> {' X ' + coin} </span>
+            </div>
+            <div>
+
+            </div>
             <canvas ref={this.setCanvas} width={'300'} height={'300'} onTouchStart={this.getTap} onMouseDown={this.getTap} />
             <button onClick={this.spawnCoins}>Coin + 1</button>
             <div>
@@ -266,7 +313,6 @@ export default class Avatar extends React.Component {
               ))}
             </div>
           </div>
-        ) : ''}
       </div>
     );
   }

@@ -15,7 +15,7 @@ import { WholeTestPaper, SingleTestPaper } from './TestPaper'
 import { SelectMenuBar } from './selectDatabase'
 import CreateQAPanel from './createQA'
 import Timer from './Timer'
-import Avatar from './avatar'
+import Game from './avatar'
 
 import { en_US, zh_TW } from './lang'
 import { IntlProvider, FormattedMessage, addLocaleData } from 'react-intl'
@@ -445,7 +445,6 @@ export default class App extends React.Component {
         </div>
         <CreateQAPanel 
           oldData={this.state.allTestQA} 
-          setCoin={this._handleSetCoin}
         />
         <div id='myNote' style={{ display: viewMyNote ? 'block' : 'none' }}>
           <h2>My Note  
@@ -459,7 +458,10 @@ export default class App extends React.Component {
           id={'hello'}
           
         />
-        <Avatar />
+        <Game 
+          coin={coin}
+          setCoin={this._handleSetCoin}
+        />
         <button onClick={this.props.changeLang}>Change Lang</button>
       </div>
     );
