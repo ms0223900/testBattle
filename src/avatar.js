@@ -33,7 +33,7 @@ export default class Game extends React.PureComponent {
   componentDidMount = () => {
     const { coinGenarateSpeed } = this.state
     this.myGameTest = idleGame(this.canvas)
-    this.myGameTest.start()
+    this.myGameTest.render()
     this.obj
 
     this.addCoin(coinGenarateSpeed)
@@ -50,7 +50,6 @@ export default class Game extends React.PureComponent {
         this.myGameTest.setLayerObjs('ObjLayer', destroyObj(gameObjLayer, newRandObj.newId))
       }, 600)
     }
-
   }
   addCoin = (speed=1) => {
     const second = 2000 / speed
@@ -62,7 +61,10 @@ export default class Game extends React.PureComponent {
     const layer = this.myGameTest.myLayers.UILayer
     const times20Coin = () => getMultiAction(20, this.spawnCoins.bind(this, true, 20))
     getTap(e, canvas, layer, 7001, this.spawnCoins.bind(this, true))
-    getTap(e, canvas, layer, 7002, times20Coin)
+    getTap(e, canvas, layer, 7002, () => {
+      times20Coin()
+      this.myGameTest.updateStateNum('UILayer', 2000, 'text', 1)
+    })
   }
   _handleChangeHat = (e) => {
     const imgSrc = e.target.getAttribute('src')

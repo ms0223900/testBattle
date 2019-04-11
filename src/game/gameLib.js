@@ -41,7 +41,7 @@ export class drawSpriteImg {
       this.posYIndex += 1
     }
   }
-  render() {
+  draw() {
     // this.ctx.clearRect(this.x, this.y, this.width / this.frameRate, this.height)
     this.ctx.drawImage(
       this.image, 
@@ -55,9 +55,9 @@ export class drawSpriteImg {
       this.height)
     
   }
-  start() {
+  render() {
     this.updateFrame()
-    this.render()
+    this.draw()
   }
 }
 export class drawStaticImg {
@@ -73,7 +73,7 @@ export class drawStaticImg {
     this.w = this.width
     this.h = this.height
   }
-  render() {
+  draw() {
     this.ctx.globalAlpha = 1
     this.ctx.drawImage(
       this.image, 
@@ -83,7 +83,7 @@ export class drawStaticImg {
       this.height
     )
   }
-  start() {
-    this.render()
+  render() {
+    this.draw()
   }
 }

@@ -25,9 +25,18 @@ export class drawUIText {
     this.x = x
     this.y = y
   }
-  start() {
+  render() {
     this.ctx.font = this.textConfig
     this.ctx.fillText(this.text, this.x, this.y)
+  }
+}
+export class countUIText extends drawUIText {
+  constructor(canvas, textConfig, text='Hi', x=0, y=0) {
+    super(canvas, textConfig, text, x, y)
+  }
+  render() {
+    this.ctx.font = this.textConfig
+    this.ctx.fillText('X ' + this.text, this.x, this.y)
   }
 }
 export class myGroupObjs {
@@ -37,9 +46,9 @@ export class myGroupObjs {
     this.y = y
     // this.id = id
   }
-  start() {
+  render() {
     for (let i = 0; i < this.groupObjs.length; i++) {
-      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.start() : this.groupObjs[i].start()
+      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render() : this.groupObjs[i].render()
     }
   }
 }
@@ -47,9 +56,9 @@ export class myLayer {
   constructor(...layerObjs) {
     this.layerObjs = layerObjs
   }
-  start() {
+  render() {
     for (let i = 0; i < this.layerObjs.length; i++) {
-      this.layerObjs[i].OBJ.start()
+      this.layerObjs[i].OBJ.render()
     }
   }
 }
@@ -70,15 +79,20 @@ export class myGame {
     this.testNum = 0
     this.dir = true
   }
+  updateStateNum(layer, id, property, num) {
+    const originObj = this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ
+    console.log(originObj[property])
+    originObj[property] = originObj[property] * 1 + num
+  }
   setLayerObjs(layer, newObjs) {
     this.myLayers[layer].layerObjs = newObjs
   }
-  start() {
+  render() {
     this.ctx.clearRect(0, 0, 300, 300)
-    this.myLayers.BackLayer.start()
-    this.myLayers.ObjLayer.start()
-    this.myLayers.UILayer.start()
-    requestAnimationFrame(this.start.bind(this))
+    this.myLayers.BackLayer.render()
+    this.myLayers.ObjLayer.render()
+    this.myLayers.UILayer.render()
+    requestAnimationFrame(this.render.bind(this))
   }
 }
 
@@ -94,7 +108,7 @@ export const moneys = (canvas, x=0, y=0) => (
 )
 export const countNum = (canvas, num=10) => ({
   id: 2000,
-  OBJ: new drawUIText(canvas, '18px Arial', `X ${num}`, 70, 280)
+  OBJ: new countUIText(canvas, '18px Arial', num, 70, 280)
 })
 export const moneyUIwithText = (cv, num=0) => ({
   id: 2000,
