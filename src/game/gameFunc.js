@@ -22,10 +22,12 @@ export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id
       w: thisCollide.OBJ.w,
       h: thisCollide.OBJ.h,
     }
-    if(checkCollideWithPoint(tapPos, collideSpec) && allCollideObjs[i].id === id) {
-      // this.destroyObj(thisCoin.id)
+    if(checkCollideWithPoint(tapPos, collideSpec)) {
       console.log(allCollideObjs[i].id)
-      return true
+      // this.destroyObj(thisCoin.id)
+      if(allCollideObjs[i].id === id) {
+        return true
+      }
     }
   }
 }

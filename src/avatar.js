@@ -63,16 +63,6 @@ export default class Game extends React.PureComponent {
     const times20Coin = () => getMultiAction(20, this.spawnCoins.bind(this, true, 20))
     getTap(e, canvas, layer, 7001, this.spawnCoins.bind(this, true))
     getTap(e, canvas, layer, 7002, times20Coin)
-    // const tapX = e.targetTouches ? e.targetTouches[0].clientX : e.clientX
-    // const tapY = e.targetTouches ? e.targetTouches[0].clientY : e.clientY
-    // const posX = tapX - canvas.getBoundingClientRect().left 
-    // const posY = tapY - canvas.getBoundingClientRect().top
-    // const tapPos = {
-    //   x: posX, y: posY
-    // }
-    // checkAllCollide(tapPos, this.myGameTest.obj)
-    // checkAllCollide(tapPos, this.myGameTest.UI[0].OBJ.UIs, this.spawnCoins.bind(this, true))
-
   }
   _handleChangeHat = (e) => {
     const imgSrc = e.target.getAttribute('src')
