@@ -95,7 +95,7 @@ export const TabMenu = ({testModeState, testModeFn, answerModeState, answerModeF
 )
 
 
-export default class App extends React.Component {
+export default class App extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -373,7 +373,6 @@ export default class App extends React.Component {
   }
   render() {
     const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition, testRecord, isStart, time, coin } = this.state
-    console.log(this.state.testRecord)
     return (
       <div>
         <div className='tab-menu'>
@@ -460,7 +459,7 @@ export default class App extends React.Component {
           
         />
         <Game 
-          coin={coin}
+          // coin={coin}
           setCoin={this._handleSetCoin}
         />
         <button onClick={this.props.changeLang}>Change Lang</button>
