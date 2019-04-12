@@ -93,6 +93,9 @@ export class myGame {
   }
   init() {
     const originLS = JSON.parse(localStorage.getItem('gameConfig')) || [] 
+    if(originLS.length === 0) {
+      localStorage.setItem('gameConfig', JSON.stringify(initGameConfig))
+    }
     for (let i = 0; i < initGameConfig.length; i++) {
       const { layer, id, objProp, value } = initGameConfig[i]
       const thatConfig = originLS.filter(or => or.id === id)
@@ -105,11 +108,8 @@ export class myGame {
     const resultVal = init ? num : originObj[property] * 1 + num
     originObj[property] = resultVal
 
-    const originLS = JSON.parse(localStorage.getItem('gameConfig')) || []
-    let storeData
-    if(originLS.length > 0) {
-      storeData = setValueOfArrObj(originLS, id, 'value', resultVal)
-    }
+    const originLS = JSON.parse(localStorage.getItem('gameConfig'))
+    const storeData = setValueOfArrObj(originLS, id, 'value', resultVal)
     localStorage.setItem('gameConfig', JSON.stringify(storeData))
   }
   setLayerObjs(layer, newObjs) {
