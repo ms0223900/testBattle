@@ -1,9 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, { Fragment } from 'react'
 //game
-import { canvasSpec, 
+import { canvasSpec } from './game/gameConfig'
+import { 
   myUI, 
-  Coin,
+  upCoin,
+  moneyBag,
+  moneyUIwithText,
   idleGame,
  } from './game/gameComponent'
 import { 
@@ -26,6 +29,11 @@ export default class Game extends React.PureComponent {
       coins: [],
       gameOpen: true,
       coinGenarateSpeed: 1,
+      coinGenState: {
+        lv1: 1,
+        lv20: 0,
+        lv100: 0,
+      }
     };
     this.setCanvas = el => this.canvas = el
     this.myGameTest = null
@@ -33,39 +41,66 @@ export default class Game extends React.PureComponent {
   componentDidMount = () => {
     const { coinGenarateSpeed } = this.state
     this.myGameTest = idleGame(this.canvas)
+    this.myGameTest.init()
     this.myGameTest.render()
     this.obj
 
     this.addCoin(coinGenarateSpeed)
   }
+  purchaseCoinUprade = (price) => {
+    const { coinGenState } = this.state
+    if(window.confirm('Are you sure buying the upgrade? (cost 10000)')) {
+      this.props.buy(price)
+      this.setState({
+        coinGenState: {
+          ...coinGenState,
+          lv20: coinGenState.lv20 + 1,
+        }
+      })
+      this.myGameTest.spawnObjToLayer({
+        layer: 'ObjLayer', 
+        objFn: moneyBag, 
+        rand: { useRandom: true, y: 120 },
+        objFnParas: [20, 20],
+        selfDestroy: false,
+      })
+      this.myGameTest.updateStateNum('UILayer', 2001, 'text', 1)
+    }
+  }
   spawnCoins = (selfDestroy=false, coinCount=1) => {
-    const gameObjLayer = this.myGameTest.myLayers.ObjLayer
-    const newRandObj = spawnRandomPosObj(this.canvas, gameObjLayer, Coin)
-    this.myGameTest.setLayerObjs('ObjLayer', newRandObj.newObjs)
     const { setCoin } = this.props
     setCoin(coinCount)
 
-    if(selfDestroy) {
-      setTimeout(() => {
-        this.myGameTest.setLayerObjs('ObjLayer', destroyObj(gameObjLayer, newRandObj.newId))
-      }, 600)
-    }
+    this.myGameTest.spawnObjToLayer({
+      layer: 'ObjLayer', 
+      objFn: moneyUIwithText, 
+      rand: { useRandom: true },
+      objFnParas: [coinCount],
+      selfDestroy: true,
+    })
   }
   addCoin = (speed=1) => {
     const second = 2000 / speed
     setInterval(() => {
-      this.spawnCoins(true)
+      const { lv1, lv20, lv100 } = this.state.coinGenState
+      const coinCount = lv1 * 1 + lv20 * 20 + lv100 * 100
+      this.spawnCoins(true, coinCount)
     }, second)
   }
+
+
   tap = (e, canvas) => {
     const layer = this.myGameTest.myLayers.UILayer
     const times20Coin = () => getMultiAction(20, this.spawnCoins.bind(this, true, 20))
+
     getTap(e, canvas, layer, 7001, this.spawnCoins.bind(this, true))
     getTap(e, canvas, layer, 7002, () => {
-      times20Coin()
-      this.myGameTest.updateStateNum('UILayer', 2000, 'text', 1)
+      // times20Coin()
+      this.purchaseCoinUprade(10000)
     })
   }
+
+
   _handleChangeHat = (e) => {
     const imgSrc = e.target.getAttribute('src')
     this.myGameTest.obj[0].OBJ = this.setHat(imgSrc)
@@ -97,11 +132,11 @@ export default class Game extends React.PureComponent {
               onTouchStart={(e) => this.tap(e, this.canvas)} 
               onMouseDown={(e) => this.tap(e, this.canvas)} />
             <button onClick={this.spawnCoins}>Coin + 1</button>
-            <div>
+            {/* <div>
               {HATs.map(hat => (
                 <img key={hat} src={hat} style={{ width: '100px' }} onClick={this._handleChangeHat} />
               ))}
-            </div>
+            </div> */}
           </div>
       </div>
     );

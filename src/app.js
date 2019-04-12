@@ -371,6 +371,18 @@ export default class App extends React.PureComponent {
       })
     }
   }
+  _handleBuying = (price=10) => {
+    const resCoin = this.state.coin - price
+    if(resCoin > 0) {
+      this.setState({
+        coin: resCoin
+      })
+      return true
+    } else {
+      window.alert('money is not enough~')
+      return false
+    }
+  }
   render() {
     const { myAnswer, isHandIn, testAmount, keyId, testQA=[], viewMyNote, noteContent, isCheckCorrectAns, answerMode, singleAnswerModeState, testMode, allTestFilterConditions, nowFIlterCondition, testRecord, isStart, time, coin } = this.state
     return (
@@ -460,6 +472,7 @@ export default class App extends React.PureComponent {
         />
         <Game 
           // coin={coin}
+          buy={this._handleBuying}
           setCoin={this._handleSetCoin}
         />
         <button onClick={this.props.changeLang}>Change Lang</button>

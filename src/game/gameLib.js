@@ -1,12 +1,13 @@
 
 export class drawStaticImg {
-  constructor({canvas, imgSrc, width, height, x=0, y=0}) {
+  constructor({canvas, imgSrc, width, height, x=0, y=0, imgRatio=1}) {
     this.ctx = canvas.getContext('2d')
     this.imgSrc = imgSrc
     this.image = new Image()
     this.image.src = this.imgSrc
-    this.width = width
-    this.height = height
+    this.imgRatio = imgRatio
+    this.width = width * this.imgRatio,
+    this.height = height * this.imgRatio,
     this.x = x
     this.y = y
     this.w = this.width
@@ -41,10 +42,10 @@ export class drawSpriteImg extends drawStaticImg {
     // this.ctx.clearRect(this.x, this.y, this.width / this.frameRate, this.height)
     this.ctx.drawImage(
       this.image, 
-      this.imgIndex * this.width / this.frameRate, 
+      this.imgIndex * this.width / this.frameRate / this.imgRatio, 
       0, 
-      this.width / this.frameRate, 
-      this.height,
+      this.width / this.frameRate / this.imgRatio, 
+      this.height / this.imgRatio,
       this.x, 
       this.y, 
       this.width / this.frameRate, 
@@ -64,9 +65,6 @@ export class drawSpriteImg extends drawStaticImg {
     
   }
   render() {
-    // for (const fn of this.actionsFn) {
-    //   fn()
-    // }
     this.updateFrame()
     this.draw()
   }
@@ -88,5 +86,34 @@ export class actionUpObj extends drawSpriteImg {
     this.upAction()
     this.updateFrame()
     this.draw()
+  }
+}
+
+export class myGroupObjs {
+  constructor({ x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio }) {
+    this.groupObjs = groupObjs
+    this.x = x
+    this.y = y
+    this.groupRatio = groupRatio
+    this.setObjInGroup(this.x, this.y, this.groupRatio)
+    // this.id = id
+  }
+  setObjInGroup(x=0, y=0) {
+    let w = 0, h = 0
+    for (let i = 0; i < this.groupObjs.length; i++) {
+      this.groupObjs[i].OBJ.x += x 
+      this.groupObjs[i].OBJ.y += y 
+    }
+    for (let i = 0; i < this.groupObjs.length; i++) {
+      if(this.groupObjs[i].OBJ.w > w) { w = this.groupObjs[i].OBJ.w }
+      if(this.groupObjs[i].OBJ.h > h) { h = this.groupObjs[i].OBJ.h }
+    }
+    this.w = w
+    this.h = h
+  }
+  render() {
+    for (let i = 0; i < this.groupObjs.length; i++) {
+      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render() : this.groupObjs[i].render()
+    }
   }
 }
