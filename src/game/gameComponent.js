@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { drawStaticImg, drawSpriteImg } from './gameLib'
+import { drawStaticImg, drawSpriteImg, actionUpObj } from './gameLib'
 import { getCanvasComponent } from './gameFunc'
 import { 
   bigCoin,
@@ -118,16 +118,11 @@ export const moneyUIwithText = (cv, num=0) => ({
   )
 }) 
 export const Coin = (canvas, x=0, y=0) => (
-  getCanvasComponent(1, canvas, bigCoin, [1000, 100, x, y], drawSpriteImg)
+  getCanvasComponent(1, canvas, bigCoin, [1000, 100, x, y], actionUpObj)
 )
-export const hat = (canvas) => ({
-  id: 0, 
-  OBJ: new drawStaticImg(canvas, HATs[0], 100, 100, 20, 20),
-})
-export const backTest = (canvas) => ({
-  id: -1000,
-  OBJ: new drawStaticImg(canvas, backgroundImage, 300, 200, 0, 0),
-})
+export const backTest = (canvas) => (
+  getCanvasComponent(-1000, canvas, backgroundImage, [300, 200, 0, 0])
+)
 
 //layers
 export const UILayer = (canvas, {...nums}) => (

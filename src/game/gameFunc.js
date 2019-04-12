@@ -33,7 +33,14 @@ export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id
 }
 export const getCanvasComponent = (id=0, canvas, imgSrc='', spec=[0, 0, 0, 0], drawClass=drawStaticImg) => ({
   id,
-  OBJ: new drawClass(canvas, imgSrc, ...spec)
+  OBJ: new drawClass({
+    canvas, 
+    imgSrc, 
+    width: spec[0], 
+    height: spec[1], 
+    x: spec[2], 
+    y: spec[3]
+  })
 })
 export const spawnRandomPosObj = (canvas, gameInstanceLayer, objFn) => {
   const originObj = objFn(canvas)
