@@ -50,7 +50,7 @@ export default class Game extends React.PureComponent {
   purchaseCoinUprade = (price) => {
     const { coinGenState } = this.state
     if(window.confirm('Are you sure buying the upgrade? (cost 10000)')) {
-      // this.props.buy(price)
+      this.props.buy(price)
       this.setState({
         coinGenState: {
           ...coinGenState,
