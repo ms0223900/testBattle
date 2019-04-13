@@ -44,6 +44,14 @@ export default class Game extends React.PureComponent {
     this.myGameTest.init()
     this.myGameTest.render()
     this.obj
+    const originLS = localStorage.getItem('gameConfig')
+    const moneyBag = JSON.parse(originLS).filter(o => o.id === 2001)[0].value
+    this.setState({
+      coinGenState: {
+        ...this.state.coinGenState,
+        lv20: moneyBag,
+      }
+    })
 
     this.addCoin(coinGenarateSpeed)
   }
