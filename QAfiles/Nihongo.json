@@ -863,7 +863,7 @@
   "correctAnswer": "カーテン",
   "options": ["カーテン", "シャッター", "　", "　"],
   "databaseSort": "カタカナ語"
-}, , {
+}, {
   "id": 131,
   "question": "日本語が（　）ですね、どれぐらい勉強したんですか。",
   "correctAnswer": "ぺらぺら",
