@@ -111,7 +111,7 @@ export default class App extends React.PureComponent {
       allTestFilterConditions: [],
       nowFIlterCondition: [],
       testQA: [],
-      testAmount: 5,
+      testAmount: 10,
       testMode: 'all',
       answerMode: 'single',
       singleAnswerModeState: {

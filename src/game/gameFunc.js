@@ -33,6 +33,7 @@ export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id
 }
 export const getCanvasComponent = (id=0, canvas, imgSrc='', spec=[0, 0, 0, 0], drawClass=drawStaticImg, ratio=1) => ({
   id,
+  cloneId: 0,
   OBJ: new drawClass({
     canvas, 
     imgSrc, 
@@ -63,9 +64,12 @@ export const spawnRandomPosObj = (canvas, gameInstanceLayer, objFn, ...objFnPara
     ]
   } )
 }
-export const destroyObj = (gameInstanceLayer, id) => {
+export const destroyObj = (gameInstanceLayer, id='', cloneId=0) => {
   const originObj = gameInstanceLayer.layerObjs
-  return (originObj.filter(o => o.id !== id))
+  if(typeof(id) === 'undefined' | typeof(cloneId) === 'undefined') {
+    throw 'Your object id or clone id is undefined.'
+  }
+  return (originObj.filter(o => !(o.id === id && o.cloneId === cloneId) ))
 }
 
 export const getTap = (e, canvas, layer, id, actionFn) => {

@@ -101,8 +101,8 @@ export default class Game extends React.PureComponent {
     const layer = this.myGameTest.myLayers.UILayer
     const times20Coin = () => getMultiAction(20, this.spawnCoins.bind(this, true, 20))
 
-    getTap(e, canvas, layer, 7001, this.spawnCoins.bind(this, true))
-    getTap(e, canvas, layer, 7002, () => {
+    getTap(e, canvas, layer, 'testButton', this.spawnCoins.bind(this, true))
+    getTap(e, canvas, layer, 'moneyBag', () => {
       // times20Coin()
       this.purchaseCoinUprade(10000)
     })

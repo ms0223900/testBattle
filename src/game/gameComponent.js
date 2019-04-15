@@ -93,14 +93,30 @@ export class myGame {
   }
   init() {
     const originLS = JSON.parse(localStorage.getItem('gameConfig')) || [] 
+    const orginGameSpawnObj = JSON.parse(localStorage.getItem('gameSpawnObjConfig')) || [] 
     if(originLS.length === 0) {
       localStorage.setItem('gameConfig', JSON.stringify(initGameConfig))
+    }
+    if(!localStorage.getItem('gameSpawnObjConfig')) {
+      localStorage.setItem('gameSpawnObjConfig', JSON.stringify([]))
     }
     for (let i = 0; i < initGameConfig.length; i++) {
       const { layer, id, objProp, value } = initGameConfig[i]
       const thatConfig = originLS.filter(or => or.id === id)
       const setValue = originLS.length > 0 && thatConfig ? thatConfig[0].value : value
       this.updateStateNum(layer, id, objProp, setValue, true)
+    }
+    for (let i = 0; i < orginGameSpawnObj.length; i++) {
+      console.log(eval(orginGameSpawnObj[i].objFn))
+      this.spawnObjToLayer({
+        layer: 'ObjLayer',
+        objFn: eval(orginGameSpawnObj[i].objFn),
+        rand: { useRandom: false, 
+          x: orginGameSpawnObj[i].pos.x, 
+          y: orginGameSpawnObj[i].pos.y, },
+        isInit: true,
+      })
+      
     }
   }
   updateStateNum(layer, id, property, num, init=false) {
@@ -115,23 +131,37 @@ export class myGame {
   setLayerObjs(layer, newObjs) {
     this.myLayers[layer].layerObjs = newObjs
   }
-  spawnObjToLayer({layer, objFn, rand={ useRandom: true, x: 0, y: 0, }, objFnParas=[], selfDestroy=true, destroyTime=600, }) {
+  spawnObjToLayer({isInit=false, layer, objFn, rand={ useRandom: true, x: 0, y: 0, }, objFnParas=[], selfDestroy=false, destroyTime=600, }) {
+    const originLS = JSON.parse(localStorage.getItem('gameSpawnObjConfig'))
     const gameLayer = this.myLayers[layer]
-    const newId = gameLayer.layerObjs.length + 1
     const newObj = objFn(this.canvas, rand.x, rand.y, ...objFnParas)
     const getRandXY = getCanvasRandPos(canvasObjAreaSpec, newObj, rand.x, rand.y)
     const newPosObj = rand.useRandom ? objFn(this.canvas, getRandXY.x, getRandXY.y, ...objFnParas) : newObj
+    const newCloneId = originLS.filter(or => or.id === newPosObj.id).length > 0 ? 
+      (originLS.filter(or => or.id === newPosObj.id).length + 1) : 
+      (gameLayer.layerObjs.filter(lo => lo.id === newPosObj.id).length + 1 || 1)
+    const gameSpawnObjConfigSetting = {
+      id: newPosObj.id,
+      cloneId: newCloneId,
+      pos: { x: getRandXY.x, y: getRandXY.y },
+      objFn: objFn.name,
+    }
+    const newGameSpawnObjConfig = [...originLS, gameSpawnObjConfigSetting]
+
     gameLayer.layerObjs = [
       ...gameLayer.layerObjs, 
       {
-        id: newId,
+        id: newPosObj.id,
+        cloneId: newCloneId,
         OBJ: newPosObj.OBJ,
       }
     ]
     if(selfDestroy) {
       setTimeout(() => {
-        this.setLayerObjs(layer, destroyObj(gameLayer, newId))
+        this.setLayerObjs(layer, destroyObj(gameLayer, newPosObj.id, newCloneId))
       }, destroyTime)
+    } else if(!selfDestroy && !isInit) {
+      localStorage.setItem('gameSpawnObjConfig', JSON.stringify(newGameSpawnObjConfig))
     }
   }
   render() {
@@ -145,10 +175,10 @@ export class myGame {
 
 //components
 export const testButton = (canvas, x=0, y=0) => (
-  getCanvasComponent(7001, canvas, testUIbuttonImage, [30, 30, x, y], drawStaticImg)
+  getCanvasComponent('testButton', canvas, testUIbuttonImage, [30, 30, x, y], drawStaticImg)
 )
 export const moneyBag = (canvas, x=0, y=0) => (
-  getCanvasComponent(7002, canvas, coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
+  getCanvasComponent('moneyBag', canvas, coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
 )
 export const moneys = (canvas, x=0, y=0) => (
   getCanvasComponent(7003, canvas, coinUpdate[0], [30, 30, x, y], drawStaticImg)
@@ -158,7 +188,7 @@ export const countNum = (canvas, x=0, y=0, num=10) => ({
   OBJ: new countUIText(canvas, '18px Arial', num, x, y)
 })
 export const upCoin = (canvas, x=0, y=0) => (
-  getCanvasComponent(1, canvas, bigCoin, [1000, 100, x, y], actionUpObj)
+  getCanvasComponent('upCoin', canvas, bigCoin, [1000, 100, x, y], actionUpObj)
 )
 export const Coin = (canvas, x=0, y=0) => (
   getCanvasComponent(1, canvas, bigCoin, [1000, 100, x, y], drawSpriteImg, 0.4)
@@ -172,7 +202,7 @@ export const ShoppingList = (canvas, x=0, y=0) => ({
 })
 
 export const moneyUIwithText = (cv, x, y, num=1) => ({
-  id: 2000,
+  id: 'moneyUIwithText',
   OBJ: new actionUpGroupObjs({
     upPosY: 30,
     x: x,
@@ -210,5 +240,4 @@ const allLayer = (cv) => ({
 export const idleGame = (canvas) => (
   new myGame(canvas, allLayer(canvas))
 )
-
 
