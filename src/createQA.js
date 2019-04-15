@@ -164,6 +164,11 @@ class CreateQAPanel extends React.Component {
       answer: handledValue,
     })
   }
+  _resetCreateQA = () => {
+    if(window.confirm('Are you sure deleting these QA?')) {
+      localStorage.setItem('tempSave', '')
+    }
+  }
   _checkAmoutOfQA = (e) => {
     const { answer, createQAData } = this.state
     const { oldData=[] } = this.props
@@ -260,6 +265,7 @@ class CreateQAPanel extends React.Component {
             <button>
               <DownloadJSONLink obj={ this.state.resultJSON } clickFn={this._checkAmoutOfQA} />
             </button>
+            <button onClick={this._resetCreateQA}>Reset QAs</button>
           </div>
         </div>
         <div ref={el => this.bottom = el} style={{ width: '100px', height: '20px' }}></div>

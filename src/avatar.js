@@ -44,6 +44,14 @@ export default class Game extends React.PureComponent {
     this.myGameTest.init()
     this.myGameTest.render()
     this.obj
+    const originLS = localStorage.getItem('gameConfig')
+    const moneyBag = JSON.parse(originLS).filter(o => o.id === 2001)[0].value
+    this.setState({
+      coinGenState: {
+        ...this.state.coinGenState,
+        lv20: moneyBag,
+      }
+    })
 
     this.addCoin(coinGenarateSpeed)
   }
@@ -83,7 +91,7 @@ export default class Game extends React.PureComponent {
     const second = 2000 / speed
     setInterval(() => {
       const { lv1, lv20, lv100 } = this.state.coinGenState
-      const coinCount = lv1 * 1 + lv20 * 20 + lv100 * 100
+      const coinCount = lv1 * 1 + lv20 * 6 + lv100 * 50
       this.spawnCoins(true, coinCount)
     }, second)
   }
