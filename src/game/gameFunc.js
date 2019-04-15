@@ -1,5 +1,5 @@
 import { canvasObjAreaSpec } from './gameConfig'
-import { drawStaticImg } from './gameLib'
+import { drawStaticImg, myGroupObjs } from './gameLib'
 
 
 export const getMultiAction = (times, fn) => {
@@ -13,7 +13,7 @@ export const checkCollideWithPoint = (point={x: 0, y: 0}, collideObj={x: 0, y: 0
       return true
   } return false
 }
-export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id=10) => {
+export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id=10, cloneId=0, allCloneAction=false) => {
   for (let i = 0; i < allCollideObjs.length; i++) {
     const thisCollide = allCollideObjs[i]
     const collideSpec = {
@@ -23,9 +23,16 @@ export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id
       h: thisCollide.OBJ.h,
     }
     if(checkCollideWithPoint(tapPos, collideSpec)) {
-      console.log(allCollideObjs[i].id)
-      // this.destroyObj(thisCoin.id)
-      if(allCollideObjs[i].id === id) {
+      // console.log(thisCollide.id)
+
+      if(thisCollide.OBJ.groupObjs) {
+        return checkAllCollideWithId({x: tapPos.x, y: tapPos.y}, thisCollide.OBJ.groupObjs, id, cloneId, allCloneAction)
+      }
+      if(cloneId !== 0) {
+        if(allCollideObjs[i].id === id && allCloneAction && allCollideObjs[i].cloneId === cloneId) {
+          return true
+        }
+      } else if(allCollideObjs[i].id === id){
         return true
       }
     }
@@ -42,6 +49,15 @@ export const getCanvasComponent = (id=0, canvas, imgSrc='', spec=[0, 0, 0, 0], d
     x: spec[2], 
     y: spec[3],
     imgRatio: ratio,
+  })
+})
+export const getCanvasGroup = (id='', spec=[0, 0], drawGroupClass=myGroupObjs, groupObjs=[]) => ({
+  id,
+  cloneId: 0,
+  OBJ: new drawGroupClass({
+    x: spec[0],
+    y: spec[1],
+    groupObjs: groupObjs,
   })
 })
 export const getCanvasRandPos = (canvasObjAreaSpec, Obj, x=0, y=0) => ({
@@ -72,7 +88,7 @@ export const destroyObj = (gameInstanceLayer, id='', cloneId=0) => {
   return (originObj.filter(o => !(o.id === id && o.cloneId === cloneId) ))
 }
 
-export const getTap = (e, canvas, layer, id, actionFn) => {
+export const getTap = (e, canvas, layer, id, cloneId=0, actionFn, allCloneAction=false) => {
   const tapX = e.targetTouches ? e.targetTouches[0].clientX : e.clientX
   const tapY = e.targetTouches ? e.targetTouches[0].clientY : e.clientY
   const posX = tapX - canvas.getBoundingClientRect().left 
@@ -80,7 +96,8 @@ export const getTap = (e, canvas, layer, id, actionFn) => {
   const tapPos = {
     x: posX, y: posY
   }
-  if(checkAllCollideWithId(tapPos, layer.layerObjs, id)) {
+  if(checkAllCollideWithId(tapPos, layer.layerObjs, id, cloneId, allCloneAction)) {
     actionFn()
+    console.log('tap')
   }
 }

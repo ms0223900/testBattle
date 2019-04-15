@@ -7,3 +7,9 @@ export const backgroundImage = 'https://visme.co/blog/wp-content/uploads/2017/07
 
 export const testUIbuttonImage = 'https://cdn4.iconfinder.com/data/icons/game-ui-pack-02/500/play-512.png'
 export const HATs = ['http://www.pngpix.com/wp-content/uploads/2016/07/PNGPIX-COM-Hat-PNG-Transparent-Image-500x377.png', 'http://www.pngpix.com/wp-content/uploads/2016/11/PNGPIX-COM-Hat-PNG-Transparent-Image--500x248.png', 'http://www.pngpix.com/wp-content/uploads/2016/07/PNGPIX-COM-Cowboy-Hat-PNG-Transparent-Image-250x187.png']
+
+export const alertTest = 'https://docs.scandit.com/flow/mobile-api/assets/ui_alert_ios.png'
+export const ICON = {
+  OKIcon: 'https://cdn1.iconfinder.com/data/icons/color-bold-style/21/34-512.png',
+  cancelIcon: 'https://cdn0.iconfinder.com/data/icons/social-messaging-ui-color-shapes/128/close-circle-red-512.png',
+}

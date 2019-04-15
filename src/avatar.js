@@ -8,6 +8,8 @@ import {
   moneyBag,
   moneyUIwithText,
   idleGame,
+  alertUI,
+  cancelIcon
  } from './game/gameComponent'
 import { 
   getMultiAction,
@@ -57,7 +59,7 @@ export default class Game extends React.PureComponent {
   }
   purchaseCoinUprade = (price) => {
     const { coinGenState } = this.state
-    if(window.confirm('Are you sure buying the upgrade? (cost 10000)')) {
+    // if(window.confirm('Are you sure buying the upgrade? (cost 10000)')) {
       this.props.buy(price)
       this.setState({
         coinGenState: {
@@ -68,12 +70,14 @@ export default class Game extends React.PureComponent {
       this.myGameTest.spawnObjToLayer({
         layer: 'ObjLayer', 
         objFn: moneyBag, 
-        rand: { useRandom: true, y: 120 },
+        pos: { useRandom: true, y: 120 },
         objFnParas: [20, 20],
         selfDestroy: false,
+        isUI: false,
       })
       this.myGameTest.updateStateNum('UILayer', 2001, 'text', 1)
-    }
+      this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
+    // }
   }
   spawnCoins = (selfDestroy=false, coinCount=1) => {
     const { setCoin } = this.props
@@ -82,7 +86,7 @@ export default class Game extends React.PureComponent {
     this.myGameTest.spawnObjToLayer({
       layer: 'ObjLayer', 
       objFn: moneyUIwithText, 
-      rand: { useRandom: true },
+      pos: { useRandom: true },
       objFnParas: [coinCount],
       selfDestroy: true,
     })
@@ -101,14 +105,26 @@ export default class Game extends React.PureComponent {
     const layer = this.myGameTest.myLayers.UILayer
     const times20Coin = () => getMultiAction(20, this.spawnCoins.bind(this, true, 20))
 
-    getTap(e, canvas, layer, 'testButton', this.spawnCoins.bind(this, true))
-    getTap(e, canvas, layer, 'moneyBag', () => {
-      // times20Coin()
+    getTap(e, canvas, layer, 'testButton',  0, this.spawnCoins.bind(this, true))
+    getTap(e, canvas, layer, 'moneyBag', 0, () => {
+      // this.purchaseCoinUprade(10000)
+      this.myGameTest.spawnObjToLayer({
+        layer: 'UILayer', 
+        objFn: alertUI, 
+        pos: { useRandom: false, x: 100, y: 120 },
+      })
+    })
+    
+    getTap(e, canvas, this.myGameTest.myLayers.ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
+    getTap(e, canvas, layer, 'OKIcon', 0, () => {
       this.purchaseCoinUprade(10000)
+    })
+    getTap(e, canvas, layer, 'cancelIcon', 0, () => {
+      this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
     })
   }
 
-
+  
   _handleChangeHat = (e) => {
     const imgSrc = e.target.getAttribute('src')
     this.myGameTest.obj[0].OBJ = this.setHat(imgSrc)
@@ -117,6 +133,9 @@ export default class Game extends React.PureComponent {
     this.setState(state => ({
       gameOpen: !state.gameOpen
     }))
+  }
+  setMouseCursor= (e) => {
+    this.myGameTest.setMouseCursor(e, ['OKIcon', 'cancelIcon', 'moneyBag'])
   }
   render() {
     const { gameOpen } = this.state
@@ -137,9 +156,10 @@ export default class Game extends React.PureComponent {
               ref={this.setCanvas} 
               width={ canvasSpec.width } 
               height={ canvasSpec.height } 
+              onMouseMove={this.setMouseCursor}
               onTouchStart={(e) => this.tap(e, this.canvas)} 
               onMouseDown={(e) => this.tap(e, this.canvas)} />
-            <button onClick={this.spawnCoins}>Coin + 1</button>
+            {/* <button onClick={this.spawnCoins}>Coin + 1</button> */}
             {/* <div>
               {HATs.map(hat => (
                 <img key={hat} src={hat} style={{ width: '100px' }} onClick={this._handleChangeHat} />
