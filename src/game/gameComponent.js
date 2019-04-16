@@ -15,7 +15,8 @@ import {
   getCanvasComponent, 
   destroyObj, 
   getCanvasGroup, 
-  getTap
+  getTap,
+  getBreakComponent,
 } from './gameFunc'
 import { 
   bigCoin,
@@ -38,6 +39,7 @@ export class drawUIText {
     this.textConfig = textConfig
     this.text = text
     this.breakText = null
+    this.fontSize = 18
     this.x = x
     this.y = y
     this.containerWidth = containerWidth
@@ -48,30 +50,17 @@ export class drawUIText {
     const textSplit = this.text.split(' ')
     const txtSplitWidth = textSplit.map(t => t = this.ctx.measureText(t).width)
     console.log(txtSplitWidth)
-    let resultBreakText = []
-    let txtI = 0
-    let resultTxtI = 0
-    const addText = (prevTxtArr, newTxt) => {
-      prevTxtArr = prevTxtArr + ' ' + newTxt
-    }
-    while(txtI < textSplit.length) {
-      if(txtSplitWidth[txtI] + txtSplitWidth[txtI + 1] < this.containerWidth) {
-        addText(resultBreakText[resultTxtI], textSplit[txtI])
-      } else {
-        resultBreakText[resultTxtI] = txtSplitWidth[txtI]
-        resultTxtI += 1
-      }
-      txtI += 1
-    }
-    console.log(resultBreakText)
-    this.breakText = 'a'
+    this.breakText = getBreakComponent(textSplit, txtSplitWidth, this.containerWidth)
+    console.log(this.breakText)
   }
   render() {
     if(this.breakText === null) {
       this.handleTextBreak()
     }
     this.ctx.font = this.textConfig
-    this.ctx.fillText(this.text, this.x, this.y)
+    for (let i = 0; i < this.breakText.length; i++) {
+      this.ctx.fillText(this.breakText[i], this.x, this.y + (this.fontSize * this.lineHeight) * i)
+    }
   }
 }
 export class countUIText extends drawUIText {

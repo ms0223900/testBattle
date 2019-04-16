@@ -12,6 +12,9 @@ import {
   getNoSameArr,
   convertSecToMin,
  } from '../src/functions'
+import { 
+  getBreakComponent,
+} from '../src/game/gameFunc'
 
 describe('test functions', () => {
   it('test set value function', () => {
@@ -127,6 +130,12 @@ describe('test functions', () => {
   })
   it('test convert seconds to minutes and seconds array function', () => {
     expect(convertSecToMin(100)).toEqual(['01', '40'])
+  })
+  it('test break text fn', () => {
+    const textMock = ['a', 'b', 'c', 'dddd', 'e', 'f']
+    const width = [20, 100, 30, 40, 40, 20]
+    const containerWidth = 100
+    expect(getBreakComponent(textMock, width, containerWidth)).toEqual(['a b', 'c dddd e', 'f'])
   })
 })
  
