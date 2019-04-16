@@ -101,3 +101,11 @@ export const getTap = (e, canvas, layer, id, cloneId=0, actionFn, allCloneAction
     console.log('tap')
   }
 }
+// export const getBreakText = (canvas, textConfig, text='Hi', lineHeight=1.2, containerWidth=100) => {
+//   const ctx = canvas.getContext('2d')
+//   ctx.font = textConfig
+//   const textSplit = text.split(' ')
+//   for (let i = 0; i < textSplit.length; i++) {
+//     console.log(textSplit[i], this.ctx.measureText(textSplit[i]).width)
+//   }
+// }

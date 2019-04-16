@@ -1,6 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { setValueOfArrObj } from '../functions'
-import { initGameConfig, canvasSpec, canvasObjAreaSpec } from './gameConfig'
+import { initGameConfig, 
+  canvasSpec, 
+  canvasObjAreaSpec,
+  styleConfig, 
+} from './gameConfig'
 import { drawStaticImg, 
   drawSpriteImg, 
   actionUpObj, 
@@ -22,20 +26,50 @@ import {
   alertTest,
   ICON
  } from './gameObj'
+const { fontStyle } = styleConfig
 
 
-export const drawUIRect = () => {
 
-}
+
+
 export class drawUIText {
-  constructor(canvas, textConfig, text='Hi', x=0, y=0) {
+  constructor({canvas, x=0, y=0, textConfig, text='Hi', lineHeight=1.2, containerWidth=100}) {
     this.ctx = canvas.getContext('2d')
     this.textConfig = textConfig
     this.text = text
+    this.breakText = null
     this.x = x
     this.y = y
+    this.containerWidth = containerWidth
+    this.lineHeight = lineHeight
+  }
+  handleTextBreak() {
+    this.ctx.font = this.textConfig
+    const textSplit = this.text.split(' ')
+    const txtSplitWidth = textSplit.map(t => t = this.ctx.measureText(t).width)
+    console.log(txtSplitWidth)
+    let resultBreakText = []
+    let txtI = 0
+    let resultTxtI = 0
+    const addText = (prevTxtArr, newTxt) => {
+      prevTxtArr = prevTxtArr + ' ' + newTxt
+    }
+    while(txtI < textSplit.length) {
+      if(txtSplitWidth[txtI] + txtSplitWidth[txtI + 1] < this.containerWidth) {
+        addText(resultBreakText[resultTxtI], textSplit[txtI])
+      } else {
+        resultBreakText[resultTxtI] = txtSplitWidth[txtI]
+        resultTxtI += 1
+      }
+      txtI += 1
+    }
+    console.log(resultBreakText)
+    this.breakText = 'a'
   }
   render() {
+    if(this.breakText === null) {
+      this.handleTextBreak()
+    }
     this.ctx.font = this.textConfig
     this.ctx.fillText(this.text, this.x, this.y)
   }
@@ -212,7 +246,11 @@ export const moneys = (canvas, x=0, y=0) => (
 )
 export const countNum = (canvas, x=0, y=0, num=10) => ({
   id: 2001,
-  OBJ: new countUIText(canvas, '18px Arial', num, x, y)
+  OBJ: new countUIText({
+    canvas, x, y,
+    textConfig: fontStyle.sSize,
+    text: num
+  })
 })
 export const upCoin = (canvas, x=0, y=0) => (
   getCanvasComponent('upCoin', canvas, bigCoin, [1000, 100, x, y], actionUpObj)
@@ -235,11 +273,19 @@ export const cancelIcon = (cv, x=0, y=0) => (
 
 export const ShoppingList = (canvas, x=0, y=0) => ({
   id: 3000,
-  OBJ: new drawUIText(canvas, '18px Arial', 'ShoppingList', x, y)
+  OBJ: new drawUIText({
+    canvas, x, y,
+    textConfig: fontStyle.mSize,
+    text: 'Shop ping List lab', 
+  })
 })
 export const alertPurchase = (canvas, x=0, y=0) => ({
   id: 'alertPurchase',
-  OBJ: new drawUIText(canvas, '18px Arial', 'Are you sure upgrading? (cost 10000)', x, y)
+  OBJ: new drawUIText({
+    canvas, x, y,
+    textConfig: fontStyle.mSize, 
+    text: 'Are you sure upgrading? (cost 10000)'
+  })
 })
 
 export const moneyUIwithText = (cv, x, y, num=1) => ({

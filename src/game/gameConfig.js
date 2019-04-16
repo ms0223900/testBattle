@@ -3,6 +3,13 @@ export const initGameConfig = [
 
 ]
 
+
+export const styleConfig = {
+  fontStyle: {
+    sSize: '12px Arial',
+    mSize: '18px Arial'
+  }
+}
 export const canvasSpec = {
   width: 300,
   height: 300,
