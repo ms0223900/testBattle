@@ -209,7 +209,10 @@ export class myGame {
     const layers = this.myLayers
     for (let i = 0; i < layerNames.length; i++) {
       for (let j = 0; j < IDs.length; j++) {
-        getTap(e, this.canvas, layers[layerNames[i]], IDs[j], 0, setPointer, true)
+        const tapAct = getTap(e, this.canvas, layers[layerNames[i]], IDs[j], 0, setPointer, true)
+        if(tapAct !== false) {
+          tapAct()
+        }
       } 
     }
   }

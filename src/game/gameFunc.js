@@ -97,9 +97,10 @@ export const getTap = (e, canvas, layer, id, cloneId=0, actionFn, allCloneAction
     x: posX, y: posY
   }
   if(checkAllCollideWithId(tapPos, layer.layerObjs, id, cloneId, allCloneAction)) {
-    actionFn()
     console.log('tap')
+    return actionFn
   }
+  return false
 }
 export const getBreakComponent = (textArr=[], textWidthArr=[], containerWidth=100) => {
   let i = 0, j = 0

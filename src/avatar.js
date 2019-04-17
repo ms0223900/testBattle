@@ -102,38 +102,45 @@ export default class Game extends React.PureComponent {
 
 
   tap = (e, canvas) => {
-    const layer = this.myGameTest.myLayers.UILayer
+    const UIlayer = this.myGameTest.myLayers.UILayer
+    const ObjLayer = this.myGameTest.myLayers.ObjLayer
     const times20Coin = () => getMultiAction(20, this.spawnCoins.bind(this, true, 20))
     const detectLayerId = (layerName, id) => (layerName.layerObjs.map(obj => obj = obj.id).indexOf(id) !== -1)
-
-    // switch (detectLayerId(layer, id)) {
-    //   case id === 'alertUI':
-        
-    //     break;
-    
-    //   default:
-    //     break;
-    // }
-    if(detectLayerId(layer, 'alertUI')) {
-      getTap(e, canvas, layer, 'OKIcon', 0, () => {
-        this.purchaseCoinUprade(10000)
-      })
-      getTap(e, canvas, layer, 'cancelIcon', 0, () => {
-        this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
-      })
-    } else {
-      getTap(e, canvas, layer, 'testButton',  0, this.spawnCoins.bind(this, true))
-      getTap(e, canvas, layer, 'moneyBag', 0, () => {
-        // this.purchaseCoinUprade(10000)
-        this.myGameTest.spawnObjToLayer({
-          layer: 'UILayer', 
-          objFn: alertUI, 
-          pos: { useRandom: false, x: 100, y: 120 },
-        })
-      })
-      getTap(e, canvas, this.myGameTest.myLayers.ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
-      getTap(e, canvas, this.myGameTest.myLayers.ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
+    let tapActions = []
+    const addTapAction = (layer, id, cloneId, fn) => {
+      tapActions = [...tapActions, getTap(e, canvas, layer, id, cloneId, fn)]
     }
+
+    addTapAction(UIlayer, 'OKIcon', 0, () => {
+      this.purchaseCoinUprade(10000)
+    })
+    addTapAction(UIlayer, 'cancelIcon', 0, () => {
+      this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
+    })
+    addTapAction(UIlayer, 'alertTest', 0, () => {})
+    addTapAction(UIlayer, 'testButton',  0, this.spawnCoins.bind(this, true))
+    addTapAction(UIlayer, 'moneyBag', 0, () => {
+      // this.purchaseCoinUprade(10000)
+      this.myGameTest.spawnObjToLayer({
+        layer: 'UILayer', 
+        objFn: alertUI, 
+        pos: { useRandom: false, x: 100, y: 120 },
+      })
+    })
+    addTapAction(ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
+    addTapAction(ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
+
+    for (let i = 0; i < tapActions.length; i++) {
+      if(tapActions[i] !== false) {
+        tapActions[i]()
+        break
+      }
+    }
+    // if(detectLayerId(layer, 'alertUI')) {
+      
+    // } else {
+      
+    // }
     
   }
 
