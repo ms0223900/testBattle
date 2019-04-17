@@ -104,24 +104,37 @@ export default class Game extends React.PureComponent {
   tap = (e, canvas) => {
     const layer = this.myGameTest.myLayers.UILayer
     const times20Coin = () => getMultiAction(20, this.spawnCoins.bind(this, true, 20))
+    const detectLayerId = (layerName, id) => (layerName.layerObjs.map(obj => obj = obj.id).indexOf(id) !== -1)
 
-    getTap(e, canvas, layer, 'testButton',  0, this.spawnCoins.bind(this, true))
-    getTap(e, canvas, layer, 'moneyBag', 0, () => {
-      // this.purchaseCoinUprade(10000)
-      this.myGameTest.spawnObjToLayer({
-        layer: 'UILayer', 
-        objFn: alertUI, 
-        pos: { useRandom: false, x: 100, y: 120 },
-      })
-    })
+    // switch (detectLayerId(layer, id)) {
+    //   case id === 'alertUI':
+        
+    //     break;
     
-    getTap(e, canvas, this.myGameTest.myLayers.ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
-    getTap(e, canvas, layer, 'OKIcon', 0, () => {
-      this.purchaseCoinUprade(10000)
-    })
-    getTap(e, canvas, layer, 'cancelIcon', 0, () => {
-      this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
-    })
+    //   default:
+    //     break;
+    // }
+    if(detectLayerId(layer, 'alertUI')) {
+      getTap(e, canvas, layer, 'OKIcon', 0, () => {
+        this.purchaseCoinUprade(10000)
+      })
+      getTap(e, canvas, layer, 'cancelIcon', 0, () => {
+        this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
+      })
+    } else {
+      getTap(e, canvas, layer, 'testButton',  0, this.spawnCoins.bind(this, true))
+      getTap(e, canvas, layer, 'moneyBag', 0, () => {
+        // this.purchaseCoinUprade(10000)
+        this.myGameTest.spawnObjToLayer({
+          layer: 'UILayer', 
+          objFn: alertUI, 
+          pos: { useRandom: false, x: 100, y: 120 },
+        })
+      })
+      getTap(e, canvas, this.myGameTest.myLayers.ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
+      getTap(e, canvas, this.myGameTest.myLayers.ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
+    }
+    
   }
 
   

@@ -11,10 +11,10 @@ export const styleConfig = {
   }
 }
 export const canvasSpec = {
-  width: 300,
-  height: 300,
+  width: 360,
+  height: 640,
 }
 export const canvasObjAreaSpec = {
-  width: 300,
-  height: 200,
+  width: 360,
+  height: 540,
 }

@@ -248,7 +248,7 @@ export const Coin = (canvas, x=0, y=0) => (
   getCanvasComponent(1, canvas, bigCoin, [1000, 100, x, y], drawSpriteImg, 0.4)
 )
 export const backTest = (canvas) => (
-  getCanvasComponent(-1000, canvas, backgroundImage, [300, 200, 0, 0])
+  getCanvasComponent(-1000, canvas, backgroundImage, [canvasObjAreaSpec.width, canvasObjAreaSpec.height, 0, 0])
 )
 export const alert = (cv, x=0, y=0) => (
   getCanvasComponent('alertTest', cv, alertTest, [200, 100, x, y], drawStaticImg)
@@ -325,3 +325,4 @@ export const idleGame = (canvas) => (
   new myGame(canvas, allLayer(canvas))
 )
 
+// const a = 0
