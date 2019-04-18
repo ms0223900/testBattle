@@ -58,10 +58,30 @@ export default class Game extends React.PureComponent {
 
     this.addCoin(coinGenarateSpeed)
 
+    let iCount = 0
+    setInterval(() => {
+      iCount++
+      if(iCount < 10) {
+        this.myGameTest
+        .setIdActions('ObjLayer', 'userCharacter', {
+          fn: 'moveByNum', parameters: [1, 1]
+        })
+        .setIdActions('ObjLayer', 'userCharacter', {
+          fn: 'changeStatus', parameters: ['another']
+        })
+      } else if(iCount >= 10 && iCount < 19) {
+        this.myGameTest
+        .setIdActions('ObjLayer', 'userCharacter', {
+          fn: 'changeStatus', parameters: ['origin']
+        })
+      } else {
+        iCount = 0
+      }
+    }, 10)
     document.addEventListener('keydown', (e) => {
       this.myGameTest
         .setIdActions('ObjLayer', 'userCharacter', {
-          fn: 'move', parameters: [e]
+          fn: 'moveByUser', parameters: [e]
         })
         .setIdActions('ObjLayer', 'userCharacter', {
           fn: 'changeStatus', parameters: ['another']
@@ -103,6 +123,7 @@ export default class Game extends React.PureComponent {
     const { setCoin } = this.props
     setCoin(coinCount)
 
+    console.log(this.myGameTest.myLayers.ObjLayer)
     this.myGameTest.spawnObjToLayer({
       layer: 'ObjLayer', 
       objFn: moneyUIwithText, 

@@ -334,7 +334,7 @@ export const UILayer = (cv, {...nums}) => (
 )
 export const ObjLayer = (cv) => (
   new myLayer(
-    userCharacter(cv, 180, 180)
+    userCharacter(cv, 120, 120)
   )
 )
 export const BackLayer = (cv) => (

@@ -123,3 +123,20 @@ export const getBreakComponent = (textArr=[], textWidthArr=[], containerWidth=10
   }
   return resBreak
 }
+export const checkCollideWithWalls = (w, h, x, y, wallW, wallH) => {
+  const objSpec = {
+    t: y, r: x + w, b: y + h, l: x
+  }
+  if(objSpec.t < 0 || objSpec.r > wallW || objSpec.b > wallH || objSpec.l < 0) {
+    if(objSpec.t < 0) {
+      return 'top'
+    } else if(objSpec.r > wallW) {
+      return 'right'
+    } else if(objSpec.b > wallH) {
+      return 'bottom'
+    } else {
+      return 'left'
+    }
+  }
+  return false
+}

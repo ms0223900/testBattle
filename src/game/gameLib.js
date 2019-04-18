@@ -1,3 +1,6 @@
+import { checkCollideWithWalls } from './gameFunc'
+import { canvasSpec } from './gameConfig'
+
 
 export class drawStaticImg {
   constructor({canvas, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[]}) {
@@ -11,6 +14,7 @@ export class drawStaticImg {
     this.x = x
     this.y = y
     this.speed = 2
+    this.dir = true
     this.w = this.width
     this.h = this.height
     this.status = [
@@ -21,11 +25,25 @@ export class drawStaticImg {
       ...status
     ]
   }
-  move(e) {
-    const distanceX = [-1, 0, 1, 0][e.keyCode - 37] * this.speed
-    const distanceY = [0, -1, 0, 1][e.keyCode - 37] * this.speed
-    this.x += distanceX
-    this.y += distanceY
+  moveByUser(e) {
+    if(e.keyCode - 37 >= 0 && e.keyCode - 37 <=3) {
+      const distanceX = [-1, 0, 1, 0][e.keyCode - 37] * this.speed
+      const distanceY = [0, -1, 0, 1][e.keyCode - 37] * this.speed
+      this.x += distanceX
+      this.y += distanceY
+    }
+  }
+  moveByNum(x, y) {
+    const collideRes = checkCollideWithWalls(this.w, this.h, this.x, this.y, canvasSpec.width, canvasSpec.height)
+    // if(checkCollideWithWalls(this.w, this.h, this.x, this.y, canvasSpec.width, canvasSpec.height)) {
+    //   this.dir = false
+    //   this.x -= x * this.speed
+    //   this.y -= y * this.speed
+    // } 
+    const distX = collideRes === 'right' || collideRes ===  'left' ? -x : x
+    const distY = collideRes === 'top' || collideRes ===  'bottom' ? -y : y
+    this.x += distX * this.speed
+    this.y += distY * this.speed
   }
   addStatus(statusName, imgSrc) {
     this.status = [
