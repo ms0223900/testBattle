@@ -25,7 +25,9 @@ import {
   HATs,
   backgroundImage,
   alertTest,
-  ICON
+  ICON,
+  ICON2,
+  character,
  } from './gameObj'
 const { fontStyle } = styleConfig
 
@@ -120,6 +122,7 @@ export class myGame {
     this.myLayers.UILayer
     this.testNum = 0
     this.dir = true
+    this.setIdActions = this.setIdActions.bind(this)
   }
   init() {
     'use strict'
@@ -187,7 +190,7 @@ export class myGame {
         OBJ: newPosObj.OBJ,
       }
     ]
-    console.log(gameLayer.layerObjs)
+    // console.log(gameLayer.layerObjs)
     if(selfDestroy) {
       setTimeout(() => {
         this.setLayerObjs(layer, destroyObj(gameLayer, newPosObj.id, newCloneId))
@@ -216,6 +219,10 @@ export class myGame {
       } 
     }
   }
+  setIdActions(layer, id, { fn: actionFn, parameters: [...paras] }) {
+    this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ[actionFn](...paras)
+    return this
+  }
   render() {
     this.ctx.clearRect(0, 0, canvasSpec.width, canvasSpec.height)
     const layerNames = ['BackLayer', 'ObjLayer', 'UILayer'] 
@@ -228,7 +235,22 @@ export class myGame {
 
 //components
 export const testButton = (canvas, x=0, y=0) => (
-  getCanvasComponent('testButton', canvas, testUIbuttonImage, [30, 30, x, y], drawStaticImg)
+  getCanvasComponent('testButton', canvas, testUIbuttonImage, [30, 30, x, y], drawStaticImg, 1, [
+    {
+      statusName: 'another',
+      img: ICON2,
+    }
+  ])
+)
+// testButton.OBJ.addState('another', ICON2)
+
+export const userCharacter = (canvas, x=0, y=0) => (
+  getCanvasComponent('userCharacter', canvas, character, [120, 120, x, y], drawStaticImg, 0.8, [
+    {
+      statusName: 'another',
+      img: ICON2,
+    }
+  ])
 )
 export const moneyBag = (canvas, x=0, y=0) => (
   getCanvasComponent('moneyBag', canvas, coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
@@ -301,21 +323,22 @@ export const alertUI = (cv, x, y) => getCanvasGroup('alertUI', [x, y], myGroupOb
 ])
 
 //layers
-export const UILayer = (canvas, {...nums}) => (
+export const UILayer = (cv, {...nums}) => (
   new myLayer(
-    ShoppingList(canvas, 10, 220),
-    testButton(canvas),
-    moneyBag(canvas, 0, 220),
-    countNum(canvas, 70, 280, nums.moneyBagCount,),
-    moneys(canvas),
-    // alertUI(canvas, 20, 20)
+    ShoppingList(cv, 10, 220),
+    testButton(cv),
+    moneyBag(cv, 0, 220),
+    countNum(cv, 70, 280, nums.moneyBagCount,),
+    // userCharacter(cv, 120, 120)
   )
 )
-export const ObjLayer = (canvas) => (
-  new myLayer()
+export const ObjLayer = (cv) => (
+  new myLayer(
+    userCharacter(cv, 180, 180)
+  )
 )
-export const BackLayer = (canvas) => (
-  new myLayer(backTest(canvas))
+export const BackLayer = (cv) => (
+  new myLayer(backTest(cv))
 )
 
 //init game

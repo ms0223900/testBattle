@@ -1,6 +1,6 @@
 
 export class drawStaticImg {
-  constructor({canvas, imgSrc, width, height, x=0, y=0, imgRatio=1}) {
+  constructor({canvas, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[]}) {
     this.ctx = canvas.getContext('2d')
     this.imgSrc = imgSrc
     this.image = new Image()
@@ -10,8 +10,37 @@ export class drawStaticImg {
     this.height = height * this.imgRatio,
     this.x = x
     this.y = y
+    this.speed = 2
     this.w = this.width
     this.h = this.height
+    this.status = [
+      {
+        statusName: 'origin',
+        img: this.imgSrc
+      },
+      ...status
+    ]
+  }
+  move(e) {
+    const distanceX = [-1, 0, 1, 0][e.keyCode - 37] * this.speed
+    const distanceY = [0, -1, 0, 1][e.keyCode - 37] * this.speed
+    this.x += distanceX
+    this.y += distanceY
+  }
+  addStatus(statusName, imgSrc) {
+    this.status = [
+      ...this.status,
+      {
+        statusName: statusName,
+        img: imgSrc,
+      }
+    ]
+  }
+  changeStatus(statusName) {
+    const IMG = this.status.filter(s => s.statusName === statusName)
+    if(IMG.length > 0) {
+      this.image.src = IMG[0].img
+    }
   }
   draw() {
     this.ctx.globalAlpha = 1

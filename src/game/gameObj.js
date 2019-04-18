@@ -13,3 +13,5 @@ export const ICON = {
   OKIcon: 'https://cdn1.iconfinder.com/data/icons/color-bold-style/21/34-512.png',
   cancelIcon: 'https://cdn0.iconfinder.com/data/icons/social-messaging-ui-color-shapes/128/close-circle-red-512.png',
 }
+export const ICON2 = 'https://png.pngtree.com/element_our/md/20180515/md_5afb099d007c6.jpg'
+export const character = 'https://images-na.ssl-images-amazon.com/images/I/51Wpjypba1L._SX425_.jpg'

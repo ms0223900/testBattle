@@ -38,7 +38,7 @@ export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id
     }
   }
 }
-export const getCanvasComponent = (id=0, canvas, imgSrc='', spec=[0, 0, 0, 0], drawClass=drawStaticImg, ratio=1) => ({
+export const getCanvasComponent = (id=0, canvas, imgSrc='', spec=[0, 0, 0, 0], drawClass=drawStaticImg, ratio=1, status=[]) => ({
   id,
   cloneId: 0,
   OBJ: new drawClass({
@@ -49,6 +49,7 @@ export const getCanvasComponent = (id=0, canvas, imgSrc='', spec=[0, 0, 0, 0], d
     x: spec[2], 
     y: spec[3],
     imgRatio: ratio,
+    status,
   })
 })
 export const getCanvasGroup = (id='', spec=[0, 0], drawGroupClass=myGroupObjs, groupObjs=[]) => ({

@@ -5,6 +5,7 @@ import { canvasSpec } from './game/gameConfig'
 import { 
   myUI, 
   upCoin,
+  testButton,  
   moneyBag,
   moneyUIwithText,
   idleGame,
@@ -56,6 +57,25 @@ export default class Game extends React.PureComponent {
     })
 
     this.addCoin(coinGenarateSpeed)
+
+    document.addEventListener('keydown', (e) => {
+      this.myGameTest
+        .setIdActions('ObjLayer', 'userCharacter', {
+          fn: 'move', parameters: [e]
+        })
+        .setIdActions('ObjLayer', 'userCharacter', {
+          fn: 'changeStatus', parameters: ['another']
+        })
+    })
+    document.addEventListener('keyup', (e) => {
+      this.myGameTest
+        .setIdActions('ObjLayer', 'userCharacter', {
+          fn: 'changeStatus', parameters: ['origin']
+        })
+    })
+    // document.addEventListener('keyup', this.myGameTest.setIdActions('UILayer', 'move', {
+    //   fn: 'changeStatus', parameters: []
+    // }))
   }
   purchaseCoinUprade = (price) => {
     const { coinGenState } = this.state
@@ -118,7 +138,12 @@ export default class Game extends React.PureComponent {
       this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
     })
     addTapAction(UIlayer, 'alertTest', 0, () => {})
-    addTapAction(UIlayer, 'testButton',  0, this.spawnCoins.bind(this, true))
+    addTapAction(UIlayer, 'testButton',  0, () => {
+      console.log(UIlayer.layerObjs)
+      this.myGameTest.setIdActions('UILayer', 'testButton', {
+          fn: 'changeStatus', parameters: ['another']
+        })
+    })
     addTapAction(UIlayer, 'moneyBag', 0, () => {
       // this.purchaseCoinUprade(10000)
       this.myGameTest.spawnObjToLayer({
@@ -136,12 +161,6 @@ export default class Game extends React.PureComponent {
         break
       }
     }
-    // if(detectLayerId(layer, 'alertUI')) {
-      
-    // } else {
-      
-    // }
-    
   }
 
   
@@ -155,7 +174,7 @@ export default class Game extends React.PureComponent {
     }))
   }
   setMouseCursor= (e) => {
-    this.myGameTest.setMouseCursor(e, ['OKIcon', 'cancelIcon', 'moneyBag'])
+    this.myGameTest.setMouseCursor(e, ['OKIcon', 'cancelIcon', 'moneyBag', 'testButton'])
   }
   render() {
     const { gameOpen } = this.state
@@ -176,6 +195,7 @@ export default class Game extends React.PureComponent {
               ref={this.setCanvas} 
               width={ canvasSpec.width } 
               height={ canvasSpec.height } 
+              onKeyDown={ this._handleMove }
               onMouseMove={this.setMouseCursor}
               onTouchStart={(e) => this.tap(e, this.canvas)} 
               onMouseDown={(e) => this.tap(e, this.canvas)} />
