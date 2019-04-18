@@ -77,7 +77,7 @@ export default class Game extends React.PureComponent {
       } else {
         iCount = 0
       }
-    }, 10)
+    }, 100)
     document.addEventListener('keydown', (e) => {
       this.myGameTest
         .setIdActions('ObjLayer', 'userCharacter', {
