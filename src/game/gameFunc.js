@@ -8,6 +8,7 @@ export const getMultiAction = (times, fn) => {
   }
 }
 export const checkCollideWithPoint = (point={x: 0, y: 0}, collideObj={x: 0, y: 0, w: 0, h: 0}) => {
+  // console.log(collideObj)
   if(point.x < collideObj.x + collideObj.w && point.x > collideObj.x && 
     point.y < collideObj.y + collideObj.h && point.y > collideObj.y) {
       return true
@@ -22,6 +23,7 @@ export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id
       w: thisCollide.OBJ.w,
       h: thisCollide.OBJ.h,
     }
+    // console.log(id, tapPos, collideSpec)
     if(checkCollideWithPoint(tapPos, collideSpec)) {
       // console.log(thisCollide.id)
 
@@ -38,7 +40,7 @@ export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id
     }
   }
 }
-export const getCanvasComponent = (id=0, canvas, imgSrc='', spec=[0, 0, 0, 0], drawClass=drawStaticImg, ratio=1, status=[]) => ({
+export const getCanvasComponent = (id='', canvas, imgSrc='', spec=[0, 0, 0, 0], drawClass=drawStaticImg, ratio=1, status=[]) => ({
   id,
   cloneId: 0,
   OBJ: new drawClass({
@@ -89,7 +91,7 @@ export const destroyObj = (gameInstanceLayer, id='', cloneId=0) => {
   return (originObj.filter(o => !(o.id === id && o.cloneId === cloneId) ))
 }
 
-export const getTap = (e, canvas, layer, id, cloneId=0, actionFn, allCloneAction=false) => {
+export const getTap = (e, canvas, layerInstanse, id, cloneId=0, actionFn, allCloneAction=false) => {
   const tapX = e.targetTouches ? e.targetTouches[0].clientX : e.clientX
   const tapY = e.targetTouches ? e.targetTouches[0].clientY : e.clientY
   const posX = tapX - canvas.getBoundingClientRect().left 
@@ -97,9 +99,12 @@ export const getTap = (e, canvas, layer, id, cloneId=0, actionFn, allCloneAction
   const tapPos = {
     x: posX, y: posY
   }
-  if(checkAllCollideWithId(tapPos, layer.layerObjs, id, cloneId, allCloneAction)) {
-    console.log('tap')
-    return actionFn
+  const getTapObj = getLayerObjByIdCloneId(layerInstanse.layerObjs, id, cloneId, allCloneAction)
+  if(getTapObj && getTapObj.length > 0) {
+    if( getTapObj.map(obj => checkCollideWithPoint(tapPos, obj.OBJ)).indexOf(true) !== -1 ) {
+      console.log(id, cloneId, 'tap')
+      return actionFn
+    }
   }
   return false
 }
@@ -139,4 +144,29 @@ export const checkCollideWithWalls = (w, h, x, y, wallW, wallH) => {
     }
   }
   return false
+}
+export const getLayerObjByIdCloneId = (layerOBJs, id='obj', cloneId=0, allClone=false) => {
+  // console.log(layerOBJs)
+  // let resLayerObjs = []
+  
+  for (let i = 0; i < layerOBJs.length; i++) {
+    // if(allClone) {
+    //   const clonIdObjs = layerOBJs.filter(obj => obj.id === id)
+    //   const res = clonIdObjs && layerOBJs[i].OBJ
+    // }
+    if(layerOBJs[i].OBJ.groupObjs) {
+      const res = getLayerObjByIdCloneId(layerOBJs[i].OBJ.groupObjs, id, cloneId, allClone)
+      if(res) {
+        return res
+      }
+    } else {
+      const checkResult = allClone ? 
+        layerOBJs.filter(obj => obj.id === id) : 
+        layerOBJs.filter(obj => obj.id === id && obj.cloneId === cloneId) 
+      if(checkResult.length > 0) {
+        // console.log(layerOBJs[i])
+        return checkResult
+      }
+    }
+  }
 }

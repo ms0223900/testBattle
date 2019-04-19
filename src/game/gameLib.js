@@ -1,6 +1,39 @@
-import { checkCollideWithWalls } from './gameFunc'
-import { canvasSpec } from './gameConfig'
+import { setValueOfArrObj } from '../functions'
+import { 
+  canvasSpec,
+  initGameConfig, 
+  canvasObjAreaSpec,
+ } from './gameConfig'
+ import { 
+  getCanvasRandPos, 
+  destroyObj, 
+  getTap,
+  checkCollideWithWalls
+} from './gameFunc'
+import * as gameComponents from './gameComponent'
 
+
+export class drawRect {
+  constructor({ canvas, x, y, w, h, fillStyle='transparent', strokeStyle='transparent' }) {
+    this.ctx = canvas.getContext('2d')
+    this.x = x
+    this.y = y
+    this.w = w
+    this.h = h
+    this.fillStyle = fillStyle     
+    this.strokeStyle = strokeStyle        
+  }
+  draw() {
+    this.ctx.rect(this.x, this.y, this.w, this.h)
+    this.ctx.fillStyle = this.fillStyle
+    this.ctx.fill()
+    this.ctx.strokeStyle = this.strokeStyle
+    this.ctx.stroke()
+  }
+  render() {
+    this.draw()
+  }
+}
 
 export class drawStaticImg {
   constructor({canvas, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[]}) {
@@ -74,6 +107,7 @@ export class drawStaticImg {
     this.draw()
   }
 }
+
 export class drawSpriteImg extends drawStaticImg {
   constructor({frameRate=10, imgIndex = 0, imgTick = 0, ...props}) {
     super(props)
@@ -116,6 +150,7 @@ export class drawSpriteImg extends drawStaticImg {
     this.draw()
   }
 }
+
 export class actionUpObj extends drawSpriteImg {
   constructor(props) {
     super(props)
@@ -162,5 +197,134 @@ export class myGroupObjs {
     for (let i = 0; i < this.groupObjs.length; i++) {
       this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render() : this.groupObjs[i].render()
     }
+  }
+}
+
+export class myGame {
+  constructor(canvas, myLayers={}) {
+    this.canvas = canvas
+    this.ctx = canvas.getContext('2d')
+    this.UIstate = {
+      moneyBagCount: 0,
+    }
+    this.myLayers = {
+      BackLayer: myLayers.BackLayer,
+      ObjLayer: myLayers.ObjLayer,
+      UILayer: myLayers.UILayer,
+    }
+    this.myLayers.UILayer
+    this.testNum = 0
+    this.dir = true
+    this.setIdActions = this.setIdActions.bind(this)
+  }
+  init() {
+    'use strict'
+    const originLS = JSON.parse(localStorage.getItem('gameConfig')) || [] 
+    const orginGameSpawnObj = JSON.parse(localStorage.getItem('gameSpawnObjConfig')) || [] 
+    if(originLS.length === 0) {
+      localStorage.setItem('gameConfig', JSON.stringify(initGameConfig))
+    }
+    if(!localStorage.getItem('gameSpawnObjConfig')) {
+      localStorage.setItem('gameSpawnObjConfig', JSON.stringify([]))
+    }
+    for (let i = 0; i < initGameConfig.length; i++) {
+      const { layer, id, objProp, value } = initGameConfig[i]
+      const thatConfig = originLS.filter(or => or.id === id)
+      const setValue = originLS.length > 0 && thatConfig ? thatConfig[0].value : value
+      this.updateStateNum(layer, id, objProp, setValue, true)
+    }
+    for (let i = 0; i < orginGameSpawnObj.length; i++) {
+      this.spawnObjToLayer({
+        layer: 'ObjLayer',
+        objFn: gameComponents[orginGameSpawnObj[i].objFn],
+        pos: { useRandom: false, 
+          x: orginGameSpawnObj[i].pos.x, 
+          y: orginGameSpawnObj[i].pos.y, },
+        isInit: true,
+        i: i,
+        isUI: false,
+      })
+      
+    }
+  }
+  updateStateNum(layer, id, property, num, init=false) {
+    const originObj = this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ
+    const resultVal = init ? num : originObj[property] * 1 + num
+    originObj[property] = resultVal
+
+    const originLS = JSON.parse(localStorage.getItem('gameConfig'))
+    const storeData = setValueOfArrObj(originLS, id, 'value', resultVal)
+    localStorage.setItem('gameConfig', JSON.stringify(storeData))
+  }
+  setLayerObjs(layer, newObjs) {
+    this.myLayers[layer].layerObjs = newObjs
+  }
+  spawnObjToLayer({layer, objFn, pos={ useRandom: true, x: 0, y: 0, }, objFnParas=[], selfDestroy=false, destroyTime=600, isInit=false, isUI=true, i=0, }) {
+    const originLS = JSON.parse(localStorage.getItem('gameSpawnObjConfig'))
+    const gameLayer = this.myLayers[layer]
+    const newObj = objFn(this.canvas, pos.x, pos.y, ...objFnParas)
+    const getRandXY = getCanvasRandPos(canvasObjAreaSpec, newObj, pos.x, pos.y)
+    const newPosObj = pos.useRandom ? objFn(this.canvas, getRandXY.x, getRandXY.y, ...objFnParas) : newObj
+    const newCloneId = originLS.filter(or => or.id === newPosObj.id).length > 0 ? 
+      (originLS.filter(or => or.id === newPosObj.id)[i].cloneId) : 
+      (gameLayer.layerObjs.filter(lo => lo.id === newPosObj.id).length + 1 || 1)
+    // console.log('newCloneId: ', newCloneId)
+    const gameSpawnObjConfigSetting = {
+      id: newPosObj.id,
+      cloneId: newCloneId,
+      pos: { x: getRandXY.x, y: getRandXY.y },
+      objFn: objFn.name,
+    }
+    const newGameSpawnObjConfig = [...originLS, gameSpawnObjConfigSetting]
+
+    gameLayer.layerObjs = [
+      ...gameLayer.layerObjs, 
+      {
+        id: newPosObj.id,
+        cloneId: newCloneId,
+        OBJ: newPosObj.OBJ,
+      }
+    ]
+    // console.log(gameLayer.layerObjs)
+    if(selfDestroy) {
+      setTimeout(() => {
+        this.setLayerObjs(layer, destroyObj(gameLayer, newPosObj.id, newCloneId))
+      }, destroyTime)
+    } else if(!selfDestroy && !isInit && !isUI) {
+      localStorage.setItem('gameSpawnObjConfig', JSON.stringify(newGameSpawnObjConfig))
+    }
+  }
+  removeObjFromLayer(layer='', objId='', cloneId=0) {
+    const gameLayer = this.myLayers[layer]
+    this.setLayerObjs(layer, destroyObj(gameLayer, objId, cloneId))
+  }
+  setMouseCursor(e, IDs=[], ) {
+    if(this.canvas.style.cursor !== 'default') {
+      this.canvas.style.cursor = 'default'
+    }
+    const setPointer = () => this.canvas.style.cursor = 'pointer'
+    const layerNames = ['BackLayer', 'ObjLayer', 'UILayer'] 
+    const layers = this.myLayers
+    for (let i = 0; i < layerNames.length; i++) {
+      for (let j = 0; j < IDs.length; j++) {
+        const tapAct = getTap(e, this.canvas, layers[layerNames[i]], IDs[j], 0, setPointer, true)
+        if(tapAct !== false) {
+          tapAct()
+          // break
+        }
+      } 
+    }
+  }
+  setIdActions(layer, id, { fn: actionFn, parameters: [...paras] }) {
+    this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ[actionFn](...paras)
+    return this
+  }
+  render() {
+    this.ctx.clearRect(0, 0, canvasSpec.width, canvasSpec.height)
+    const layerNames = ['BackLayer', 'ObjLayer', 'UILayer'] 
+    for (let i = 0; i < layerNames.length; i++) {
+      this.myLayers[layerNames[i]].render()
+    }
+    requestAnimationFrame(this.render.bind(this))
   }
 }

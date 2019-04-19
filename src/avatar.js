@@ -123,7 +123,7 @@ export default class Game extends React.PureComponent {
     const { setCoin } = this.props
     setCoin(coinCount)
 
-    console.log(this.myGameTest.myLayers.ObjLayer)
+    // console.log(this.myGameTest.myLayers.ObjLayer)
     this.myGameTest.spawnObjToLayer({
       layer: 'ObjLayer', 
       objFn: moneyUIwithText, 
@@ -148,19 +148,30 @@ export default class Game extends React.PureComponent {
     const times20Coin = () => getMultiAction(20, this.spawnCoins.bind(this, true, 20))
     const detectLayerId = (layerName, id) => (layerName.layerObjs.map(obj => obj = obj.id).indexOf(id) !== -1)
     let tapActions = []
-    const addTapAction = (layer, id, cloneId, fn) => {
-      tapActions = [...tapActions, getTap(e, canvas, layer, id, cloneId, fn)]
+    const addTapAction = (layer, id, cloneId, fn, allClone=false) => {
+      tapActions = [...tapActions, getTap(e, canvas, layer, id, cloneId, fn, allClone)]
     }
 
-    addTapAction(UIlayer, 'OKIcon', 0, () => {
-      this.purchaseCoinUprade(10000)
-    })
-    addTapAction(UIlayer, 'cancelIcon', 0, () => {
-      this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
+    //順序很重要, 越前面的層級越大
+    const alertUIActions = [
+      { layer: UIlayer, id: 'OKIcon', cloneId: 0, fn: () => {
+        this.purchaseCoinUprade(10000)
+      } },
+      { layer: UIlayer, id: 'cancelIcon', cloneId: 0, fn: () => {
+        this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
+      } },
+      { layer: UIlayer, id: 'alertBack', cloneId: 0, fn: () => {
+        return false
+      } },
+    ]
+    alertUIActions.map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn))
+
+    addTapAction(UIlayer, 'bulbCurvyFlat', 0, () => {
+      window.alert('aa')
     })
     addTapAction(UIlayer, 'alertTest', 0, () => {})
     addTapAction(UIlayer, 'testButton',  0, () => {
-      console.log(UIlayer.layerObjs)
+      // console.log(UIlayer.layerObjs)
       this.myGameTest.setIdActions('UILayer', 'testButton', {
           fn: 'changeStatus', parameters: ['another']
         })
@@ -170,11 +181,10 @@ export default class Game extends React.PureComponent {
       this.myGameTest.spawnObjToLayer({
         layer: 'UILayer', 
         objFn: alertUI, 
-        pos: { useRandom: false, x: 100, y: 120 },
+        pos: { useRandom: false, x: 0, y: 0 },
       })
     })
-    addTapAction(ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
-    addTapAction(ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
+    addTapAction(ObjLayer, 'moneyBag', 2, this.spawnCoins.bind(this, true, 20), false)
 
     for (let i = 0; i < tapActions.length; i++) {
       if(tapActions[i] !== false) {
@@ -195,7 +205,7 @@ export default class Game extends React.PureComponent {
     }))
   }
   setMouseCursor= (e) => {
-    this.myGameTest.setMouseCursor(e, ['OKIcon', 'cancelIcon', 'moneyBag', 'testButton'])
+    // this.myGameTest.setMouseCursor(e, ['bulbCurvyFlat', 'OKIcon', 'cancelIcon', 'moneyBag', 'testButton', ])
   }
   render() {
     const { gameOpen } = this.state

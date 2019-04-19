@@ -1,39 +1,34 @@
 /* eslint-disable no-unused-vars */
-import { setValueOfArrObj } from '../functions'
-import { initGameConfig, 
-  canvasSpec, 
+import { 
+  canvasSpec,
   canvasObjAreaSpec,
   styleConfig, 
 } from './gameConfig'
-import { drawStaticImg, 
+import { 
+  drawRect,
+  drawStaticImg, 
   drawSpriteImg, 
   actionUpObj, 
-  myGroupObjs 
+  myGroupObjs,
+  myGame, 
 } from './gameLib'
 import { 
-  getCanvasRandPos, 
   getCanvasComponent, 
-  destroyObj, 
   getCanvasGroup, 
-  getTap,
   getBreakComponent,
 } from './gameFunc'
 import { 
   bigCoin,
   coinUpdate,
   testUIbuttonImage,
-  HATs,
   backgroundImage,
   alertTest,
   ICON,
   ICON2,
   character,
+  testMapIcon,
  } from './gameObj'
 const { fontStyle } = styleConfig
-
-
-
-
 
 export class drawUIText {
   constructor({canvas, x=0, y=0, textConfig, text='Hi', lineHeight=1.2, containerWidth=100}) {
@@ -60,6 +55,7 @@ export class drawUIText {
       this.handleTextBreak()
     }
     this.ctx.font = this.textConfig
+    this.ctx.fillStyle = '#000'
     for (let i = 0; i < this.breakText.length; i++) {
       this.ctx.fillText(this.breakText[i], this.x, this.y + (this.fontSize * this.lineHeight) * i)
     }
@@ -101,137 +97,15 @@ export class myLayer {
     this.layerObjs = layerObjs
   }
   render() {
+
+    // console.log(this.layerObjs)
     for (let i = 0; i < this.layerObjs.length; i++) {
       this.layerObjs[i].OBJ.render()
     }
   }
 }
 
-export class myGame {
-  constructor(canvas, myLayers={}) {
-    this.canvas = canvas
-    this.ctx = canvas.getContext('2d')
-    this.UIstate = {
-      moneyBagCount: 0,
-    }
-    this.myLayers = {
-      BackLayer: myLayers.BackLayer,
-      ObjLayer: myLayers.ObjLayer,
-      UILayer: myLayers.UILayer,
-    }
-    this.myLayers.UILayer
-    this.testNum = 0
-    this.dir = true
-    this.setIdActions = this.setIdActions.bind(this)
-  }
-  init() {
-    'use strict'
-    const originLS = JSON.parse(localStorage.getItem('gameConfig')) || [] 
-    const orginGameSpawnObj = JSON.parse(localStorage.getItem('gameSpawnObjConfig')) || [] 
-    if(originLS.length === 0) {
-      localStorage.setItem('gameConfig', JSON.stringify(initGameConfig))
-    }
-    if(!localStorage.getItem('gameSpawnObjConfig')) {
-      localStorage.setItem('gameSpawnObjConfig', JSON.stringify([]))
-    }
-    for (let i = 0; i < initGameConfig.length; i++) {
-      const { layer, id, objProp, value } = initGameConfig[i]
-      const thatConfig = originLS.filter(or => or.id === id)
-      const setValue = originLS.length > 0 && thatConfig ? thatConfig[0].value : value
-      this.updateStateNum(layer, id, objProp, setValue, true)
-    }
-    for (let i = 0; i < orginGameSpawnObj.length; i++) {
-      this.spawnObjToLayer({
-        layer: 'ObjLayer',
-        objFn: eval(orginGameSpawnObj[i].objFn),
-        pos: { useRandom: false, 
-          x: orginGameSpawnObj[i].pos.x, 
-          y: orginGameSpawnObj[i].pos.y, },
-        isInit: true,
-        isUI: false,
-      })
-      
-    }
-  }
-  updateStateNum(layer, id, property, num, init=false) {
-    const originObj = this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ
-    const resultVal = init ? num : originObj[property] * 1 + num
-    originObj[property] = resultVal
 
-    const originLS = JSON.parse(localStorage.getItem('gameConfig'))
-    const storeData = setValueOfArrObj(originLS, id, 'value', resultVal)
-    localStorage.setItem('gameConfig', JSON.stringify(storeData))
-  }
-  setLayerObjs(layer, newObjs) {
-    this.myLayers[layer].layerObjs = newObjs
-  }
-  spawnObjToLayer({layer, objFn, pos={ useRandom: true, x: 0, y: 0, }, objFnParas=[], selfDestroy=false, destroyTime=600, isInit=false, isUI=true, }) {
-    const originLS = JSON.parse(localStorage.getItem('gameSpawnObjConfig'))
-    const gameLayer = this.myLayers[layer]
-    const newObj = objFn(this.canvas, pos.x, pos.y, ...objFnParas)
-    const getRandXY = getCanvasRandPos(canvasObjAreaSpec, newObj, pos.x, pos.y)
-    const newPosObj = pos.useRandom ? objFn(this.canvas, getRandXY.x, getRandXY.y, ...objFnParas) : newObj
-    const newCloneId = originLS.filter(or => or.id === newPosObj.id).length > 0 ? 
-      (originLS.filter(or => or.id === newPosObj.id).length + 1) : 
-      (gameLayer.layerObjs.filter(lo => lo.id === newPosObj.id).length + 1 || 1)
-    const gameSpawnObjConfigSetting = {
-      id: newPosObj.id,
-      cloneId: newCloneId,
-      pos: { x: getRandXY.x, y: getRandXY.y },
-      objFn: objFn.name,
-    }
-    const newGameSpawnObjConfig = [...originLS, gameSpawnObjConfigSetting]
-
-    gameLayer.layerObjs = [
-      ...gameLayer.layerObjs, 
-      {
-        id: newPosObj.id,
-        cloneId: newCloneId,
-        OBJ: newPosObj.OBJ,
-      }
-    ]
-    // console.log(gameLayer.layerObjs)
-    if(selfDestroy) {
-      setTimeout(() => {
-        this.setLayerObjs(layer, destroyObj(gameLayer, newPosObj.id, newCloneId))
-      }, destroyTime)
-    } else if(!selfDestroy && !isInit && !isUI) {
-      localStorage.setItem('gameSpawnObjConfig', JSON.stringify(newGameSpawnObjConfig))
-    }
-  }
-  removeObjFromLayer(layer='', objId='', cloneId=0) {
-    const gameLayer = this.myLayers[layer]
-    this.setLayerObjs(layer, destroyObj(gameLayer, objId, cloneId))
-  }
-  setMouseCursor(e, IDs=[], ) {
-    if(this.canvas.style.cursor !== 'default') {
-      this.canvas.style.cursor = 'default'
-    }
-    const setPointer = () => this.canvas.style.cursor = 'pointer'
-    const layerNames = ['BackLayer', 'ObjLayer', 'UILayer'] 
-    const layers = this.myLayers
-    for (let i = 0; i < layerNames.length; i++) {
-      for (let j = 0; j < IDs.length; j++) {
-        const tapAct = getTap(e, this.canvas, layers[layerNames[i]], IDs[j], 0, setPointer, true)
-        if(tapAct !== false) {
-          tapAct()
-        }
-      } 
-    }
-  }
-  setIdActions(layer, id, { fn: actionFn, parameters: [...paras] }) {
-    this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ[actionFn](...paras)
-    return this
-  }
-  render() {
-    this.ctx.clearRect(0, 0, canvasSpec.width, canvasSpec.height)
-    const layerNames = ['BackLayer', 'ObjLayer', 'UILayer'] 
-    for (let i = 0; i < layerNames.length; i++) {
-      this.myLayers[layerNames[i]].render()
-    }
-    requestAnimationFrame(this.render.bind(this))
-  }
-}
 
 //components
 export const testButton = (canvas, x=0, y=0) => (
@@ -284,6 +158,19 @@ export const OKIcon = (cv, x=0, y=0) => (
 export const cancelIcon = (cv, x=0, y=0) => (
   getCanvasComponent('cancelIcon', cv, ICON.cancelIcon, [20, 20, x, y], drawStaticImg)
 )
+export const alertBack = (cv, x, y) => ({
+  id: 'alertBack',
+  cloneId: 0,
+  OBJ: new drawRect({
+    canvas: cv,
+    x: x,
+    y: y,
+    w: canvasSpec.width,
+    h: canvasSpec.height,
+    fillStyle: 'rgba(0, 0, 0, 0.2)'
+  })
+})
+
 
 export const ShoppingList = (canvas, x=0, y=0) => ({
   id: 3000,
@@ -316,11 +203,18 @@ export const moneyUIwithText = (cv, x, y, num=1) => ({
 }) 
 
 export const alertUI = (cv, x, y) => getCanvasGroup('alertUI', [x, y], myGroupObjs, [
-  alert(cv, 0, 0),
+  alertBack(cv, 0, 0),
+  alert(cv, 100, 100),
   alertPurchase(cv, 30, 40),
-  OKIcon(cv, 20, 60),
-  cancelIcon(cv, 60, 60),
+  OKIcon(cv, 120, 160),
+  cancelIcon(cv, 200, 160),
 ])
+// getCanvasComponent('moneyBag', canvas, coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
+const testMAP = [
+  { id: 'bulbCurvyFlat', imgSrc: testMapIcon[0], x: 20 },
+  { id: 'htmlFlat', imgSrc: testMapIcon[1], x: 80 },
+]
+export const testGroupMap = (cv, x, y) => getCanvasGroup('testGroupMap', [x, y], myGroupObjs, testMAP.map(te => getCanvasComponent(te.id, cv, te.imgSrc, [100, 100, te.x, y], drawStaticImg, 0.5) ) )
 
 //layers
 export const UILayer = (cv, {...nums}) => (
@@ -329,6 +223,7 @@ export const UILayer = (cv, {...nums}) => (
     testButton(cv),
     moneyBag(cv, 0, 220),
     countNum(cv, 70, 280, nums.moneyBagCount,),
+    testGroupMap(cv, 100, 100),
     // userCharacter(cv, 120, 120)
   )
 )

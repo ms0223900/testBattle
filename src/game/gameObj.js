@@ -15,3 +15,7 @@ export const ICON = {
 }
 export const ICON2 = 'https://www.san-x.co.jp/charapri/images/kabe/rirakkuma/119_1080_1920.png'
 export const character = 'https://images-na.ssl-images-amazon.com/images/I/51Wpjypba1L._SX425_.jpg'
+export const testMapIcon = [
+  'https://freeiconshop.com/wp-content/uploads/edd/bulb-curvy-flat.png',
+  'https://freeiconshop.com/wp-content/uploads/edd/html-flat.png',
+]
