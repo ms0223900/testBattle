@@ -24,11 +24,12 @@ export class drawRect {
     this.strokeStyle = strokeStyle        
   }
   draw() {
-    this.ctx.rect(this.x, this.y, this.w, this.h)
+    this.ctx.save()
     this.ctx.fillStyle = this.fillStyle
-    this.ctx.fill()
+    this.ctx.fillRect(this.x, this.y, this.w, this.h)
     this.ctx.strokeStyle = this.strokeStyle
     this.ctx.stroke()
+    this.ctx.restore()
   }
   render() {
     this.draw()
@@ -36,12 +37,13 @@ export class drawRect {
 }
 
 export class drawStaticImg {
-  constructor({canvas, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[]}) {
+  constructor({ canvas, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[], opacity=1 }) {
     this.ctx = canvas.getContext('2d')
     this.imgSrc = imgSrc
     this.image = new Image()
     this.image.src = this.imgSrc
     this.imgRatio = imgRatio
+    this.opacity = opacity
     this.width = width * this.imgRatio,
     this.height = height * this.imgRatio,
     this.x = x
@@ -94,7 +96,8 @@ export class drawStaticImg {
     }
   }
   draw() {
-    this.ctx.globalAlpha = 1
+    this.ctx.save()
+    this.ctx.globalAlpha = this.opacity
     this.ctx.drawImage(
       this.image, 
       this.x, 
@@ -102,6 +105,7 @@ export class drawStaticImg {
       this.width, 
       this.height
     )
+    this.ctx.restore()
   }
   render() {
     this.draw()

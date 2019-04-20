@@ -214,7 +214,7 @@ const testMAP = [
   { id: 'bulbCurvyFlat', imgSrc: testMapIcon[0], x: 20 },
   { id: 'htmlFlat', imgSrc: testMapIcon[1], x: 80 },
 ]
-export const testGroupMap = (cv, x, y) => getCanvasGroup('testGroupMap', [x, y], myGroupObjs, testMAP.map(te => getCanvasComponent(te.id, cv, te.imgSrc, [100, 100, te.x, y], drawStaticImg, 0.5) ) )
+export const testGroupMap = (cv, x, y) => getCanvasGroup('testGroupMap', [x, y], myGroupObjs, testMAP.map(te => getCanvasComponent(te.id, cv, te.imgSrc, [100, 100, te.x, y], drawStaticImg, 1, [], 0.7) ) )
 
 //layers
 export const UILayer = (cv, {...nums}) => (
