@@ -24,7 +24,7 @@ export class drawRect {
     this.strokeStyle = strokeStyle        
   }
   draw() {
-    this.ctx.save()
+    // this.ctx.save()
     this.ctx.fillStyle = this.fillStyle
     this.ctx.fillRect(this.x, this.y, this.w, this.h)
     this.ctx.strokeStyle = this.strokeStyle
@@ -32,6 +32,13 @@ export class drawRect {
     this.ctx.restore()
   }
   render() {
+    this.ctx.save()
+    // const region = new Path2D()
+    this.ctx.rect(100, 100, 100, 200)
+    this.ctx.fillStyle = 'transparent'
+    this.ctx.fill()
+    this.ctx.clip()
+    // this.ctx.restore()
     this.draw()
   }
 }
@@ -203,6 +210,22 @@ export class myGroupObjs {
     }
   }
 }
+
+export class clipObj {
+  constructor( canvas, clipW=100, clipH=300 ) {
+    this.ctx = canvas.getContext('2d')
+    this.clipW = clipW
+    this.clipH = clipH
+  }
+  render() {
+    
+    const region = new Path2D()
+    region.rect = (50, 50, this.clipW, this.clipH)
+    this.ctx.clip(region)
+  }
+}
+// export class clipObj = ({ clipW=100, clipH=300 }) => 
+
 
 export class myGame {
   constructor(canvas, myLayers={}) {

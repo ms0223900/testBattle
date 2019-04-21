@@ -10,6 +10,7 @@ import {
   drawSpriteImg, 
   actionUpObj, 
   myGroupObjs,
+  clipObj,
   myGame, 
 } from './gameLib'
 import { 
@@ -201,8 +202,12 @@ export const moneyUIwithText = (cv, x, y, num=1) => ({
     ],
   })
 }) 
-
+// export const alertClip = (cv, x, y) => ({
+//   id: 'alertClip', cloneId: 0,
+//   OBJ: new clipObj(cv, x, y),
+// })
 export const alertUI = (cv, x, y) => getCanvasGroup('alertUI', [x, y], myGroupObjs, [
+  // alertClip(cv, 100, 600),
   alertBack(cv, 0, 0),
   alert(cv, 100, 100),
   alertPurchase(cv, 30, 40),
