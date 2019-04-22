@@ -14,8 +14,8 @@ import * as gameComponents from './gameComponent'
 
 
 export class drawRect {
-  constructor({ canvas, x, y, w, h, fillStyle='transparent', strokeStyle='transparent' }) {
-    this.ctx = canvas.getContext('2d')
+  constructor({ x, y, w, h, fillStyle='transparent', strokeStyle='transparent' }) {
+    // this.ctx = canvas.getContext('2d')
     this.x = x
     this.y = y
     this.w = w
@@ -23,29 +23,25 @@ export class drawRect {
     this.fillStyle = fillStyle     
     this.strokeStyle = strokeStyle        
   }
-  draw() {
-    // this.ctx.save()
-    this.ctx.fillStyle = this.fillStyle
-    this.ctx.fillRect(this.x, this.y, this.w, this.h)
-    this.ctx.strokeStyle = this.strokeStyle
-    this.ctx.stroke()
-    this.ctx.restore()
+  draw(ctx) {
+    ctx.save()
+    ctx.fillStyle = this.fillStyle
+    ctx.fillRect(this.x, this.y, this.w, this.h)
+    ctx.fill()
+    ctx.strokeStyle = this.strokeStyle
+    ctx.stroke()
+    ctx.restore()
   }
-  render() {
-    this.ctx.save()
-    // const region = new Path2D()
-    this.ctx.rect(100, 100, 100, 200)
-    this.ctx.fillStyle = 'transparent'
-    this.ctx.fill()
-    this.ctx.clip()
+  render(ctx) {
     // this.ctx.restore()
-    this.draw()
+    this.draw(ctx)
   }
 }
 
 export class drawStaticImg {
-  constructor({ canvas, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[], opacity=1 }) {
-    this.ctx = canvas.getContext('2d')
+  constructor({ id, cloneId, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[], opacity=1 }) {
+    this.id = id
+    this.cloneId = cloneId
     this.imgSrc = imgSrc
     this.image = new Image()
     this.image.src = this.imgSrc
@@ -102,25 +98,25 @@ export class drawStaticImg {
       this.image.src = IMG[0].img
     }
   }
-  draw() {
-    this.ctx.save()
-    this.ctx.globalAlpha = this.opacity
-    this.ctx.drawImage(
+  draw(ctx) {
+    ctx.save()
+    ctx.globalAlpha = this.opacity
+    ctx.drawImage(
       this.image, 
       this.x, 
       this.y, 
       this.width, 
       this.height
     )
-    this.ctx.restore()
+    ctx.restore()
   }
-  render() {
-    this.draw()
+  render(ctx) {
+    this.draw(ctx)
   }
 }
 
 export class drawSpriteImg extends drawStaticImg {
-  constructor({frameRate=10, imgIndex = 0, imgTick = 0, ...props}) {
+  constructor({ frameRate=10, imgIndex = 0, imgTick = 0, ...props }) {
     super(props)
     this.actionsFn = [this.updateFrame]
     this.frameRate = frameRate
@@ -130,9 +126,9 @@ export class drawSpriteImg extends drawStaticImg {
     this.imgIndex = imgIndex
     this.imgTick = imgTick
   }
-  draw() {
+  draw(ctx) {
     // this.ctx.clearRect(this.x, this.y, this.width / this.frameRate, this.height)
-    this.ctx.drawImage(
+    ctx.drawImage(
       this.image, 
       this.imgIndex * this.width / this.frameRate / this.imgRatio, 
       0, 
@@ -156,9 +152,9 @@ export class drawSpriteImg extends drawStaticImg {
     }
     
   }
-  render() {
+  render(ctx) {
     this.updateFrame()
-    this.draw()
+    this.draw(ctx)
   }
 }
 
@@ -175,19 +171,22 @@ export class actionUpObj extends drawSpriteImg {
       this.posYIndex += 1
     }
   }
-  render() {
+  render(ctx) {
     this.upAction()
     this.updateFrame()
-    this.draw()
+    this.draw(ctx)
   }
 }
 
 export class myGroupObjs {
-  constructor({ x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio }) {
-    this.groupObjs = groupObjs
+  constructor({ id='default', cloneId=0, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: true, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
+    this.id = id
+    this.cloneId = cloneId
     this.x = x
     this.y = y
     this.groupRatio = groupRatio
+    this.clip = clip
+    this.groupObjs = groupObjs
     this.setObjInGroup(this.x, this.y, this.groupRatio)
     // this.id = id
   }
@@ -204,10 +203,21 @@ export class myGroupObjs {
     this.w = w
     this.h = h
   }
-  render() {
-    for (let i = 0; i < this.groupObjs.length; i++) {
-      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render() : this.groupObjs[i].render()
+  render(ctx) {
+    ctx.save()
+    const { isClip, clipX, clipY, clipW, clipH } = this.clip
+    if(isClip) {
+      
+      // const region = new Path2D()
+      ctx.rect(clipX, clipY, clipW, clipH)
+      ctx.fillStyle = 'transparent'
+      ctx.fill()
+      // ctx.clip()
     }
+    for (let i = 0; i < this.groupObjs.length; i++) {
+      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
+    }
+    ctx.restore()
   }
 }
 
@@ -243,6 +253,7 @@ export class myGame {
     this.testNum = 0
     this.dir = true
     this.setIdActions = this.setIdActions.bind(this)
+    this.frame = { prev: 0, now: 0, fps: 0 }
   }
   init() {
     'use strict'
@@ -273,6 +284,11 @@ export class myGame {
       })
       
     }
+    setInterval(() => {
+      this.frame.fps = (this.frame.now - this.frame.prev) * 2
+      this.frame.prev = this.frame.now
+      // console.log(this.frame)
+    }, 500)
   }
   updateStateNum(layer, id, property, num, init=false) {
     const originObj = this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ
@@ -289,9 +305,9 @@ export class myGame {
   spawnObjToLayer({layer, objFn, pos={ useRandom: true, x: 0, y: 0, }, objFnParas=[], selfDestroy=false, destroyTime=600, isInit=false, isUI=true, i=0, }) {
     const originLS = JSON.parse(localStorage.getItem('gameSpawnObjConfig'))
     const gameLayer = this.myLayers[layer]
-    const newObj = objFn(this.canvas, pos.x, pos.y, ...objFnParas)
+    const newObj = objFn(pos.x, pos.y, ...objFnParas)
     const getRandXY = getCanvasRandPos(canvasObjAreaSpec, newObj, pos.x, pos.y)
-    const newPosObj = pos.useRandom ? objFn(this.canvas, getRandXY.x, getRandXY.y, ...objFnParas) : newObj
+    const newPosObj = pos.useRandom ? objFn(getRandXY.x, getRandXY.y, ...objFnParas) : newObj
     const newCloneId = originLS.filter(or => or.id === newPosObj.id).length > 0 ? 
       (originLS.filter(or => or.id === newPosObj.id)[i].cloneId) : 
       (gameLayer.layerObjs.filter(lo => lo.id === newPosObj.id).length + 1 || 1)
@@ -347,11 +363,22 @@ export class myGame {
     return this
   }
   render() {
+    this.frame.now += 1
+    // setInterval(() => {
+    //   console.log(this.frame)
+    // }, 1000)
+    // console.log(this.frame)
     this.ctx.clearRect(0, 0, canvasSpec.width, canvasSpec.height)
+  
+
     const layerNames = ['BackLayer', 'ObjLayer', 'UILayer'] 
     for (let i = 0; i < layerNames.length; i++) {
-      this.myLayers[layerNames[i]].render()
+      this.myLayers[layerNames[i]].render(this.ctx)
     }
+    this.ctx.font = '16px Arial'
+    this.ctx.fillStyle = '#000'
+    this.ctx.fillText('fps:' + this.frame.fps, 10, 60)
+
     requestAnimationFrame(this.render.bind(this))
   }
 }

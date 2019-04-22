@@ -40,11 +40,10 @@ export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id
     }
   }
 }
-export const getCanvasComponent = (id='', canvas, imgSrc='', spec=[0, 0, 0, 0], drawClass=drawStaticImg, ratio=1, status=[], opacity) => ({
+export const getCanvasComponent = (id='', imgSrc='', spec=[0, 0, 0, 0], drawClass=drawStaticImg, ratio=1, status=[], opacity) => ({
   id,
   cloneId: 0,
   OBJ: new drawClass({
-    canvas, 
     imgSrc, 
     width: spec[0], 
     height: spec[1], 
@@ -55,7 +54,7 @@ export const getCanvasComponent = (id='', canvas, imgSrc='', spec=[0, 0, 0, 0], 
     opacity,
   })
 })
-export const getCanvasGroup = (id='', spec=[0, 0], drawGroupClass=myGroupObjs, groupObjs=[]) => ({
+export const getCanvasGroup = ({ id='', spec=[0, 0], drawGroupClass=myGroupObjs, groupObjs=[] }) => ({
   id,
   cloneId: 0,
   OBJ: new drawGroupClass({
@@ -68,12 +67,12 @@ export const getCanvasRandPos = (canvasObjAreaSpec, Obj, x=0, y=0) => ({
   x: x === 0 ? ~~( Math.random() * ( canvasObjAreaSpec.width - Obj.OBJ.w ) ) : x,
   y: y === 0 ? ~~( Math.random() * ( canvasObjAreaSpec.width - Obj.OBJ.w ) ) : y,
 })
-export const spawnRandomPosObj = (canvas, gameInstanceLayer, objFn, ...objFnParas) => {
-  const originObj = objFn(canvas)
+export const spawnRandomPosObj = (gameInstanceLayer, objFn, ...objFnParas) => {
+  const originObj = objFn()
   const randX = ~~( Math.random() * ( canvasObjAreaSpec.width - originObj.OBJ.w ) ) 
   const randY = ~~( Math.random() * ( canvasObjAreaSpec.height - originObj.OBJ.h ) )
   const newId = gameInstanceLayer.layerObjs.length + 1
-  const newObj = objFn(canvas, randX, randY, ...objFnParas)
+  const newObj = objFn(randX, randY, ...objFnParas)
   return ( {
     newId: newId,
     newObjs: [

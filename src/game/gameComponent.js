@@ -28,12 +28,12 @@ import {
   ICON2,
   character,
   testMapIcon,
+  testBack
  } from './gameObj'
 const { fontStyle } = styleConfig
 
 export class drawUIText {
-  constructor({canvas, x=0, y=0, textConfig, text='Hi', lineHeight=1.2, containerWidth=100}) {
-    this.ctx = canvas.getContext('2d')
+  constructor({ x=0, y=0, textConfig, text='Hi', lineHeight=1.2, containerWidth=100 }) {
     this.textConfig = textConfig
     this.text = text
     this.breakText = null
@@ -43,36 +43,38 @@ export class drawUIText {
     this.containerWidth = containerWidth
     this.lineHeight = lineHeight
   }
-  handleTextBreak() {
-    this.ctx.font = this.textConfig
+  handleTextBreak(ctx) {
+    ctx.font = this.textConfig
     const textSplit = this.text.split(' ')
-    const txtSplitWidth = textSplit.map(t => t = this.ctx.measureText(t).width)
+    const txtSplitWidth = textSplit.map(t => t = ctx.measureText(t).width)
     console.log(txtSplitWidth)
     this.breakText = getBreakComponent(textSplit, txtSplitWidth, this.containerWidth)
     console.log(this.breakText)
   }
-  render() {
+  render(ctx) {
+    ctx.save()
     if(this.breakText === null) {
-      this.handleTextBreak()
+      this.handleTextBreak(ctx)
     }
-    this.ctx.font = this.textConfig
-    this.ctx.fillStyle = '#000'
+    ctx.font = this.textConfig
+    ctx.fillStyle = '#000'
     for (let i = 0; i < this.breakText.length; i++) {
-      this.ctx.fillText(this.breakText[i], this.x, this.y + (this.fontSize * this.lineHeight) * i)
+      ctx.fillText(this.breakText[i], this.x, this.y + (this.fontSize * this.lineHeight) * i)
     }
+    ctx.restore()
   }
 }
 export class countUIText extends drawUIText {
-  constructor(canvas, textConfig, text='Hi', x=0, y=0) {
-    super(canvas, textConfig, text, x, y)
+  constructor(props) {
+    super(props)
   }
-  render() {
-    this.ctx.font = this.textConfig
-    this.ctx.fillText('X ' + this.text, this.x, this.y)
+  render(ctx) {
+    ctx.font = this.textConfig
+    ctx.fillText('X ' + this.text, this.x, this.y)
   }
 }
 export class actionUpGroupObjs extends myGroupObjs {
-  constructor({upPosY=40, ...props}) {
+  constructor({ upPosY=40, ...props }) {
     super(props)
     this.posYTick = upPosY
     this.posYIndex = 0
@@ -86,22 +88,21 @@ export class actionUpGroupObjs extends myGroupObjs {
       this.posYIndex += 1
     }
   }
-  render() {
+  render(ctx) {
     this.upAction()
     for (let i = 0; i < this.groupObjs.length; i++) {
-      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render() : this.groupObjs[i].render()
+      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
     }
   }
 }
 export class myLayer {
-  constructor(...layerObjs) {
+  constructor(layerObjs=[]) {
     this.layerObjs = layerObjs
   }
-  render() {
-
+  render(ctx) {
     // console.log(this.layerObjs)
     for (let i = 0; i < this.layerObjs.length; i++) {
-      this.layerObjs[i].OBJ.render()
+      this.layerObjs[i].OBJ.render(ctx)
     }
   }
 }
@@ -109,8 +110,8 @@ export class myLayer {
 
 
 //components
-export const testButton = (canvas, x=0, y=0) => (
-  getCanvasComponent('testButton', canvas, testUIbuttonImage, [30, 30, x, y], drawStaticImg, 1, [
+export const testButton = (x=0, y=0) => (
+  getCanvasComponent('testButton', testUIbuttonImage, [30, 30, x, y], drawStaticImg, 1, [
     {
       statusName: 'another',
       img: ICON2,
@@ -119,51 +120,49 @@ export const testButton = (canvas, x=0, y=0) => (
 )
 // testButton.OBJ.addState('another', ICON2)
 
-export const userCharacter = (canvas, x=0, y=0) => (
-  getCanvasComponent('userCharacter', canvas, character, [120, 120, x, y], drawStaticImg, 0.8, [
+export const userCharacter = (x=0, y=0) => (
+  getCanvasComponent('userCharacter', character, [120, 120, x, y], drawStaticImg, 0.8, [
     {
       statusName: 'another',
       img: ICON2,
     }
   ])
 )
-export const moneyBag = (canvas, x=0, y=0) => (
-  getCanvasComponent('moneyBag', canvas, coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
+export const moneyBag = (x=0, y=0) => (
+  getCanvasComponent('moneyBag', coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
 )
-export const moneys = (canvas, x=0, y=0) => (
-  getCanvasComponent(7003, canvas, coinUpdate[0], [30, 30, x, y], drawStaticImg)
+export const moneys = (x=0, y=0) => (
+  getCanvasComponent(7003, coinUpdate[0], [30, 30, x, y], drawStaticImg)
 )
-export const countNum = (canvas, x=0, y=0, num=10) => ({
+export const countNum = (x=0, y=0, num=10) => ({
   id: 2001,
   OBJ: new countUIText({
-    canvas, x, y,
+    x, y,
     textConfig: fontStyle.sSize,
     text: num
   })
 })
-export const upCoin = (canvas, x=0, y=0) => (
-  getCanvasComponent('upCoin', canvas, bigCoin, [1000, 100, x, y], actionUpObj)
+export const upCoin = (x=0, y=0) => (
+  getCanvasComponent('upCoin', bigCoin, [1000, 100, x, y], actionUpObj)
 )
-export const Coin = (canvas, x=0, y=0) => (
-  getCanvasComponent(1, canvas, bigCoin, [1000, 100, x, y], drawSpriteImg, 0.4)
+export const Coin = (x=0, y=0) => (
+  getCanvasComponent(1, bigCoin, [1000, 100, x, y], drawSpriteImg, 0.4)
 )
-export const backTest = (canvas) => (
-  getCanvasComponent(-1000, canvas, backgroundImage, [canvasObjAreaSpec.width, canvasObjAreaSpec.height, 0, 0])
+export const backTest = getCanvasComponent(-1000, backgroundImage, [canvasObjAreaSpec.width, canvasObjAreaSpec.height, 0, 0])
+
+export const alert = (x=0, y=0) => (
+  getCanvasComponent('alertTest', alertTest, [200, 100, x, y], drawStaticImg)
 )
-export const alert = (cv, x=0, y=0) => (
-  getCanvasComponent('alertTest', cv, alertTest, [200, 100, x, y], drawStaticImg)
+export const OKIcon = (x=0, y=0) => (
+  getCanvasComponent('OKIcon', ICON.OKIcon, [20, 20, x, y], drawStaticImg)
 )
-export const OKIcon = (cv, x=0, y=0) => (
-  getCanvasComponent('OKIcon', cv, ICON.OKIcon, [20, 20, x, y], drawStaticImg)
+export const cancelIcon = (x=0, y=0) => (
+  getCanvasComponent('cancelIcon', ICON.cancelIcon, [20, 20, x, y], drawStaticImg)
 )
-export const cancelIcon = (cv, x=0, y=0) => (
-  getCanvasComponent('cancelIcon', cv, ICON.cancelIcon, [20, 20, x, y], drawStaticImg)
-)
-export const alertBack = (cv, x, y) => ({
+export const alertBack = (x, y) => ({
   id: 'alertBack',
   cloneId: 0,
   OBJ: new drawRect({
-    canvas: cv,
     x: x,
     y: y,
     w: canvasSpec.width,
@@ -171,34 +170,36 @@ export const alertBack = (cv, x, y) => ({
     fillStyle: 'rgba(0, 0, 0, 0.2)'
   })
 })
+export const testPicBack = (x, y) => (
+  getCanvasComponent('testPicBack', testBack, [300, 300, x, y], drawStaticImg)
+)
 
-
-export const ShoppingList = (canvas, x=0, y=0) => ({
+export const ShoppingList = (x=0, y=0) => ({
   id: 3000,
   OBJ: new drawUIText({
-    canvas, x, y,
+    x, y,
     textConfig: fontStyle.mSize,
     text: 'Shop ping List lab', 
   })
 })
-export const alertPurchase = (canvas, x=0, y=0) => ({
+export const alertPurchase = (x=0, y=0) => ({
   id: 'alertPurchase',
   OBJ: new drawUIText({
-    canvas, x, y,
+    x, y,
     textConfig: fontStyle.mSize, 
     text: 'Are you sure upgrading? (cost 10000)'
   })
 })
 
-export const moneyUIwithText = (cv, x, y, num=1) => ({
+export const moneyUIwithText = (x=0, y=0, num=1) => ({
   id: 'moneyUIwithText',
   OBJ: new actionUpGroupObjs({
     upPosY: 30,
     x: x,
     y: y,
     groupObjs: [
-      countNum(cv, 20, 60, num),
-      Coin(cv, 0, 0)
+      countNum(20, 60, num),
+      Coin(0, 0)
     ],
   })
 }) 
@@ -206,49 +207,54 @@ export const moneyUIwithText = (cv, x, y, num=1) => ({
 //   id: 'alertClip', cloneId: 0,
 //   OBJ: new clipObj(cv, x, y),
 // })
-export const alertUI = (cv, x, y) => getCanvasGroup('alertUI', [x, y], myGroupObjs, [
-  // alertClip(cv, 100, 600),
-  alertBack(cv, 0, 0),
-  alert(cv, 100, 100),
-  alertPurchase(cv, 30, 40),
-  OKIcon(cv, 120, 160),
-  cancelIcon(cv, 200, 160),
-])
+export const alertUI = (x, y) => getCanvasGroup({
+  id: 'alertUI', 
+  spec: [x, y], 
+  drawGroupClass: myGroupObjs, 
+  groupObjs: [ 
+    // alertBack(0, 0),
+    testPicBack(0, 0),
+    alert(100, 100),
+    cancelIcon(200, 160), 
+    alertPurchase(130, 140),
+    OKIcon(120, 160),
+  ]
+})
 // getCanvasComponent('moneyBag', canvas, coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
 const testMAP = [
   { id: 'bulbCurvyFlat', imgSrc: testMapIcon[0], x: 20 },
   { id: 'htmlFlat', imgSrc: testMapIcon[1], x: 80 },
+  { id: 'bulbCurvyFlat2', imgSrc: testMapIcon[0], x: 120 },
+  { id: 'bulbCurvyFlat3', imgSrc: testMapIcon[0], x: 160 },
 ]
-export const testGroupMap = (cv, x, y) => getCanvasGroup('testGroupMap', [x, y], myGroupObjs, testMAP.map(te => getCanvasComponent(te.id, cv, te.imgSrc, [100, 100, te.x, y], drawStaticImg, 1, [], 0.7) ) )
+export const testGroupMap = (x, y) => getCanvasGroup({
+  id: 'testGroupMap', 
+  spec: [x, y], 
+  drawGroupClass: myGroupObjs, 
+  groupObjs: testMAP.map(te => getCanvasComponent(te.id, te.imgSrc, [100, 100, te.x, y], drawStaticImg, 1, [], 0.7) ) 
+})
 
 //layers
-export const UILayer = (cv, {...nums}) => (
-  new myLayer(
-    ShoppingList(cv, 10, 220),
-    testButton(cv),
-    moneyBag(cv, 0, 220),
-    countNum(cv, 70, 280, nums.moneyBagCount,),
-    testGroupMap(cv, 100, 100),
-    // userCharacter(cv, 120, 120)
-  )
-)
-export const ObjLayer = (cv) => (
-  new myLayer(
-    userCharacter(cv, 120, 120)
-  )
-)
-export const BackLayer = (cv) => (
-  new myLayer(backTest(cv))
-)
+export const UILayer = new myLayer([
+  ShoppingList(10, 220),
+  testButton(),
+  moneyBag(0, 220),
+  countNum(70, 280),
+  testGroupMap(100, 100),
+])
+export const ObjLayer = new myLayer([ userCharacter(120, 120) ])
+export const BackLayer = new myLayer([ backTest ])
+  
+
 
 //init game
-const allLayer = (cv) => ({
-  BackLayer: BackLayer(cv),
-  ObjLayer: ObjLayer(cv),
-  UILayer: UILayer(cv),
-})
-export const idleGame = (canvas) => (
-  new myGame(canvas, allLayer(canvas))
+const allLayer = {
+  BackLayer: BackLayer,
+  ObjLayer: ObjLayer,
+  UILayer: UILayer,
+}
+export const idleGame = (ctx) => (
+  new myGame(ctx, allLayer)
 )
 
 // const a = 0

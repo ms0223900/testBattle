@@ -184,7 +184,7 @@ export default class Game extends React.PureComponent {
         pos: { useRandom: false, x: 0, y: 0 },
       })
     })
-    addTapAction(ObjLayer, 'moneyBag', 2, this.spawnCoins.bind(this, true, 20), false)
+    addTapAction(ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
 
     for (let i = 0; i < tapActions.length; i++) {
       if(tapActions[i] !== false) {
