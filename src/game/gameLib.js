@@ -17,10 +17,11 @@ import * as gameComponents from './gameComponents'
 
 
 export class drawRect {
-  constructor({ id, cloneId, x, y, w, h, fillStyle='transparent', strokeStyle='transparent' }) {
+  constructor({ id, cloneId, display=true, x, y, w, h, fillStyle='transparent', strokeStyle='transparent' }) {
     // this.ctx = canvas.getContext('2d')
     this.id = id
     this.cloneId = cloneId
+    this.display = display
     this.x = x
     this.y = y
     this.w = w
@@ -267,7 +268,13 @@ export class myGroupObjs {
   }
   draw(ctx) {
     for (let i = 0; i < this.groupObjs.length; i++) {
-      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
+
+      if(!this.display) {
+        this.groupObjs[i].OBJ.display = false
+      } else {
+        this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
+        // this.groupObjs[i].OBJ.display = true
+      }
     }
   }
   render(ctx) {
@@ -281,7 +288,7 @@ export class myGroupObjs {
       ctx.fill()
       // ctx.clip()
     }
-    if(this.display) { this.draw(ctx) }
+    this.draw(ctx) 
     ctx.restore()
   }
 }

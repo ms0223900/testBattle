@@ -20,6 +20,9 @@ export const character = 'https://images-na.ssl-images-amazon.com/images/I/51Wpj
 export const testMapIcon = [
   'https://freeiconshop.com/wp-content/uploads/edd/bulb-curvy-flat.png',
   'https://freeiconshop.com/wp-content/uploads/edd/html-flat.png',
+  'https://freeiconshop.com/wp-content/uploads/edd/car-outline-filled.png',
+  'https://freeiconshop.com/wp-content/uploads/edd/earth-outline-filled.png',
+  'https://freeiconshop.com/wp-content/uploads/edd/globe-outline-filled.png',
 ]
 export const testBackArr = [
   'https://image.freepik.com/free-psd/abstract-background-design_1297-84.jpg',

@@ -7,7 +7,10 @@ import {
   getCanvasGroup,
   getCanvasComponent,
 } from './gameFunc'
-import { testBackArr } from './gameObj'
+import { 
+  testBackArr,
+  testMapIcon,
+ } from './gameObj'
 
 export const tabRect = (color, txt) => ({
   id: 'tabRect_' + txt,
@@ -41,17 +44,18 @@ export const UITabs = (txt, x, y, fillColor) => getCanvasGroup({
   ]
 })
 
-export const UIDisplay = (txt, x, y, imgSrc) => getCanvasGroup({
+export const UIDisplay = (txt, x, y, imgSrc, backImgSrc) => getCanvasGroup({
   id: 'UIDisplay_' + txt,
   spec: [x, y],
   groupObjs: [
-    getCanvasComponent('UIDisplayBG_' + txt, imgSrc, [200, 200, 0, 0], drawStaticImg, 0.8)
+    getCanvasComponent('UIDisplayBG_' + txt, backImgSrc, [200, 200, 0, 0], drawStaticImg, 0.8),
+    getCanvasComponent('UIDisplayComponent_' + txt, imgSrc, [60, 60, 0, 0], drawStaticImg, 0.8),
   ]
 })
 export const UITabs_A = UITabs('A', 30, 100, 'rgba(20, 200, 20, ' + '1)')
 export const UITabs_B = UITabs('B', 120, 100, 'rgba(200, 20, 20, ' + '0.5)')
 export const UITabs_C = UITabs('C', 200, 100, 'rgba(20, 20, 200, ' + '0.5)')
 
-export const UIDisplay_A = UIDisplay('A', 30, 140, testBackArr[0])
-export const UIDisplay_B = UIDisplay('B', 30, 140, testBackArr[1])
-export const UIDisplay_C = UIDisplay('C', 30, 140, testBackArr[2])
+export const UIDisplay_A = UIDisplay('A', 30, 140, testMapIcon[2], testBackArr[0])
+export const UIDisplay_B = UIDisplay('B', 30, 140, testMapIcon[3], testBackArr[1])
+export const UIDisplay_C = UIDisplay('C', 30, 140, testMapIcon[4], testBackArr[2])

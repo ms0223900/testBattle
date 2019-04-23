@@ -157,7 +157,7 @@ export default class Game extends React.PureComponent {
 
     //順序很重要, 越前面的層級越大
     const alertUIActions = [
-      { layer: UIlayer, id: 'OKIcon', cloneId: 0, fn: () => {
+      { layer: UIlayer, id: 'UIDisplayComponent_A', cloneId: 0, fn: () => {
         this.purchaseCoinUprade(10000)
       } },
       { layer: UIlayer, id: 'cancelIcon', cloneId: 0, fn: () => {
@@ -170,10 +170,10 @@ export default class Game extends React.PureComponent {
     tabActions(this.myGameTest).map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn, ac.allClone))
     alertUIActions.map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn))
 
+    addTapAction(UIlayer, 'UIDisplayBG_A', 0, () => {})
     addTapAction(UIlayer, 'bulbCurvyFlat', 0, () => {
       window.alert('aa')
     })
-    addTapAction(UIlayer, 'alertTest', 0, () => {})
     addTapAction(UIlayer, 'testButton',  0, () => {
       // console.log(UIlayer.layerObjs)
       this.myGameTest.setIdActions('UILayer', 'testButton', {

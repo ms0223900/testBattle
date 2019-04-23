@@ -25,19 +25,19 @@ const TABconfig = [
     tabId: 'tabRect_A', 
     blurColor: 'rgba(20, 200, 20, 0.5)', 
     focusColor: 'rgba(20, 200, 20, 1)', 
-    BGId: 'UIDisplayBG_A',  
+    BGId: 'UIDisplay_A',  
   },
   { 
     tabId: 'tabRect_B', 
     blurColor: 'rgba(200, 20, 20, 0.5)', 
     focusColor: 'rgba(200, 20, 20, 1)', 
-    BGId: 'UIDisplayBG_B',  
+    BGId: 'UIDisplay_B',  
   },
   { 
     tabId: 'tabRect_C', 
     blurColor: 'rgba(20, 20, 200, 0.5)', 
     focusColor: 'rgba(20, 20, 200, 1)', 
-    BGId: 'UIDisplayBG_C',  
+    BGId: 'UIDisplay_C',  
   },
 ]
 export const tabActions = (gameInstanse) => TABconfig.map(config => (

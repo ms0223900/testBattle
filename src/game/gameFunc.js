@@ -8,11 +8,13 @@ export const getMultiAction = (times, fn) => {
   }
 }
 export const checkCollideWithPoint = (point={x: 0, y: 0}, collideObj={x: 0, y: 0, w: 0, h: 0}) => {
-  // console.log(collideObj)
-  if(point.x < collideObj.x + collideObj.w && point.x > collideObj.x && 
-    point.y < collideObj.y + collideObj.h && point.y > collideObj.y) {
-      return true
-  } return false
+  console.log(collideObj)
+  if(collideObj.display) {
+    if(point.x < collideObj.x + collideObj.w && point.x > collideObj.x && 
+      point.y < collideObj.y + collideObj.h && point.y > collideObj.y) {
+        return true
+    } return false
+  }
 }
 export const checkAllCollideWithId = (tapPos={x: 0, y: 0}, allCollideObjs=[], id=10, cloneId=0, allCloneAction=false) => {
   for (let i = 0; i < allCollideObjs.length; i++) {
