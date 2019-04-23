@@ -8,20 +8,26 @@ import {
   getCanvasRandPos, 
   destroyObj, 
   getTap,
-  checkCollideWithWalls
+  checkCollideWithWalls,
+  getBreakComponent
 } from './gameFunc'
 import * as gameComponents from './gameComponent'
 
 
 export class drawRect {
-  constructor({ x, y, w, h, fillStyle='transparent', strokeStyle='transparent' }) {
+  constructor({ id, cloneId, x, y, w, h, fillStyle='transparent', strokeStyle='transparent' }) {
     // this.ctx = canvas.getContext('2d')
+    this.id = id
+    this.cloneId = cloneId
     this.x = x
     this.y = y
     this.w = w
     this.h = h
     this.fillStyle = fillStyle     
     this.strokeStyle = strokeStyle        
+  }
+  setAttr(attr, value) {
+    this[attr] = value
   }
   draw(ctx) {
     ctx.save()
@@ -37,7 +43,55 @@ export class drawRect {
     this.draw(ctx)
   }
 }
+export class drawUIText {
+  constructor({ x=0, y=0, fillStyle, textConfig, text='Hi', lineHeight=1.2, containerWidth=100, textAlignCenter=true, textBreak=false }) {
+    this.textConfig = textConfig
+    this.text = text
+    this.textBreak = textBreak
+    this.breakText = null
+    this.fontSize = 18
+    this.fillStyle = fillStyle
+    this.x = this.textAlignCenter ? 0 : x
+    this.y = y
+    this.containerWidth = containerWidth
+    this.lineHeight = lineHeight
+    this.textAlignCenter = textAlignCenter
+  }
+  handleTextBreak(ctx) {
+    ctx.font = this.textConfig
+    const textSplit = this.text.split(' ')
+    const txtSplitWidth = textSplit.map(t => t = ctx.measureText(t).width)
+    console.log(txtSplitWidth)
+    this.breakText = getBreakComponent(textSplit, txtSplitWidth, this.containerWidth)
+    console.log(this.breakText)
+  }
+  handleTextAlignCenter(ctx) {
+    this.x += ( this.containerWidth - ctx.measureText(this.text).width ) / 2
+  }
+  render(ctx) {
+    ctx.save()
+    ctx.font = this.textConfig
+    ctx.fillStyle = this.fillStyle
 
+    if(this.textAlignCenter) { 
+      this.handleTextAlignCenter(ctx)
+      this.textAlignCenter = false
+    }
+    if(this.textBreak) {
+      if(this.breakText === null) {
+        this.handleTextBreak(ctx)
+      }
+      for (let i = 0; i < this.breakText.length; i++) {
+        ctx.fillText(this.breakText[i], this.x, this.y + (this.fontSize * this.lineHeight) * i)
+      }
+    }
+    else {
+      ctx.fillText(this.text, this.x, this.y)
+    }
+
+    ctx.restore()
+  }
+}
 export class drawStaticImg {
   constructor({ id, cloneId, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[], opacity=1 }) {
     this.id = id
@@ -179,7 +233,7 @@ export class actionUpObj extends drawSpriteImg {
 }
 
 export class myGroupObjs {
-  constructor({ id='default', cloneId=0, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: true, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
+  constructor({ id='default', cloneId=0, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: false, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
     this.id = id
     this.cloneId = cloneId
     this.x = x

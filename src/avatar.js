@@ -164,6 +164,18 @@ export default class Game extends React.PureComponent {
         return false
       } },
     ]
+    const testTabActions = [
+      { layer: UIlayer, id: 'UITabs_A', cloneId: 0, fn: () => {
+        alert('UITabs_A')
+      } },
+      { layer: UIlayer, id: 'UITabs_B', cloneId: 0, fn: () => {
+        alert('UITabs_B')
+      } },
+      { layer: UIlayer, id: 'UITabs_C', cloneId: 0, fn: () => {
+        alert('UITabs_C')
+      } },
+    ]
+    testTabActions.map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn))
     alertUIActions.map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn))
 
     addTapAction(UIlayer, 'bulbCurvyFlat', 0, () => {

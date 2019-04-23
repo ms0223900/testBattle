@@ -6,6 +6,7 @@ import {
 } from './gameConfig'
 import { 
   drawRect,
+  drawUIText,
   drawStaticImg, 
   drawSpriteImg, 
   actionUpObj, 
@@ -30,40 +31,14 @@ import {
   testMapIcon,
   testBack
  } from './gameObj'
+import { 
+  UITabs_A,
+  UITabs_B,
+  UITabs_C,
+ } from './gameUIComponents'
 const { fontStyle } = styleConfig
 
-export class drawUIText {
-  constructor({ x=0, y=0, textConfig, text='Hi', lineHeight=1.2, containerWidth=100 }) {
-    this.textConfig = textConfig
-    this.text = text
-    this.breakText = null
-    this.fontSize = 18
-    this.x = x
-    this.y = y
-    this.containerWidth = containerWidth
-    this.lineHeight = lineHeight
-  }
-  handleTextBreak(ctx) {
-    ctx.font = this.textConfig
-    const textSplit = this.text.split(' ')
-    const txtSplitWidth = textSplit.map(t => t = ctx.measureText(t).width)
-    console.log(txtSplitWidth)
-    this.breakText = getBreakComponent(textSplit, txtSplitWidth, this.containerWidth)
-    console.log(this.breakText)
-  }
-  render(ctx) {
-    ctx.save()
-    if(this.breakText === null) {
-      this.handleTextBreak(ctx)
-    }
-    ctx.font = this.textConfig
-    ctx.fillStyle = '#000'
-    for (let i = 0; i < this.breakText.length; i++) {
-      ctx.fillText(this.breakText[i], this.x, this.y + (this.fontSize * this.lineHeight) * i)
-    }
-    ctx.restore()
-  }
-}
+
 export class countUIText extends drawUIText {
   constructor(props) {
     super(props)
@@ -213,11 +188,15 @@ export const alertUI = (x, y) => getCanvasGroup({
   drawGroupClass: myGroupObjs, 
   groupObjs: [ 
     // alertBack(0, 0),
+    
     testPicBack(0, 0),
-    alert(100, 100),
+    // alert(100, 100),
     cancelIcon(200, 160), 
-    alertPurchase(130, 140),
+    // alertPurchase(130, 140),
     OKIcon(120, 160),
+    UITabs_A,
+    UITabs_B,
+    UITabs_C,
   ]
 })
 // getCanvasComponent('moneyBag', canvas, coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
