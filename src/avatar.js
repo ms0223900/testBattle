@@ -137,11 +137,11 @@ export default class Game extends React.PureComponent {
   }
   addCoin = (speed=1) => {
     const second = 2000 / speed
-    setInterval(() => {
-      const { lv1, lv20, lv100 } = this.state.coinGenState
-      const coinCount = lv1 * 1 + lv20 * 6 + lv100 * 50
-      this.spawnCoins(true, coinCount)
-    }, second)
+    // setInterval(() => {
+    //   const { lv1, lv20, lv100 } = this.state.coinGenState
+    //   const coinCount = lv1 * 1 + lv20 * 6 + lv100 * 50
+    //   this.spawnCoins(true, coinCount)
+    // }, second)
   }
 
 

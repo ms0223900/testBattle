@@ -48,10 +48,10 @@ export const tabActions = (gameInstanse) => TABconfig.map(config => (
     fn: () => {
       for (let i = 0; i < TABconfig.length; i++) {
         gameInstanse.setAttr('UILayer', TABconfig[i].tabId, 0, 'fillStyle', TABconfig[i].blurColor)
-        gameInstanse.setAttr('UILayer', TABconfig[i].BGId, 0, 'display', false)
+        gameInstanse.setAttr('UILayer', TABconfig[i].BGId, 0, 'groupDisplay', false)
       }
       gameInstanse.setAttr('UILayer', config.tabId, 0, 'fillStyle', config.focusColor)
-      gameInstanse.setAttr('UILayer', config.BGId, 0, 'display', true)
+      gameInstanse.setAttr('UILayer', config.BGId, 0, 'groupDisplay', true)
     }
   }
 ))

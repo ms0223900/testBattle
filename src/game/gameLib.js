@@ -125,6 +125,9 @@ export class drawStaticImg {
       ...status
     ]
   }
+  setAttr(attr, value) {
+    this[attr] = value
+  }
   moveByUser(e) {
     if(e.keyCode - 37 >= 0 && e.keyCode - 37 <=3) {
       const distanceX = [-1, 0, 1, 0][e.keyCode - 37] * this.speed
@@ -216,7 +219,7 @@ export class drawSpriteImg extends drawStaticImg {
   }
   render(ctx) {
     this.updateFrame()
-    this.draw(ctx)
+    if(this.display) { this.draw(ctx) }
   }
 }
 
@@ -241,17 +244,33 @@ export class actionUpObj extends drawSpriteImg {
 }
 
 export class myGroupObjs {
-  constructor({ id='default', cloneId=0, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: false, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
+  constructor({ id, cloneId, groupDisplay=true, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: false, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
     this.id = id
     this.cloneId = cloneId
-    this.display = true
+    this.groupDisplay = groupDisplay
     this.x = x
     this.y = y
     this.groupRatio = groupRatio
     this.clip = clip
     this.groupObjs = groupObjs
-    this.setObjInGroup(this.x, this.y, this.groupRatio)
+    // this.reset = false
+    this.prevAttr = {}
+    this.setObjInGroup(this.x, this.y, this.display)
     // this.id = id
+  }
+  setAttr(attr, value=false) {
+    this[attr] = value
+    console.log('this.' + attr + ':' , this[attr])
+    // this.display = 'vvv'
+    if(this.prevAttr.x !== this.x) {
+      this.setObjInGroup(this.x - this.prevAttr.x, 0)
+    } 
+    if(this.prevAttr.y !== this.y) {
+      this.setObjInGroup(0, this.y - this.prevAttr.y) 
+    }
+    if(this.prevAttr.display !== this.display) {
+      this.setObjInGroup(0, 0, this.display) 
+    }
   }
   setObjInGroup(x=0, y=0) {
     let w = 0, h = 0
@@ -265,29 +284,32 @@ export class myGroupObjs {
     }
     this.w = w
     this.h = h
+    this.prevAttr = {
+      x: this.x,
+      y: this.y,
+      w: this.w,
+      h: this.h,
+    }
   }
   draw(ctx) {
+    // if(!this.display) { console.log('groupObj', this.display, this.groupObjs) } 
     for (let i = 0; i < this.groupObjs.length; i++) {
-
-      if(!this.display) {
-        this.groupObjs[i].OBJ.display = false
-      } else {
+        this.groupObjs[i].OBJ.display = this.groupDisplay
         this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
         // this.groupObjs[i].OBJ.display = true
-      }
     }
   }
   render(ctx) {
     ctx.save()
-    const { isClip, clipX, clipY, clipW, clipH } = this.clip
-    if(isClip) {
+    // const { isClip, clipX, clipY, clipW, clipH } = this.clip
+    // if(isClip) {
       
-      // const region = new Path2D()
-      ctx.rect(clipX, clipY, clipW, clipH)
-      ctx.fillStyle = 'transparent'
-      ctx.fill()
-      // ctx.clip()
-    }
+    //   // const region = new Path2D()
+    //   ctx.rect(clipX, clipY, clipW, clipH)
+    //   ctx.fillStyle = 'transparent'
+    //   ctx.fill()
+    //   // ctx.clip()
+    // }
     this.draw(ctx) 
     ctx.restore()
   }
@@ -365,8 +387,9 @@ export class myGame {
   setAttr(layerName='', id='', cloneId=0, attr='', value, allClone=false) {
     const targetArr = getLayerObjByIdCloneId(this.myLayers[layerName].layerObjs, id, cloneId, allClone)
     for (let i = 0; i < targetArr.length; i++) {
-      targetArr[i].OBJ[attr] = value
+      targetArr[i]['OBJ'].setAttr(attr, value)
     }
+    console.log(value, targetArr)
   }
   updateStateNum(layer, id, property, num, init=false) {
     const originObj = this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ
