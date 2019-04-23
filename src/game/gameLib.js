@@ -9,9 +9,10 @@ import {
   destroyObj, 
   getTap,
   checkCollideWithWalls,
-  getBreakComponent
+  getBreakComponent,
+  getLayerObjByIdCloneId
 } from './gameFunc'
-import * as gameComponents from './gameComponent'
+import * as gameComponents from './gameComponents'
 
 
 export class drawRect {
@@ -53,6 +54,8 @@ export class drawUIText {
     this.fillStyle = fillStyle
     this.x = this.textAlignCenter ? 0 : x
     this.y = y
+    this.w = 0
+    this.h = 0
     this.containerWidth = containerWidth
     this.lineHeight = lineHeight
     this.textAlignCenter = textAlignCenter
@@ -67,6 +70,8 @@ export class drawUIText {
   }
   handleTextAlignCenter(ctx) {
     this.x += ( this.containerWidth - ctx.measureText(this.text).width ) / 2
+    this.w = ctx.measureText(this.text).width
+    this.h = ctx.measureText(this.text).height
   }
   render(ctx) {
     ctx.save()
@@ -236,6 +241,7 @@ export class myGroupObjs {
   constructor({ id='default', cloneId=0, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: false, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
     this.id = id
     this.cloneId = cloneId
+    this.display = true
     this.x = x
     this.y = y
     this.groupRatio = groupRatio
@@ -257,6 +263,11 @@ export class myGroupObjs {
     this.w = w
     this.h = h
   }
+  draw(ctx) {
+    for (let i = 0; i < this.groupObjs.length; i++) {
+      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
+    }
+  }
   render(ctx) {
     ctx.save()
     const { isClip, clipX, clipY, clipW, clipH } = this.clip
@@ -268,9 +279,7 @@ export class myGroupObjs {
       ctx.fill()
       // ctx.clip()
     }
-    for (let i = 0; i < this.groupObjs.length; i++) {
-      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
-    }
+    if(this.display) { this.draw(ctx) }
     ctx.restore()
   }
 }
@@ -343,6 +352,12 @@ export class myGame {
       this.frame.prev = this.frame.now
       // console.log(this.frame)
     }, 500)
+  }
+  setAttr(layerName='', id='', cloneId=0, attr='', value, allClone=false) {
+    const targetArr = getLayerObjByIdCloneId(this.myLayers[layerName].layerObjs, id, cloneId, allClone)
+    for (let i = 0; i < targetArr.length; i++) {
+      targetArr[i].OBJ[attr] = value
+    }
   }
   updateStateNum(layer, id, property, num, init=false) {
     const originObj = this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ

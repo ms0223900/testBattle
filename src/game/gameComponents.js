@@ -35,7 +35,8 @@ import {
   UITabs_A,
   UITabs_B,
   UITabs_C,
- } from './gameUIComponents'
+  UIDisplay_A,
+} from './gameUIComponents'
 const { fontStyle } = styleConfig
 
 
@@ -178,6 +179,7 @@ export const moneyUIwithText = (x=0, y=0, num=1) => ({
     ],
   })
 }) 
+
 // export const alertClip = (cv, x, y) => ({
 //   id: 'alertClip', cloneId: 0,
 //   OBJ: new clipObj(cv, x, y),
@@ -197,10 +199,11 @@ export const alertUI = (x, y) => getCanvasGroup({
     UITabs_A,
     UITabs_B,
     UITabs_C,
+    UIDisplay_A,
   ]
 })
 // getCanvasComponent('moneyBag', canvas, coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
-const testMAP = [
+export const testMAP = [
   { id: 'bulbCurvyFlat', imgSrc: testMapIcon[0], x: 20 },
   { id: 'htmlFlat', imgSrc: testMapIcon[1], x: 80 },
   { id: 'bulbCurvyFlat2', imgSrc: testMapIcon[0], x: 120 },
@@ -209,10 +212,8 @@ const testMAP = [
 export const testGroupMap = (x, y) => getCanvasGroup({
   id: 'testGroupMap', 
   spec: [x, y], 
-  drawGroupClass: myGroupObjs, 
   groupObjs: testMAP.map(te => getCanvasComponent(te.id, te.imgSrc, [100, 100, te.x, y], drawStaticImg, 1, [], 0.7) ) 
 })
-
 //layers
 export const UILayer = new myLayer([
   ShoppingList(10, 220),
