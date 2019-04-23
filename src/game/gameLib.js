@@ -13,6 +13,7 @@ import {
   getLayerObjByIdCloneId
 } from './gameFunc'
 import * as gameComponents from './gameComponents'
+// import './gameObj'
 
 
 export class drawRect {
@@ -101,6 +102,7 @@ export class drawStaticImg {
   constructor({ id, cloneId, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[], opacity=1 }) {
     this.id = id
     this.cloneId = cloneId
+    this.display = true
     this.imgSrc = imgSrc
     this.image = new Image()
     this.image.src = this.imgSrc
@@ -170,7 +172,7 @@ export class drawStaticImg {
     ctx.restore()
   }
   render(ctx) {
-    this.draw(ctx)
+    if(this.display) { this.draw(ctx) }
   }
 }
 

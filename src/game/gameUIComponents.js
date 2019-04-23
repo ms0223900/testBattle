@@ -1,13 +1,13 @@
-import './testImport'
 import { 
   drawRect,
   drawUIText,
+  drawStaticImg,
 } from './gameLib'
 import { 
   getCanvasGroup,
+  getCanvasComponent,
 } from './gameFunc'
-import { coinImg } from './gameObj'
-console.log(coinImg)
+import { testBackArr } from './gameObj'
 
 export const tabRect = (color, txt) => ({
   id: 'tabRect_' + txt,
@@ -41,18 +41,17 @@ export const UITabs = (txt, x, y, fillColor) => getCanvasGroup({
   ]
 })
 
-export const UIDisplay = (txt, x, y, fillColor) => getCanvasGroup({
+export const UIDisplay = (txt, x, y, imgSrc) => getCanvasGroup({
   id: 'UIDisplay_' + txt,
   spec: [x, y],
   groupObjs: [
-    tabRect(fillColor, txt),
-    // getCanvasComponent('moneyBag', coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)
+    getCanvasComponent('UIDisplayBG_' + txt, imgSrc, [200, 200, 0, 0], drawStaticImg, 0.8)
   ]
 })
 export const UITabs_A = UITabs('A', 30, 100, 'rgba(20, 200, 20, ' + '1)')
 export const UITabs_B = UITabs('B', 120, 100, 'rgba(200, 20, 20, ' + '0.5)')
 export const UITabs_C = UITabs('C', 200, 100, 'rgba(20, 20, 200, ' + '0.5)')
 
-export const UIDisplay_A = UIDisplay('A', 30, 140, 'rgba(20, 200, 20, ' + '1)')
-export const UIDisplay_B = UIDisplay('B', 120, 140, 'rgba(200, 20, 20, ' + '0.5)')
-export const UIDisplay_C = UIDisplay('C', 200, 140, 'rgba(20, 20, 200, ' + '0.5)')
+export const UIDisplay_A = UIDisplay('A', 30, 140, testBackArr[0])
+export const UIDisplay_B = UIDisplay('B', 30, 140, testBackArr[1])
+export const UIDisplay_C = UIDisplay('C', 30, 140, testBackArr[2])

@@ -1,7 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React, { Fragment } from 'react'
 //game
-import { canvasSpec } from './game/gameConfig'
+import { 
+  canvasSpec,
+  tabActions,
+ } from './game/gameConfig'
 import { 
   myUI, 
   upCoin,
@@ -164,29 +167,7 @@ export default class Game extends React.PureComponent {
         return false
       } },
     ]
-    const TABRect = ['tabRect_A', 'tabRect_B', 'tabRect_C']
-    const TABsOriginColor = ['rgba(20, 200, 20,0.5)', 'rgba(200, 20, 20,0.5)', 'rgba(20, 20, 200,0.5)']
-    const testTabActions = [
-      { layer: UIlayer, id: 'UITabs_A', cloneId: 0, fn: () => {
-        for (let i = 0; i < TABRect.length; i++) {
-          this.myGameTest.setAttr('UILayer', TABRect[i], 0, 'fillStyle', TABsOriginColor[i])
-        }
-        this.myGameTest.setAttr('UILayer', 'tabRect_A', 0, 'fillStyle', 'rgba(20, 200, 20, 1)')
-      } },
-      { layer: UIlayer, id: 'UITabs_B', cloneId: 0, fn: () => {
-        for (let i = 0; i < TABRect.length; i++) {
-          this.myGameTest.setAttr('UILayer', TABRect[i], 0, 'fillStyle', TABsOriginColor[i])
-        }
-        this.myGameTest.setAttr('UILayer', 'tabRect_B', 0, 'fillStyle', 'rgba(200, 20, 20, 1)')
-      } },
-      { layer: UIlayer, id: 'UITabs_C', cloneId: 0, fn: () => {
-        for (let i = 0; i < TABRect.length; i++) {
-          this.myGameTest.setAttr('UILayer', TABRect[i], 0, 'fillStyle', TABsOriginColor[i])
-        }
-        this.myGameTest.setAttr('UILayer', 'tabRect_C', 0, 'fillStyle', 'rgba(20, 20, 200, 1)')
-      } },
-    ]
-    testTabActions.map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn, ac.allClone))
+    tabActions(this.myGameTest).map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn, ac.allClone))
     alertUIActions.map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn))
 
     addTapAction(UIlayer, 'bulbCurvyFlat', 0, () => {
