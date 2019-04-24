@@ -178,3 +178,9 @@ export const getReverseResult = (now, min, max, dir, unit=1) => {
     dir: dir
   }
 }
+export const handleBlockLineBreak = (id=0, breakLimit=3, yDis=20, containerWidth=100, elementWidth=20, ) => {
+  const xSpacing = (containerWidth - elementWidth * breakLimit) / (breakLimit * 2)
+  const x = (id % breakLimit) * (containerWidth / breakLimit) + xSpacing
+  const y = ~~( id / breakLimit ) * yDis
+  return { x, y }
+}

@@ -40,6 +40,7 @@ import {
   UIDisplay_B,
   UIDisplay_C,
 } from './gameUIComponents'
+import { ShopContainer } from './shop/shopContainer'
 const { fontStyle } = styleConfig
 
 
@@ -225,7 +226,8 @@ export const UILayer = new myLayer([
   testButton(),
   moneyBag(0, 220),
   countNum(70, 280),
-  testGroupMap(100, 100),
+  // testGroupMap(100, 100),
+  ShopContainer(0, 100),
 ])
 export const ObjLayer = new myLayer([ userCharacter(120, 120) ])
 export const BackLayer = new myLayer([ backTest ])

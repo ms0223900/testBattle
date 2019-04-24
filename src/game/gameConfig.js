@@ -1,9 +1,12 @@
+import { 
+  freeIcon,
+  testBackArr
+ } from './gameObj'
+
 export const initGameConfig = [
   { layer: 'UILayer', id: 2001, objProp: 'text', value: 1 },
 
 ]
-
-
 export const styleConfig = {
   fontStyle: {
     sSize: '12px Arial',
@@ -55,3 +58,16 @@ export const tabActions = (gameInstanse) => TABconfig.map(config => (
     }
   }
 ))
+export const ShopIconConfig = [
+  { posId: 0, id: 'ShopIcon_shop', imgSrc: freeIcon.shop },
+  { posId: 1, id: 'ShopIcon_info', imgSrc: freeIcon.info },
+  { posId: 2, id: 'ShopIcon_coins', imgSrc: freeIcon.coins },
+  { posId: 3, id: 'ShopIcon_burger', imgSrc: freeIcon.burger },
+]
+export const ShopUIConfig = {
+  backGround: { 
+    width: 300, 
+    height: 500, 
+    imgSrc: testBackArr[1]
+  }
+}

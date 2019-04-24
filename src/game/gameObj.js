@@ -29,3 +29,12 @@ export const testBackArr = [
   'https://image.freepik.com/free-vector/bokeh-lights-glitter-background_1048-8548.jpg',
   'https://besthqwallpapers.com/Uploads/14-2-2019/80461/thumb2-blue-mosaic-4k-artwork-mosaic-texture-blue-background.jpg'
 ]
+export const freeIcon = {
+  shop: 'https://freeiconshop.com/wp-content/uploads/edd/shopping-bag-flat.png',
+  info: 'https://freeiconshop.com/wp-content/uploads/edd/info-flat.png',
+  coins: 'https://freeiconshop.com/wp-content/uploads/edd/coins-flat.png',
+  burger: 'https://freeiconshop.com/wp-content/uploads/edd/burger-flat.png',
+  pear: 'https://freeiconshop.com/wp-content/uploads/edd/pear-flat.png',
+  hotDog: 'https://freeiconshop.com/wp-content/uploads/edd/hotdog-flat.png',
+  close: 'https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png',
+}

@@ -47,7 +47,8 @@ export class drawRect {
   }
 }
 export class drawUIText {
-  constructor({ x=0, y=0, fillStyle, textConfig, text='Hi', lineHeight=1.2, containerWidth=100, textAlignCenter=true, textBreak=false }) {
+  constructor({ x=0, y=0, display=true, fillStyle, textConfig, text='Hi', lineHeight=1.2, containerWidth=100, textAlignCenter=true, textBreak=false }) {
+    this.display = display
     this.textConfig = textConfig
     this.text = text
     this.textBreak = textBreak
@@ -75,7 +76,7 @@ export class drawUIText {
     this.w = ctx.measureText(this.text).width
     this.h = ctx.measureText(this.text).height
   }
-  render(ctx) {
+  draw(ctx) {
     ctx.save()
     ctx.font = this.textConfig
     ctx.fillStyle = this.fillStyle
@@ -97,6 +98,9 @@ export class drawUIText {
     }
 
     ctx.restore()
+  }
+  render(ctx) {
+    if(this.display) { this.draw(ctx) }
   }
 }
 export class drawStaticImg {
@@ -258,9 +262,11 @@ export class myGroupObjs {
     this.setObjInGroup(this.x, this.y, this.display)
     // this.id = id
   }
-  setAttr(attr, value=false) {
-    this[attr] = value
-    console.log('this.' + attr + ':' , this[attr])
+  setAttr(attr=false, value=false) {
+    if(attr) { 
+      this[attr] = value
+      console.log('this.' + attr + ':' , this[attr])
+    }
     // this.display = 'vvv'
     if(this.prevAttr.x !== this.x) {
       this.setObjInGroup(this.x - this.prevAttr.x, 0)
@@ -275,8 +281,13 @@ export class myGroupObjs {
   setObjInGroup(x=0, y=0) {
     let w = 0, h = 0
     for (let i = 0; i < this.groupObjs.length; i++) {
+      console.log(this.groupObjs[i].id, this.groupObjs[i])
       this.groupObjs[i].OBJ.x += x 
       this.groupObjs[i].OBJ.y += y 
+      if(this.groupObjs[i].groupObj) {
+        this.groupObjs[i].groupObj.x += x 
+        this.groupObjs[i].groupObj.y += y 
+      }
     }
     for (let i = 0; i < this.groupObjs.length; i++) {
       if(this.groupObjs[i].OBJ.w > w) { w = this.groupObjs[i].OBJ.w }
@@ -294,10 +305,15 @@ export class myGroupObjs {
   draw(ctx) {
     // if(!this.display) { console.log('groupObj', this.display, this.groupObjs) } 
     for (let i = 0; i < this.groupObjs.length; i++) {
+      if(this.groupObjs[i].OBJ.groupDisplay) {
+        this.groupObjs[i].OBJ.groupDisplay = this.groupDisplay
+      } else {
         this.groupObjs[i].OBJ.display = this.groupDisplay
-        this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
+      }
+      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
         // this.groupObjs[i].OBJ.display = true
     }
+    this.setAttr()
   }
   render(ctx) {
     ctx.save()

@@ -44,6 +44,7 @@ export default class Game extends React.PureComponent {
     this.setCanvas = el => this.canvas = el
     this.myGameTest = null
   }
+  
   componentDidMount = () => {
     const { coinGenarateSpeed } = this.state
     this.myGameTest = idleGame(this.canvas)
@@ -167,6 +168,11 @@ export default class Game extends React.PureComponent {
         return false
       } },
     ]
+    addTapAction(UIlayer, 'closeIcon', 0, () => {
+      this.myGameTest.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', false)
+    })
+    addTapAction(UIlayer, 'ShopBG_B', 0, () => {})
+
     tabActions(this.myGameTest).map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn, ac.allClone))
     alertUIActions.map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn))
 
@@ -219,13 +225,6 @@ export default class Game extends React.PureComponent {
       <div>
         <button onClick={this._handleOpenGame}>Open Game</button>
           <div id={'game-canvas'} style={{ display: gameOpen ? 'block' : 'none' }} >
-            <div id={'coin-container'}>
-              <img className={'coin-img'} src={coinImg} />
-              {/* <span> {' X ' + coin} </span> */}
-            </div>
-            <div>
-
-            </div>
             <canvas 
               ref={this.setCanvas} 
               width={ canvasSpec.width } 
