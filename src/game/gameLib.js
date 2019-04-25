@@ -248,7 +248,7 @@ export class actionUpObj extends drawSpriteImg {
 }
 
 export class myGroupObjs {
-  constructor({ id, cloneId, groupDisplay=true, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: false, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
+  constructor({ id, cloneId=0, groupDisplay=true, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: false, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
     this.id = id
     this.cloneId = cloneId
     this.groupDisplay = groupDisplay
@@ -265,7 +265,7 @@ export class myGroupObjs {
   setAttr(attr=false, value=false) {
     if(attr) { 
       this[attr] = value
-      console.log('this.' + attr + ':' , this[attr])
+      // console.log('this.' + attr + ':' , this[attr])
     }
     // this.display = 'vvv'
     if(this.prevAttr.x !== this.x) {
@@ -274,14 +274,14 @@ export class myGroupObjs {
     if(this.prevAttr.y !== this.y) {
       this.setObjInGroup(0, this.y - this.prevAttr.y) 
     }
-    if(this.prevAttr.display !== this.display) {
-      this.setObjInGroup(0, 0, this.display) 
-    }
+    // if(this.prevAttr.display !== this.display) {
+    //   this.setObjInGroup(0, 0, this.display) 
+    // }
   }
   setObjInGroup(x=0, y=0) {
     let w = 0, h = 0
     for (let i = 0; i < this.groupObjs.length; i++) {
-      console.log(this.groupObjs[i].id, this.groupObjs[i])
+      // console.log(this.groupObjs[i].id, this.groupObjs[i])
       this.groupObjs[i].OBJ.x += x 
       this.groupObjs[i].OBJ.y += y 
       if(this.groupObjs[i].groupObj) {
@@ -295,6 +295,7 @@ export class myGroupObjs {
     }
     this.w = w
     this.h = h
+    console.log(this.id, this.x, this.y, this.w, this.h)
     this.prevAttr = {
       x: this.x,
       y: this.y,

@@ -23,7 +23,7 @@ export const canvasObjAreaSpec = {
 }
 
 
-const TABconfig = [
+export const TABconfig = [
   { 
     tabId: 'tabRect_A', 
     blurColor: 'rgba(20, 200, 20, 0.5)', 
@@ -43,21 +43,6 @@ const TABconfig = [
     BGId: 'UIDisplay_C',  
   },
 ]
-export const tabActions = (gameInstanse) => TABconfig.map(config => (
-  { 
-    layer: gameInstanse['myLayers']['UILayer'], 
-    id: config.tabId, 
-    cloneId: 0, 
-    fn: () => {
-      for (let i = 0; i < TABconfig.length; i++) {
-        gameInstanse.setAttr('UILayer', TABconfig[i].tabId, 0, 'fillStyle', TABconfig[i].blurColor)
-        gameInstanse.setAttr('UILayer', TABconfig[i].BGId, 0, 'groupDisplay', false)
-      }
-      gameInstanse.setAttr('UILayer', config.tabId, 0, 'fillStyle', config.focusColor)
-      gameInstanse.setAttr('UILayer', config.BGId, 0, 'groupDisplay', true)
-    }
-  }
-))
 export const ShopIconConfig = [
   { posId: 0, id: 'ShopIcon_shop', imgSrc: freeIcon.shop },
   { posId: 1, id: 'ShopIcon_info', imgSrc: freeIcon.info },
@@ -69,5 +54,8 @@ export const ShopUIConfig = {
     width: 300, 
     height: 500, 
     imgSrc: testBackArr[1]
+  },
+  iconDist: {
+    y: 80,
   }
 }

@@ -1,32 +1,20 @@
 /* eslint-disable no-unused-vars */
-import React, { Fragment } from 'react'
+import React from 'react'
 //game
 import { 
   canvasSpec,
   tabActions,
  } from './game/gameConfig'
 import { 
-  myUI, 
-  upCoin,
-  testButton,  
   moneyBag,
   moneyUIwithText,
   idleGame,
   alertUI,
-  cancelIcon
  } from './game/gameComponents'
 import { 
-  getMultiAction,
-  spawnRandomPosObj,
-  destroyObj, 
   getTap,
 } from './game/gameFunc'
-import { 
-  coinImg, 
-  backgroundImage, 
-  testUIbuttonImage, 
-  HATs 
-} from './game/gameObj'
+import { tapActionHolder } from './game/tapActionsHolder'
 
 export default class Game extends React.PureComponent {
   constructor(props) {
@@ -67,12 +55,12 @@ export default class Game extends React.PureComponent {
       iCount++
       if(iCount < 10) {
         this.myGameTest
-        .setIdActions('ObjLayer', 'userCharacter', {
-          fn: 'moveByNum', parameters: [1, 1]
-        })
-        .setIdActions('ObjLayer', 'userCharacter', {
-          fn: 'changeStatus', parameters: ['another']
-        })
+          .setIdActions('ObjLayer', 'userCharacter', {
+            fn: 'moveByNum', parameters: [1, 1]
+          })
+          .setIdActions('ObjLayer', 'userCharacter', {
+            fn: 'changeStatus', parameters: ['another']
+          })
       } else if(iCount >= 10 && iCount < 19) {
         this.myGameTest
         .setIdActions('ObjLayer', 'userCharacter', {
@@ -82,24 +70,21 @@ export default class Game extends React.PureComponent {
         iCount = 0
       }
     }, 100)
-    document.addEventListener('keydown', (e) => {
-      this.myGameTest
-        .setIdActions('ObjLayer', 'userCharacter', {
-          fn: 'moveByUser', parameters: [e]
-        })
-        .setIdActions('ObjLayer', 'userCharacter', {
-          fn: 'changeStatus', parameters: ['another']
-        })
-    })
-    document.addEventListener('keyup', (e) => {
-      this.myGameTest
-        .setIdActions('ObjLayer', 'userCharacter', {
-          fn: 'changeStatus', parameters: ['origin']
-        })
-    })
-    // document.addEventListener('keyup', this.myGameTest.setIdActions('UILayer', 'move', {
-    //   fn: 'changeStatus', parameters: []
-    // }))
+    // document.addEventListener('keydown', (e) => {
+    //   this.myGameTest
+    //     .setIdActions('ObjLayer', 'userCharacter', {
+    //       fn: 'moveByUser', parameters: [e]
+    //     })
+    //     .setIdActions('ObjLayer', 'userCharacter', {
+    //       fn: 'changeStatus', parameters: ['another']
+    //     })
+    // })
+    // document.addEventListener('keyup', (e) => {
+    //   this.myGameTest
+    //     .setIdActions('ObjLayer', 'userCharacter', {
+    //       fn: 'changeStatus', parameters: ['origin']
+    //     })
+    // })
   }
   purchaseCoinUprade = (price) => {
     const { coinGenState } = this.state
@@ -147,54 +132,17 @@ export default class Game extends React.PureComponent {
 
 
   tap = (e, canvas) => {
-    const UIlayer = this.myGameTest.myLayers.UILayer
-    const ObjLayer = this.myGameTest.myLayers.ObjLayer
-    const times20Coin = () => getMultiAction(20, this.spawnCoins.bind(this, true, 20))
-    const detectLayerId = (layerName, id) => (layerName.layerObjs.map(obj => obj = obj.id).indexOf(id) !== -1)
+    // const UIlayer = this.myGameTest.myLayers.UILayer
+    // const ObjLayer = this.myGameTest.myLayers.ObjLayer
     let tapActions = []
     const addTapAction = (layer, id, cloneId, fn, allClone=false) => {
       tapActions = [...tapActions, getTap(e, canvas, layer, id, cloneId, fn, allClone)]
     }
 
     //順序很重要, 越前面的層級越大
-    const alertUIActions = [
-      { layer: UIlayer, id: 'UIDisplayComponent_A', cloneId: 0, fn: () => {
-        this.purchaseCoinUprade(10000)
-      } },
-      { layer: UIlayer, id: 'cancelIcon', cloneId: 0, fn: () => {
-        this.myGameTest.removeObjFromLayer('UILayer', 'alertUI', 1)
-      } },
-      { layer: UIlayer, id: 'alertBack', cloneId: 0, fn: () => {
-        return false
-      } },
-    ]
-    addTapAction(UIlayer, 'closeIcon', 0, () => {
-      this.myGameTest.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', false)
-    })
-    addTapAction(UIlayer, 'ShopBG_B', 0, () => {})
+    // addTapAction(UIlayer, 'ShopBG_B', 0, () => {})
 
-    tabActions(this.myGameTest).map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn, ac.allClone))
-    alertUIActions.map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn))
-
-    addTapAction(UIlayer, 'UIDisplayBG_A', 0, () => {})
-    addTapAction(UIlayer, 'bulbCurvyFlat', 0, () => {
-      window.alert('aa')
-    })
-    addTapAction(UIlayer, 'testButton',  0, () => {
-      // console.log(UIlayer.layerObjs)
-      this.myGameTest.setIdActions('UILayer', 'testButton', {
-          fn: 'changeStatus', parameters: ['another']
-        })
-    })
-    addTapAction(UIlayer, 'moneyBag', 0, () => {
-      // this.purchaseCoinUprade(10000)
-      this.myGameTest.spawnObjToLayer({
-        layer: 'UILayer', 
-        objFn: alertUI, 
-        pos: { useRandom: false, x: 0, y: 0 },
-      })
-    })
-    addTapAction(ObjLayer, 'moneyBag', 0, this.spawnCoins.bind(this, true, 20), true)
+    tapActionHolder(this.myGameTest).map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn, ac.allClone))
 
     for (let i = 0; i < tapActions.length; i++) {
       if(tapActions[i] !== false) {

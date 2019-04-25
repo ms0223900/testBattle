@@ -1,7 +1,9 @@
-import { Icon, ShopIcon } from './shopIcon'
+import { Icon } from '../components/Icon'
+import { ShopIcon } from './shopIcon'
 import { ShopBG_B } from './shopBG'
 import { freeIcon } from '../gameObj'
 import { 
+  canvasSpec,
   ShopIconConfig,
   ShopUIConfig 
 } from '../gameConfig'
@@ -41,6 +43,11 @@ export const ShopContainer = (x, y) => {
         id: 'closeIcon',
         imgSrc: freeIcon.close,
         x: 280, y: -20,
+      }),
+      Icon({
+        id: 'shopIcon',
+        imgSrc: freeIcon.shop,
+        x: canvasSpec.width - 20, y: canvasSpec.height - 40,
       })
     ]
   })

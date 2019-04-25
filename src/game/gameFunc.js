@@ -9,7 +9,7 @@ export const getMultiAction = (times, fn) => {
 }
 export const checkCollideWithPoint = (point={x: 0, y: 0}, collideObj={x: 0, y: 0, w: 0, h: 0}) => {
   // console.log(collideObj)
-  if(collideObj.display) {
+  if(collideObj.display || collideObj.groupDisplay) {
     if(point.x < collideObj.x + collideObj.w && point.x > collideObj.x && 
       point.y < collideObj.y + collideObj.h && point.y > collideObj.y) {
         return true
@@ -46,6 +46,7 @@ export const getCanvasComponent = (id='', imgSrc='', spec=[0, 0, 0, 0], drawClas
   id,
   cloneId: 0,
   OBJ: new drawClass({
+    id,
     imgSrc, 
     width: spec[0], 
     height: spec[1], 
@@ -60,6 +61,7 @@ export const getCanvasGroup = ({ id='', spec=[0, 0], drawGroupClass=myGroupObjs,
   id,
   cloneId: 0,
   OBJ: new drawGroupClass({
+    id,
     x: spec[0],
     y: spec[1],
     groupObjs: groupObjs,
@@ -103,6 +105,7 @@ export const getTap = (e, canvas, layerInstanse, id, cloneId=0, actionFn, allClo
   }
   const getTapObj = getLayerObjByIdCloneId(layerInstanse.layerObjs, id, cloneId, allCloneAction)
   if(getTapObj && getTapObj.length > 0) {
+    console.log(getTapObj)
     if( getTapObj.map(obj => checkCollideWithPoint(tapPos, obj.OBJ)).indexOf(true) !== -1 ) {
       console.log(id, cloneId, 'tap')
       return actionFn
@@ -156,18 +159,16 @@ export const getLayerObjByIdCloneId = (layerOBJs, id='obj', cloneId=0, allClone=
     //   const clonIdObjs = layerOBJs.filter(obj => obj.id === id)
     //   const res = clonIdObjs && layerOBJs[i].OBJ
     // }
-    if(layerOBJs[i].OBJ.groupObjs) {
+    const checkResult = allClone ? 
+      layerOBJs.filter(obj => obj.id === id) : 
+      layerOBJs.filter(obj => obj.id === id && obj.cloneId === cloneId)
+    if(checkResult.length > 0) {
+      // console.log(layerOBJs[i])
+      return checkResult
+    } else if(layerOBJs[i].OBJ.groupObjs) {
       const res = getLayerObjByIdCloneId(layerOBJs[i].OBJ.groupObjs, id, cloneId, allClone)
       if(res) {
         return res
-      }
-    } else {
-      const checkResult = allClone ? 
-        layerOBJs.filter(obj => obj.id === id) : 
-        layerOBJs.filter(obj => obj.id === id && obj.cloneId === cloneId) 
-      if(checkResult.length > 0) {
-        // console.log(layerOBJs[i])
-        return checkResult
       }
     }
   }

@@ -1,29 +1,27 @@
 import { 
-  drawStaticImg,
   drawUIText,
 } from '../gameLib'
+import { Icon } from '../components/Icon'
 // import { ShopUIConfig } from '../gameConfig'
 import { getCanvasGroup } from '../gameFunc'
 
 
-export const Icon = ({ imgSrc='', id='Icon', x=0, y=0 }) => ({
-  id,
-  cloneId: 0,
-  OBJ: new drawStaticImg({
-    imgSrc: imgSrc,
-    x, y,
-    width: 40,
-    height: 40,
-  })
-})
+export class drawNumberCountTest extends drawUIText {
+  constructor({ count , ...props}) {
+    super(props)
+    this.count = count
+    this.text = 'X ' + this.count
+  }
+}
+
 
 export const ShopCount = ({ count=0, }) => ({
   id: 'shopCount',
   cloneId: 0,
-  OBJ: new drawUIText({
+  OBJ: new drawNumberCountTest({
     x: 0, y: 60,
     textConfig: '14px Arial',
-    text: 'X ' + count,
+    count,
     containerWidth: 40,
   })
 })
