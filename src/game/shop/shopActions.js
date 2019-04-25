@@ -1,4 +1,5 @@
 // import { TABconfig } from '../gameConfig'
+import { MyShopContainer } from './shopContainer'
 
 // export const tabActions = (gameInstanse) => TABconfig.map(config => (
 //   { 
@@ -31,12 +32,14 @@ export const shopUIActions = (gameInstanse) => {
       layer: UILayer, 
       id: 'ShopIcon_shop', cloneId: 0, 
       fn: () => {
-        gameInstanse.setAttr('UILayer', 'ShopIcon_shop', 0, 'groupDisplay', false)
+        console.log(MyShopContainer)
+        MyShopContainer.countNum[1] += 1 
+        gameInstanse.setAttr('UILayer', 'shopCount', 0, 'count', MyShopContainer.countNum[1], false)
       },
     },
     {
       layer: UILayer, 
-      id: 'shopIcon', cloneId: 0, 
+      id: 'ShopOpenIcon', cloneId: 0, 
       fn: () => {
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', true)
       },

@@ -11,6 +11,20 @@ export class drawNumberCountTest extends drawUIText {
     super(props)
     this.count = count
     this.text = 'X ' + this.count
+    this.prev = {
+      count: this.count,
+    }
+  }
+  updateWithProps() {
+    if(this.prev.count !== this.count) {
+      this.text = 'X ' + this.count
+    }
+    this.prev.count = this.count
+  }
+  render(ctx) {
+    // this.ctx.restore()
+    this.updateWithProps()
+    if(this.display) { this.draw(ctx) }
   }
 }
 

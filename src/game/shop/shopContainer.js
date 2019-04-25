@@ -13,7 +13,7 @@ const { width: backW, height: backH, imgSrc: backImgSrc } = ShopUIConfig.backGro
 
 
 
-export const ShopContainer = (x, y) => {
+export function ShopContainer(x, y) {
   const xy = ShopIconConfig.map(config => handleBlockLineBreak(config.posId, 3, 60, backW, 40))
   let iconConfig = []
   for (let i = 0; i < ShopIconConfig.length; i++) {
@@ -23,7 +23,8 @@ export const ShopContainer = (x, y) => {
       y: xy[i].y,
     }
   }
-  return getCanvasGroup({
+  const containerProps = { countNum: [20, 30, 40, 20] }
+  const containerGroup = getCanvasGroup({
     id: 'ShopContainer', 
     spec: [x, y], 
     groupObjs: [
@@ -37,7 +38,7 @@ export const ShopContainer = (x, y) => {
         x: iconConfig.x,
         y: iconConfig.y,
         iconImgSrc: iconConfig.imgSrc,
-        iconCount: 20,
+        iconCount: this.countNum,
       })),
       Icon({
         id: 'closeIcon',
@@ -51,4 +52,9 @@ export const ShopContainer = (x, y) => {
       })
     ]
   })
+  return {
+    ...containerProps,
+    ...containerGroup,
+  }
 }
+export const MyShopContainer = new ShopContainer(0, 100)

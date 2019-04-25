@@ -8,9 +8,9 @@ import {
 import { 
   moneyBag,
   moneyUIwithText,
-  idleGame,
   alertUI,
  } from './game/gameComponents'
+import { idleGame, } from './game/Layers'
 import { 
   getTap,
 } from './game/gameFunc'
@@ -53,22 +53,22 @@ export default class Game extends React.PureComponent {
     let iCount = 0
     setInterval(() => {
       iCount++
-      if(iCount < 10) {
-        this.myGameTest
-          .setIdActions('ObjLayer', 'userCharacter', {
-            fn: 'moveByNum', parameters: [1, 1]
-          })
-          .setIdActions('ObjLayer', 'userCharacter', {
-            fn: 'changeStatus', parameters: ['another']
-          })
-      } else if(iCount >= 10 && iCount < 19) {
-        this.myGameTest
-        .setIdActions('ObjLayer', 'userCharacter', {
-          fn: 'changeStatus', parameters: ['origin']
-        })
-      } else {
-        iCount = 0
-      }
+      // if(iCount < 10) {
+      //   this.myGameTest
+      //     .setIdActions('ObjLayer', 'userCharacter', {
+      //       fn: 'moveByNum', parameters: [1, 1]
+      //     })
+      //     .setIdActions('ObjLayer', 'userCharacter', {
+      //       fn: 'changeStatus', parameters: ['another']
+      //     })
+      // } else if(iCount >= 10 && iCount < 19) {
+      //   this.myGameTest
+      //   .setIdActions('ObjLayer', 'userCharacter', {
+      //     fn: 'changeStatus', parameters: ['origin']
+      //   })
+      // } else {
+      //   iCount = 0
+      // }
     }, 100)
     // document.addEventListener('keydown', (e) => {
     //   this.myGameTest
@@ -132,16 +132,11 @@ export default class Game extends React.PureComponent {
 
 
   tap = (e, canvas) => {
-    // const UIlayer = this.myGameTest.myLayers.UILayer
-    // const ObjLayer = this.myGameTest.myLayers.ObjLayer
     let tapActions = []
     const addTapAction = (layer, id, cloneId, fn, allClone=false) => {
       tapActions = [...tapActions, getTap(e, canvas, layer, id, cloneId, fn, allClone)]
     }
-
-    //順序很重要, 越前面的層級越大
-    // addTapAction(UIlayer, 'ShopBG_B', 0, () => {})
-
+    
     tapActionHolder(this.myGameTest).map(ac => addTapAction(ac.layer, ac.id, ac.cloneId, ac.fn, ac.allClone))
 
     for (let i = 0; i < tapActions.length; i++) {
@@ -153,10 +148,6 @@ export default class Game extends React.PureComponent {
   }
 
   
-  _handleChangeHat = (e) => {
-    const imgSrc = e.target.getAttribute('src')
-    this.myGameTest.obj[0].OBJ = this.setHat(imgSrc)
-  }
   _handleOpenGame = () => {
     this.setState(state => ({
       gameOpen: !state.gameOpen

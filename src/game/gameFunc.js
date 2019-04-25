@@ -152,24 +152,21 @@ export const checkCollideWithWalls = (w, h, x, y, wallW, wallH) => {
 }
 export const getLayerObjByIdCloneId = (layerOBJs, id='obj', cloneId=0, allClone=false) => {
   // console.log(layerOBJs)
-  // let resLayerObjs = []
+  let resLayerObjs = []
   
   for (let i = 0; i < layerOBJs.length; i++) {
-    // if(allClone) {
-    //   const clonIdObjs = layerOBJs.filter(obj => obj.id === id)
-    //   const res = clonIdObjs && layerOBJs[i].OBJ
-    // }
     const checkResult = allClone ? 
       layerOBJs.filter(obj => obj.id === id) : 
       layerOBJs.filter(obj => obj.id === id && obj.cloneId === cloneId)
     if(checkResult.length > 0) {
       // console.log(layerOBJs[i])
-      return checkResult
+      resLayerObjs = [...resLayerObjs, ...checkResult]
     } else if(layerOBJs[i].OBJ.groupObjs) {
       const res = getLayerObjByIdCloneId(layerOBJs[i].OBJ.groupObjs, id, cloneId, allClone)
       if(res) {
-        return res
+        resLayerObjs = [...resLayerObjs, ...res]
       }
     }
   }
+  return resLayerObjs
 }

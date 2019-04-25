@@ -43,7 +43,7 @@ export class drawRect {
   }
   render(ctx) {
     // this.ctx.restore()
-    this.draw(ctx)
+    if(this.display) { this.draw(ctx) }
   }
 }
 export class drawUIText {
@@ -62,6 +62,9 @@ export class drawUIText {
     this.containerWidth = containerWidth
     this.lineHeight = lineHeight
     this.textAlignCenter = textAlignCenter
+  }
+  setAttr(attr, value) {
+    this[attr] = value
   }
   handleTextBreak(ctx) {
     ctx.font = this.textConfig
@@ -306,7 +309,7 @@ export class myGroupObjs {
   draw(ctx) {
     // if(!this.display) { console.log('groupObj', this.display, this.groupObjs) } 
     for (let i = 0; i < this.groupObjs.length; i++) {
-      if(this.groupObjs[i].OBJ.groupDisplay) {
+      if(this.groupObjs[i].OBJ.hasOwnProperty('groupDisplay')) {
         this.groupObjs[i].OBJ.groupDisplay = this.groupDisplay
       } else {
         this.groupObjs[i].OBJ.display = this.groupDisplay
@@ -409,9 +412,13 @@ export class myGame {
     console.log(value, targetArr)
   }
   updateStateNum(layer, id, property, num, init=false) {
-    const originObj = this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ
+    const originObj = 
+      this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0] && 
+      this.myLayers[layer].layerObjs.filter(obj => obj.id === id)[0].OBJ
     const resultVal = init ? num : originObj[property] * 1 + num
-    originObj[property] = resultVal
+
+    if(originObj && originObj[property]) { originObj[property] = resultVal }
+    
 
     const originLS = JSON.parse(localStorage.getItem('gameConfig'))
     const storeData = setValueOfArrObj(originLS, id, 'value', resultVal)

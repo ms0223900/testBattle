@@ -12,8 +12,6 @@ import {
   drawSpriteImg, 
   actionUpObj, 
   myGroupObjs,
-  clipObj,
-  myGame, 
 } from './gameLib'
 import { 
   getCanvasComponent, 
@@ -72,17 +70,6 @@ export class actionUpGroupObjs extends myGroupObjs {
     this.upAction()
     for (let i = 0; i < this.groupObjs.length; i++) {
       this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
-    }
-  }
-}
-export class myLayer {
-  constructor(layerObjs=[]) {
-    this.layerObjs = layerObjs
-  }
-  render(ctx) {
-    // console.log(this.layerObjs)
-    for (let i = 0; i < this.layerObjs.length; i++) {
-      this.layerObjs[i].OBJ.render(ctx)
     }
   }
 }
@@ -220,28 +207,5 @@ export const testGroupMap = (x, y) => getCanvasGroup({
   spec: [x, y], 
   groupObjs: testMAP.map(te => getCanvasComponent(te.id, te.imgSrc, [100, 100, te.x, y], drawStaticImg, 1, [], 0.7) ) 
 })
-//layers
-export const UILayer = new myLayer([
-  ShoppingList(10, 220),
-  testButton(),
-  moneyBag(0, 220),
-  countNum(70, 280),
-  // testGroupMap(100, 100),
-  ShopContainer(0, 100),
-])
-export const ObjLayer = new myLayer([ userCharacter(120, 120) ])
-export const BackLayer = new myLayer([ backTest ])
-  
-
-
-//init game
-const allLayer = {
-  BackLayer: BackLayer,
-  ObjLayer: ObjLayer,
-  UILayer: UILayer,
-}
-export const idleGame = (ctx) => (
-  new myGame(ctx, allLayer)
-)
 
 // const a = 0
