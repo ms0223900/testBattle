@@ -261,7 +261,9 @@ export class myGroupObjs {
     this.clip = clip
     this.groupObjs = groupObjs
     // this.reset = false
-    this.prevAttr = {}
+    this.prevAttr = {
+      groupObjs: this.groupObjs,
+    }
     this.setObjInGroup(this.x, this.y, this.display)
     // this.id = id
   }
@@ -277,14 +279,16 @@ export class myGroupObjs {
     if(this.prevAttr.y !== this.y) {
       this.setObjInGroup(0, this.y - this.prevAttr.y) 
     }
+    if(this.prevAttr.groupObjs.length < this.groupObjs.length) {
+      this.setObjInGroup(this.x, this.y, 'single', this.groupObjs.length - 1)
+    }
     // if(this.prevAttr.display !== this.display) {
     //   this.setObjInGroup(0, 0, this.display) 
     // }
   }
-  setObjInGroup(x=0, y=0) {
+  setObjInGroup(x=0, y=0, singleOrAll='all', singleIndex=0) {
     let w = 0, h = 0
-    for (let i = 0; i < this.groupObjs.length; i++) {
-      // console.log(this.groupObjs[i].id, this.groupObjs[i])
+    const setGroupAttr = (i) => {
       this.groupObjs[i].OBJ.x += x 
       this.groupObjs[i].OBJ.y += y 
       if(this.groupObjs[i].groupObj) {
@@ -292,6 +296,16 @@ export class myGroupObjs {
         this.groupObjs[i].groupObj.y += y 
       }
     }
+
+    if(singleOrAll === 'all') {
+      for (let i = 0; i < this.groupObjs.length; i++) {
+        // console.log(this.groupObjs[i].id, this.groupObjs[i])
+        setGroupAttr(i)
+      }
+    } else {
+      setGroupAttr(singleIndex)
+    }
+    
     for (let i = 0; i < this.groupObjs.length; i++) {
       if(this.groupObjs[i].OBJ.w > w) { w = this.groupObjs[i].OBJ.w }
       if(this.groupObjs[i].OBJ.h > h) { h = this.groupObjs[i].OBJ.h }
@@ -300,10 +314,12 @@ export class myGroupObjs {
     this.h = h
     console.log(this.id, this.x, this.y, this.w, this.h)
     this.prevAttr = {
+      ...this.prevAttr,
       x: this.x,
       y: this.y,
       w: this.w,
       h: this.h,
+      groupObjs: this.groupObjs,
     }
   }
   draw(ctx) {

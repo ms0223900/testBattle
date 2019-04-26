@@ -1,8 +1,12 @@
 import { 
   myGame,  
 } from './gameLib'
-import { ShopOpenIcon } from './components/Icon'
+import { 
+  ShopOpenIcon,
+  ItemOpenIcon,
+} from './components/Icon'
 import { MyShopContainer } from './shop/shopContainer'
+import { MyItemsContainer } from './items/itemsContainer'
 import { 
   backTest 
 } from './gameComponents'
@@ -24,6 +28,8 @@ export class myLayer {
 
 export const UILayer = new myLayer([
   // testGroupMap(100, 100),
+  MyItemsContainer,
+  ItemOpenIcon,
   ShopOpenIcon,
   MyShopContainer,
 ])

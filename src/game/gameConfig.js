@@ -53,7 +53,7 @@ export const ShopUIConfig = {
   backGround: { 
     width: 300, 
     height: 500, 
-    imgSrc: testBackArr[1]
+    imgSrc: testBackArr[3]
   },
   iconDist: {
     y: 80,

@@ -1,5 +1,7 @@
 // import { TABconfig } from '../gameConfig'
 import { MyShopContainer } from './shopContainer'
+import { ShopIconConfig } from '../gameConfig'
+import { ShopIcon } from './shopIcon'
 
 // export const tabActions = (gameInstanse) => TABconfig.map(config => (
 //   { 
@@ -32,9 +34,26 @@ export const shopUIActions = (gameInstanse) => {
       layer: UILayer, 
       id: 'ShopIcon_shop', cloneId: 0, 
       fn: () => {
-        console.log(MyShopContainer)
-        MyShopContainer.countNum[1] += 1 
-        gameInstanse.setAttr('UILayer', 'shopCount', 0, 'count', MyShopContainer.countNum[1], false)
+        MyShopContainer.containerProps.countNum[1] += 1 
+        gameInstanse.setAttr('UILayer', 'shopCount', 0, 'count', MyShopContainer.containerProps.countNum[1], false)
+
+        const ICONconfig = ShopIconConfig.filter(config => config.id === 'ShopIcon_shop')
+
+        const originGroupObjs = gameInstanse.myLayers.UILayer.layerObjs.filter(obj => obj.id === 'ItemsContainer')[0].OBJ.groupObjs
+        console.log(originGroupObjs)
+        const addedIcon = ICONconfig.map(config => ShopIcon({
+          id: config.id,
+          x: 0, y: 100,
+          iconImgSrc: config.imgSrc,
+          iconCount: 1,
+        }))
+        if(originGroupObjs.filter(obj => obj.id === 'ShopIcon_shop').length === 0) {
+          gameInstanse.setAttr('UILayer', 'ItemsContainer', 0, 'groupObjs', [
+            ...originGroupObjs,
+            ...addedIcon,
+          ])
+        }
+        
       },
     },
     {

@@ -1,9 +1,11 @@
-import { Icon } from '../components/Icon'
+import { 
+  Icon, 
+} from '../components/Icon'
 import { ShopIcon } from './shopIcon'
 import { ShopBG_B } from './shopBG'
 import { freeIcon } from '../gameObj'
 import { 
-  canvasSpec,
+  // canvasSpec,
   ShopIconConfig,
   ShopUIConfig 
 } from '../gameConfig'
@@ -23,7 +25,13 @@ export function ShopContainer(x, y) {
       y: xy[i].y,
     }
   }
-  const containerProps = { countNum: [20, 30, 40, 20] }
+  
+  const containerProps = { 
+    countNum: [20, 30, 40, 20],
+    icons: iconConfig,
+  }
+  const ICONS = this.containerProps || iconConfig
+
   const containerGroup = getCanvasGroup({
     id: 'ShopContainer', 
     spec: [x, y], 
@@ -33,7 +41,7 @@ export function ShopContainer(x, y) {
         x: 0, y: 0,
         w: backW, h: backH,
       }),
-      ...iconConfig.map(iconConfig => ShopIcon({
+      ...ICONS.map(iconConfig => ShopIcon({
         id: iconConfig.id,
         x: iconConfig.x,
         y: iconConfig.y,
@@ -45,15 +53,10 @@ export function ShopContainer(x, y) {
         imgSrc: freeIcon.close,
         x: 280, y: -20,
       }),
-      Icon({
-        id: 'shopIcon',
-        imgSrc: freeIcon.shop,
-        x: canvasSpec.width - 20, y: canvasSpec.height - 40,
-      })
     ]
   })
   return {
-    ...containerProps,
+    containerProps,
     ...containerGroup,
   }
 }

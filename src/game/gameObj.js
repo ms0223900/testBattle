@@ -27,7 +27,8 @@ export const testMapIcon = [
 export const testBackArr = [
   'https://image.freepik.com/free-psd/abstract-background-design_1297-84.jpg',
   'https://image.freepik.com/free-vector/bokeh-lights-glitter-background_1048-8548.jpg',
-  'https://besthqwallpapers.com/Uploads/14-2-2019/80461/thumb2-blue-mosaic-4k-artwork-mosaic-texture-blue-background.jpg'
+  'https://besthqwallpapers.com/Uploads/14-2-2019/80461/thumb2-blue-mosaic-4k-artwork-mosaic-texture-blue-background.jpg',
+  'https://cdn.pixabay.com/photo/2017/03/02/08/58/background-texture-2110724__340.jpg',
 ]
 export const freeIcon = {
   shop: 'https://freeiconshop.com/wp-content/uploads/edd/shopping-bag-flat.png',
@@ -37,4 +38,5 @@ export const freeIcon = {
   pear: 'https://freeiconshop.com/wp-content/uploads/edd/pear-flat.png',
   hotDog: 'https://freeiconshop.com/wp-content/uploads/edd/hotdog-flat.png',
   close: 'https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png',
+  item: 'https://freeiconshop.com/wp-content/uploads/edd/list-flat.png',
 }
