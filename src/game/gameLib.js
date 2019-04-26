@@ -55,8 +55,12 @@ export class drawUIText {
     this.breakText = null
     this.fontSize = 18
     this.fillStyle = fillStyle
-    this.x = this.textAlignCenter ? 0 : x
-    this.y = y
+    this.groupXY = {
+      x: 0, y: 0,
+    }
+    this.x = this.textAlignCenter ? 0 : x + this.groupXY.x
+    this.y = y + this.groupXY.y
+    
     this.w = 0
     this.h = 0
     this.containerWidth = containerWidth
@@ -97,7 +101,7 @@ export class drawUIText {
       }
     }
     else {
-      ctx.fillText(this.text, this.x, this.y)
+      ctx.fillText(this.text, this.x + this.groupXY.x, this.y + this.groupXY.y)
     }
 
     ctx.restore()
@@ -120,6 +124,9 @@ export class drawStaticImg {
     this.height = height * this.imgRatio,
     this.x = x
     this.y = y
+    this.groupXY = {
+      x: 0, y: 0,
+    }
     this.speed = 2
     this.dir = true
     this.w = this.width
@@ -175,8 +182,8 @@ export class drawStaticImg {
     ctx.globalAlpha = this.opacity
     ctx.drawImage(
       this.image, 
-      this.x, 
-      this.y, 
+      this.x + this.groupXY.x, 
+      this.y + this.groupXY.y, 
       this.width, 
       this.height
     )
@@ -194,7 +201,7 @@ export class drawSpriteImg extends drawStaticImg {
     this.frameRate = frameRate
     this.w = this.width / this.frameRate
     this.h = this.height
-
+    
     this.imgIndex = imgIndex
     this.imgTick = imgTick
   }
@@ -206,8 +213,8 @@ export class drawSpriteImg extends drawStaticImg {
       0, 
       this.width / this.frameRate / this.imgRatio, 
       this.height / this.imgRatio,
-      this.x, 
-      this.y, 
+      this.x + this.groupXY.x, 
+      this.y + this.groupXY.y, 
       this.width / this.frameRate, 
       this.height)
     
@@ -257,6 +264,9 @@ export class myGroupObjs {
     this.groupDisplay = groupDisplay
     this.x = x
     this.y = y
+    this.groupXY = {
+      x: 0, y: 0,
+    }
     this.groupRatio = groupRatio
     this.clip = clip
     this.groupObjs = groupObjs
@@ -264,7 +274,7 @@ export class myGroupObjs {
     this.prevAttr = {
       groupObjs: this.groupObjs,
     }
-    this.setObjInGroup(this.x, this.y, this.display)
+    this.setObjInGroup()
     // this.id = id
   }
   setAttr(attr=false, value=false) {
@@ -274,10 +284,10 @@ export class myGroupObjs {
     }
     // this.display = 'vvv'
     if(this.prevAttr.x !== this.x) {
-      this.setObjInGroup(this.x - this.prevAttr.x, 0)
+      this.setObjInGroup()
     } 
     if(this.prevAttr.y !== this.y) {
-      this.setObjInGroup(0, this.y - this.prevAttr.y) 
+      this.setObjInGroup() 
     }
     if(this.prevAttr.groupObjs.length < this.groupObjs.length) {
       this.setObjInGroup(this.x, this.y, 'single', this.groupObjs.length - 1)
@@ -286,14 +296,18 @@ export class myGroupObjs {
     //   this.setObjInGroup(0, 0, this.display) 
     // }
   }
-  setObjInGroup(x=0, y=0, singleOrAll='all', singleIndex=0) {
+  setObjInGroup(singleOrAll='all', singleIndex=0) {
     let w = 0, h = 0
     const setGroupAttr = (i) => {
-      this.groupObjs[i].OBJ.x += x 
-      this.groupObjs[i].OBJ.y += y 
+      this.groupObjs[i].OBJ.groupXY = {
+        x: this.x + this.groupXY.x,
+        y: this.y + this.groupXY.y
+      }
       if(this.groupObjs[i].groupObj) {
-        this.groupObjs[i].groupObj.x += x 
-        this.groupObjs[i].groupObj.y += y 
+        this.groupObjs[i].groupObj.groupXY = {
+          x: this.x + this.groupXY.x,
+          y: this.y + this.groupXY.y
+        } 
       }
     }
 
@@ -302,7 +316,7 @@ export class myGroupObjs {
         // console.log(this.groupObjs[i].id, this.groupObjs[i])
         setGroupAttr(i)
       }
-    } else {
+    } else if(singleOrAll === 'single') {
       setGroupAttr(singleIndex)
     }
     
@@ -419,6 +433,16 @@ export class myGame {
       this.frame.prev = this.frame.now
       // console.log(this.frame)
     }, 500)
+  }
+  getAttr(layerName='', id='', cloneId=0, attr, allClone=false) {
+    const targetArr = getLayerObjByIdCloneId(this.myLayers[layerName].layerObjs, id, cloneId, allClone)
+    console.log(targetArr[0].OBJ[attr])
+    if(targetArr) {
+      return targetArr[0].OBJ[attr]
+    } else {
+      throw 'cannot get attr from your function'
+    }
+    
   }
   setAttr(layerName='', id='', cloneId=0, attr='', value, allClone=false) {
     const targetArr = getLayerObjByIdCloneId(this.myLayers[layerName].layerObjs, id, cloneId, allClone)

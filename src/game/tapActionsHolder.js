@@ -1,4 +1,8 @@
-import { shopUIActions } from './shop/shopActions'
+import { 
+  shopUIActions,
+} from './shop/shopActions'
+import { 
+  ItemsActions,  } from './items/itemsActions'
 
 export const alertUIActions = (gameInstanse) => {
   const { UILayer } = gameInstanse.myLayers
@@ -25,5 +29,6 @@ export const tapActionHolder = (gameInstanse) => {
     ...alertUIActions(gameInstanse),
     // ...tabActions(gameInstanse),
     ...shopUIActions(gameInstanse),
+    ...ItemsActions(gameInstanse),
   ]
 }
