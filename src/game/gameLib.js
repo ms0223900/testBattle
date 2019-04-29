@@ -24,6 +24,9 @@ export class drawRect {
     this.display = display
     this.x = x
     this.y = y
+    this.translateXY = {
+      x: [], y: [],
+    }
     this.w = w
     this.h = h
     this.fillStyle = fillStyle     
@@ -55,20 +58,26 @@ export class drawUIText {
     this.breakText = null
     this.fontSize = 18
     this.fillStyle = fillStyle
-    this.groupXY = {
-      x: 0, y: 0,
+    this.x = this.textAlignCenter ? 0 : x 
+    this.y = y
+    this.translateXY = {
+      x: [], y: [],
     }
-    this.x = this.textAlignCenter ? 0 : x + this.groupXY.x
-    this.y = y + this.groupXY.y
-    
     this.w = 0
     this.h = 0
     this.containerWidth = containerWidth
     this.lineHeight = lineHeight
     this.textAlignCenter = textAlignCenter
+    this.prevProps = {
+      x: this.x, y: this.y,
+    }
   }
   setAttr(attr, value) {
     this[attr] = value
+    this.prevProps = {
+      ...this.prevProps,
+      [attr]: value
+    }
   }
   handleTextBreak(ctx) {
     ctx.font = this.textConfig
@@ -101,9 +110,8 @@ export class drawUIText {
       }
     }
     else {
-      ctx.fillText(this.text, this.x + this.groupXY.x, this.y + this.groupXY.y)
+      ctx.fillText(this.text, this.x, this.y)
     }
-
     ctx.restore()
   }
   render(ctx) {
@@ -124,8 +132,8 @@ export class drawStaticImg {
     this.height = height * this.imgRatio,
     this.x = x
     this.y = y
-    this.groupXY = {
-      x: 0, y: 0,
+    this.translateXY = {
+      x: [], y: [],
     }
     this.speed = 2
     this.dir = true
@@ -138,9 +146,19 @@ export class drawStaticImg {
       },
       ...status
     ]
+    this.prevProps = {
+      x: 0, y: 0,
+      originXY: { x: this.x, y: this.y },
+      translateXY: null,
+    }
   }
-  setAttr(attr, value) {
+  setAttr(attr=false, value='') {
     this[attr] = value
+    // this.checkGroupTranslate()
+    this.prevProps = {
+      ...this.prevProps,
+      [attr]: value
+    }
   }
   moveByUser(e) {
     if(e.keyCode - 37 >= 0 && e.keyCode - 37 <=3) {
@@ -182,8 +200,8 @@ export class drawStaticImg {
     ctx.globalAlpha = this.opacity
     ctx.drawImage(
       this.image, 
-      this.x + this.groupXY.x, 
-      this.y + this.groupXY.y, 
+      this.x, 
+      this.y, 
       this.width, 
       this.height
     )
@@ -264,51 +282,57 @@ export class myGroupObjs {
     this.groupDisplay = groupDisplay
     this.x = x
     this.y = y
+    this.translateXY = {
+      x: [this.x], y: [this.y]
+    }
     this.groupXY = {
-      x: 0, y: 0,
+      x: 0, y: 0, setToGroupXY: false,
     }
     this.groupRatio = groupRatio
     this.clip = clip
     this.groupObjs = groupObjs
     // this.reset = false
-    this.prevAttr = {
+    this.prevProps = {
       groupObjs: this.groupObjs,
+      x: null, 
+      y: null,
     }
     this.setObjInGroup()
     // this.id = id
   }
   setAttr(attr=false, value=false) {
+    // const { translateXY } = this.prevProps
     if(attr) { 
       this[attr] = value
       // console.log('this.' + attr + ':' , this[attr])
+    } else {
+      // if(translateXY.x !== this.translateXY.x || translateXY.y !== this.translateXY.y) {
+      //   this.setObjInGroup()
+      // }
+      
+      if(this.prevProps.x !== this.x || this.prevProps.y !== this.y) {
+        console.log(this.x, this.prevProps.x,';', this.y, this.prevProps.y)
+        this.setObjInGroup()
+        // console.log('setAttr prevProps.x')
+      }
+      if(this.prevProps.groupObjs.length < this.groupObjs.length) {
+        this.setObjInGroup('single', this.groupObjs.length - 1)
+        // console.log('setAttr groupObjs.length')
+      }
     }
-    // this.display = 'vvv'
-    if(this.prevAttr.x !== this.x) {
-      this.setObjInGroup()
-    } 
-    if(this.prevAttr.y !== this.y) {
-      this.setObjInGroup() 
-    }
-    if(this.prevAttr.groupObjs.length < this.groupObjs.length) {
-      this.setObjInGroup(this.x, this.y, 'single', this.groupObjs.length - 1)
-    }
-    // if(this.prevAttr.display !== this.display) {
-    //   this.setObjInGroup(0, 0, this.display) 
-    // }
   }
   setObjInGroup(singleOrAll='all', singleIndex=0) {
     let w = 0, h = 0
     const setGroupAttr = (i) => {
-      this.groupObjs[i].OBJ.groupXY = {
-        x: this.x + this.groupXY.x,
-        y: this.y + this.groupXY.y
-      }
-      if(this.groupObjs[i].groupObj) {
-        this.groupObjs[i].groupObj.groupXY = {
-          x: this.x + this.groupXY.x,
-          y: this.y + this.groupXY.y
-        } 
-      }
+      this.groupObjs[i].OBJ.setAttr('x', this.groupObjs[i].OBJ.x + this.x - this.prevProps.x)
+      this.groupObjs[i].OBJ.setAttr('y', this.groupObjs[i].OBJ.y + this.y - this.prevProps.y)
+      // this.groupObjs[i].OBJ.setAttr('translateXY', {
+      //   x: this.groupObjs[i].OBJ.translateXY ? 
+      //     [...this.translateXY.x, this.x] : [this.x],
+      //   y: this.groupObjs[i].OBJ.translateXY ? 
+      //     [...this.translateXY.y, this.y] : [this.y],
+      // })
+      // console.log(this.id, this.translateXY, this.groupObjs[i])
     }
 
     if(singleOrAll === 'all') {
@@ -326,14 +350,17 @@ export class myGroupObjs {
     }
     this.w = w
     this.h = h
-    console.log(this.id, this.x, this.y, this.w, this.h)
-    this.prevAttr = {
-      ...this.prevAttr,
+    // console.log(this.id, this.x, this.y, this.w, this.h)
+    this.prevProps = {
+      ...this.prevProps,
       x: this.x,
       y: this.y,
       w: this.w,
       h: this.h,
       groupObjs: this.groupObjs,
+      translateXY: {
+        x: this.translateXY.x, y: this.translateXY.y,
+      }
     }
   }
   draw(ctx) {
@@ -351,15 +378,6 @@ export class myGroupObjs {
   }
   render(ctx) {
     ctx.save()
-    // const { isClip, clipX, clipY, clipW, clipH } = this.clip
-    // if(isClip) {
-      
-    //   // const region = new Path2D()
-    //   ctx.rect(clipX, clipY, clipW, clipH)
-    //   ctx.fillStyle = 'transparent'
-    //   ctx.fill()
-    //   // ctx.clip()
-    // }
     this.draw(ctx) 
     ctx.restore()
   }

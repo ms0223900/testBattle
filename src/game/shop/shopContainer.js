@@ -16,9 +16,9 @@ const { width: backW, height: backH, imgSrc: backImgSrc } = ShopUIConfig.backGro
 
 
 export function ShopContainer(x, y) {
-  const xy = ShopIconConfig.map(config => handleBlockLineBreak(config.posId, 3, 60, backW, 40))
+  const xy = ShopIconConfig.slice(0, 4).map(config => handleBlockLineBreak(config.posId, 3, 80, backW, 40))
   let iconConfig = []
-  for (let i = 0; i < ShopIconConfig.length; i++) {
+  for (let i = 0; i < xy.length; i++) {
     iconConfig[i] = {
       ...ShopIconConfig[i],
       x: xy[i].x,
@@ -60,4 +60,4 @@ export function ShopContainer(x, y) {
     ...containerGroup,
   }
 }
-export const MyShopContainer = new ShopContainer(0, 100)
+export const MyShopContainer = new ShopContainer(22, 99)

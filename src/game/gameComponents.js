@@ -30,14 +30,14 @@ import {
   testMapIcon,
   testBack
  } from './gameObj'
-import { 
-  UITabs_A,
-  UITabs_B,
-  UITabs_C,
-  UIDisplay_A,
-  UIDisplay_B,
-  UIDisplay_C,
-} from './gameUIComponents'
+// import { 
+//   UITabs_A,
+//   UITabs_B,
+//   UITabs_C,
+//   UIDisplay_A,
+//   UIDisplay_B,
+//   UIDisplay_C,
+// } from './gameUIComponents'
 import { ShopContainer } from './shop/shopContainer'
 const { fontStyle } = styleConfig
 
@@ -187,12 +187,12 @@ export const alertUI = (x, y) => getCanvasGroup({
     cancelIcon(200, 160), 
     // alertPurchase(130, 140),
     OKIcon(120, 160),
-    UITabs_C,
-    UITabs_B,
-    UITabs_A,
-    UIDisplay_C, 
-    UIDisplay_B,
-    UIDisplay_A,   
+    // UITabs_C,
+    // UITabs_B,
+    // UITabs_A,
+    // UIDisplay_C, 
+    // UIDisplay_B,
+    // UIDisplay_A,   
   ]
 })
 // getCanvasComponent('moneyBag', canvas, coinUpdate[1], [100, 100, x, y], drawStaticImg, 0.8)

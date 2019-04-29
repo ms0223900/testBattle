@@ -29,6 +29,7 @@ export const testBackArr = [
   'https://image.freepik.com/free-vector/bokeh-lights-glitter-background_1048-8548.jpg',
   'https://besthqwallpapers.com/Uploads/14-2-2019/80461/thumb2-blue-mosaic-4k-artwork-mosaic-texture-blue-background.jpg',
   'https://cdn.pixabay.com/photo/2017/03/02/08/58/background-texture-2110724__340.jpg',
+  'https://ae01.alicdn.com/kf/HTB1DIU6NVXXXXb_XFXXq6xXFXXXU/-.jpg',
 ]
 export const freeIcon = {
   shop: 'https://freeiconshop.com/wp-content/uploads/edd/shopping-bag-flat.png',

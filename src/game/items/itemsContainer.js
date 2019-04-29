@@ -10,4 +10,4 @@ export function ItemsContainer(x, y) {
     ]
   })
 }
-export const MyItemsContainer = new ItemsContainer(20, 100)
+export const MyItemsContainer = new ItemsContainer(20, 30)

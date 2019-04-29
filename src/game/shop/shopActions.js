@@ -37,13 +37,13 @@ export const shopUIActions = (gameInstanse) => {
         MyShopContainer.containerProps.countNum[1] += 1 
         gameInstanse.setAttr('UILayer', 'shopCount', 0, 'count', MyShopContainer.containerProps.countNum[1], false)
 
-        const ICONconfig = ShopIconConfig.filter(config => config.id === 'ShopIcon_shop')
+        const ICONconfig = ShopIconConfig.filter(config => config.id === 'ShopIcon_hotDog')
 
         const originGroupObjs = gameInstanse.myLayers.UILayer.layerObjs.filter(obj => obj.id === 'ItemsContainer')[0].OBJ.groupObjs
         console.log(originGroupObjs)
         const addedIcon = ICONconfig.map(config => ShopIcon({
           id: config.id,
-          x: 0, y: 100,
+          x: 60, y: 100,
           iconImgSrc: config.imgSrc,
           iconCount: 1,
         }))
