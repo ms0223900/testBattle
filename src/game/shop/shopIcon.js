@@ -29,8 +29,8 @@ export class drawNumberCountTest extends drawUIText {
 }
 
 
-export const ShopCount = ({ count=0, }) => ({
-  id: 'shopCount',
+export const ShopCount = ({ id, count=0, }) => ({
+  id: 'shopCount_' + id,
   cloneId: 0,
   OBJ: new drawNumberCountTest({
     x: 0, y: 60,
@@ -45,6 +45,6 @@ export const ShopIcon = ({ id='ShopIcon', x=0, y=0, iconImgSrc='', iconCount, })
   spec: [x, y],
   groupObjs: [
     Icon({ imgSrc: iconImgSrc }),
-    ShopCount({ count: iconCount })
+    ShopCount({ id, count: iconCount })
   ]
 })

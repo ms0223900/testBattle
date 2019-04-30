@@ -105,9 +105,9 @@ export const getTap = (e, canvas, layerInstanse, id, cloneId=0, actionFn, allClo
   }
   const getTapObj = getLayerObjByIdCloneId(layerInstanse.layerObjs, id, cloneId, allCloneAction)
   if(getTapObj && getTapObj.length > 0) {
-    console.log(getTapObj)
+    // console.log(getTapObj)
     if( getTapObj.map(obj => checkCollideWithPoint(tapPos, obj.OBJ)).indexOf(true) !== -1 ) {
-      console.log(id, cloneId, 'tap')
+      // console.log(id, cloneId, 'tap')
       return actionFn
     }
   }
@@ -161,12 +161,31 @@ export const getLayerObjByIdCloneId = (layerOBJs, id='obj', cloneId=0, allClone=
     if(checkResult.length > 0) {
       // console.log(layerOBJs[i])
       resLayerObjs = [...resLayerObjs, ...checkResult]
+      break
     } else if(layerOBJs[i].OBJ.groupObjs) {
       const res = getLayerObjByIdCloneId(layerOBJs[i].OBJ.groupObjs, id, cloneId, allClone)
+      // console.log(res)
       if(res) {
         resLayerObjs = [...resLayerObjs, ...res]
       }
     }
   }
   return resLayerObjs
+}
+export const mergeArrObjs = (...arrObjs) => {
+  const LENGTHs = arrObjs.map(arr => arr = arr.length ? arr.length : arr)
+  for (let i = 0; i < LENGTHs.length; i++) {
+    if(LENGTHs[i] !== LENGTHs[0]) { throw 'your parameter have different length.' }
+  }
+  let res = []
+  console.log(arrObjs)
+  for (let i = 0; i < arrObjs.length; i++) {
+    for (let j = 0; j < arrObjs[i].length; j++) {
+      res[j] = {
+        ...res[j],
+        ...arrObjs[i][j],
+      }
+    }
+  }
+  return res
 }

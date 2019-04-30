@@ -21,6 +21,11 @@ import { ShopIcon } from './shopIcon'
 
 export const shopUIActions = (gameInstanse) => {
   const { UILayer } = gameInstanse.myLayers
+  // const myShopContainer = MyShopContainer(gameInstanse)
+  // myShopContainer.subscribeAttrToUpdate({ 
+  //   id: 'shopCount_ShopIcon_shop', attr: 'count',
+  //   containerStates: myShopContainer.containerStates.countNum[0]
+  // })
 
   return ([
     {
@@ -34,26 +39,29 @@ export const shopUIActions = (gameInstanse) => {
       layer: UILayer, 
       id: 'ShopIcon_shop', cloneId: 0, 
       fn: () => {
-        MyShopContainer.containerProps.countNum[1] += 1 
-        gameInstanse.setAttr('UILayer', 'shopCount', 0, 'count', MyShopContainer.containerProps.countNum[1], false)
+        const { countNum } = MyShopContainer.containerStates
+        
+        MyShopContainer.setContainerState({
+          countNum: countNum.map(num => num + 10)
+        })
+        // console.log(MyShopContainer)
+        // const newCount = MyShopContainer.containerStates.countNum[2] += 1 
+        // gameInstanse.setAttr('UILayer', 'shopCount_ShopIcon_shop', 0, 'count', newCount, false)
 
         const ICONconfig = ShopIconConfig.filter(config => config.id === 'ShopIcon_hotDog')
-
-        const originGroupObjs = gameInstanse.myLayers.UILayer.layerObjs.filter(obj => obj.id === 'ItemsContainer')[0].OBJ.groupObjs
-        console.log(originGroupObjs)
-        const addedIcon = ICONconfig.map(config => ShopIcon({
-          id: config.id,
-          x: 60, y: 100,
-          iconImgSrc: config.imgSrc,
-          iconCount: 1,
-        }))
-        if(originGroupObjs.filter(obj => obj.id === 'ShopIcon_shop').length === 0) {
-          gameInstanse.setAttr('UILayer', 'ItemsContainer', 0, 'groupObjs', [
-            ...originGroupObjs,
-            ...addedIcon,
-          ])
-        }
         
+        const isExist = gameInstanse.checkObjExist('UILayer', 'ItemsContainer', 'ShopIcon_hotDog')
+        if(!isExist) {
+          ICONconfig.map(con => gameInstanse.spawnObjToLayer({ 
+            layer: 'UILayer',
+            container: 'ItemsContainer',
+            objFn: ShopIcon,
+            pos: { x: 60, y: 100 },
+            objFnParas: { id: con.id, iconImgSrc: con.imgSrc, iconCount: 1 }
+          }))
+        } else {
+          // gameInstanse.setAttr('UILayer', 'shopCount_ShopIcon_hotDog', 0, 'count', newCount, false)
+        }
       },
     },
     {
@@ -61,6 +69,14 @@ export const shopUIActions = (gameInstanse) => {
       id: 'ShopOpenIcon', cloneId: 0, 
       fn: () => {
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', true)
+      },
+    },
+    {
+      layer: UILayer, 
+      id: 'ShopIcon_burger', cloneId: 0, 
+      fn: () => {
+        const originX = gameInstanse.getAttr('UILayer', 'ShopContainer', 0, 'x')
+        gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'x', originX + 5)
       },
     },
   ])

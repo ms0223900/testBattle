@@ -326,13 +326,6 @@ export class myGroupObjs {
     const setGroupAttr = (i) => {
       this.groupObjs[i].OBJ.setAttr('x', this.groupObjs[i].OBJ.x + this.x - this.prevProps.x)
       this.groupObjs[i].OBJ.setAttr('y', this.groupObjs[i].OBJ.y + this.y - this.prevProps.y)
-      // this.groupObjs[i].OBJ.setAttr('translateXY', {
-      //   x: this.groupObjs[i].OBJ.translateXY ? 
-      //     [...this.translateXY.x, this.x] : [this.x],
-      //   y: this.groupObjs[i].OBJ.translateXY ? 
-      //     [...this.translateXY.y, this.y] : [this.y],
-      // })
-      // console.log(this.id, this.translateXY, this.groupObjs[i])
     }
 
     if(singleOrAll === 'all') {
@@ -417,6 +410,13 @@ export class myGame {
     this.setIdActions = this.setIdActions.bind(this)
     this.frame = { prev: 0, now: 0, fps: 0 }
   }
+  setPropToGame(attr, value) {
+    this[attr] = value
+    this.prevProps = {
+      ...this.prevProps,
+      [attr]: value,
+    }
+  }
   init() {
     'use strict'
     const originLS = JSON.parse(localStorage.getItem('gameConfig')) || [] 
@@ -452,6 +452,15 @@ export class myGame {
       // console.log(this.frame)
     }, 500)
   }
+  setInitStates(stateObj={}) {
+    this.stateTree = stateObj
+  }
+  updateGameStates(stateObj={}) {
+    this.stateTree = {
+      ...this.stateTree,
+      stateObj,
+    }
+  }
   getAttr(layerName='', id='', cloneId=0, attr, allClone=false) {
     const targetArr = getLayerObjByIdCloneId(this.myLayers[layerName].layerObjs, id, cloneId, allClone)
     console.log(targetArr[0].OBJ[attr])
@@ -460,14 +469,21 @@ export class myGame {
     } else {
       throw 'cannot get attr from your function'
     }
-    
   }
   setAttr(layerName='', id='', cloneId=0, attr='', value, allClone=false) {
+    // console.log(this.myLayers[layerName].layerObjs)
     const targetArr = getLayerObjByIdCloneId(this.myLayers[layerName].layerObjs, id, cloneId, allClone)
     for (let i = 0; i < targetArr.length; i++) {
       targetArr[i]['OBJ'].setAttr(attr, value)
     }
-    console.log(value, targetArr)
+    console.log('gameSetAttr: ', value, targetArr)
+  }
+  checkObjExist(layer='', container='', id='', cloneId=0) {
+    if(container.length > 0) {
+      return this.myLayers[layer].layerObjs.filter(obj => obj.id === container)[0].OBJ.groupObjs.filter(obj => obj.id === id && cloneId === cloneId).length > 0
+    } else {
+      return getLayerObjByIdCloneId(this.myLayers[layer].layerObjs, id, cloneId, true).length > 0
+    }
   }
   updateStateNum(layer, id, property, num, init=false) {
     const originObj = 
@@ -485,10 +501,10 @@ export class myGame {
   setLayerObjs(layer, newObjs) {
     this.myLayers[layer].layerObjs = newObjs
   }
-  spawnObjToLayer({layer, objFn, pos={ useRandom: true, x: 0, y: 0, }, objFnParas=[], selfDestroy=false, destroyTime=600, isInit=false, isUI=true, i=0, }) {
+  spawnObjToLayer({layer, container='', objFn, pos={ useRandom: true, x: 0, y: 0, }, objFnParas={}, selfDestroy=false, destroyTime=600, isInit=false, isUI=true, i=0, }) {
     const originLS = JSON.parse(localStorage.getItem('gameSpawnObjConfig'))
     const gameLayer = this.myLayers[layer]
-    const newObj = objFn(pos.x, pos.y, ...objFnParas)
+    const newObj = objFn({ x: pos.x, y: pos.y, ...objFnParas })
     const getRandXY = getCanvasRandPos(canvasObjAreaSpec, newObj, pos.x, pos.y)
     const newPosObj = pos.useRandom ? objFn(getRandXY.x, getRandXY.y, ...objFnParas) : newObj
     const newCloneId = originLS.filter(or => or.id === newPosObj.id).length > 0 ? 
@@ -502,15 +518,18 @@ export class myGame {
       objFn: objFn.name,
     }
     const newGameSpawnObjConfig = [...originLS, gameSpawnObjConfigSetting]
-
-    gameLayer.layerObjs = [
-      ...gameLayer.layerObjs, 
-      {
-        id: newPosObj.id,
-        cloneId: newCloneId,
-        OBJ: newPosObj.OBJ,
-      }
-    ]
+    //
+    const originGroupObjs = 
+      gameLayer.layerObjs.filter(obj => obj.id === container)[0].OBJ.groupObjs
+    const newAddedObj = {
+      id: newPosObj.id,
+      cloneId: newCloneId,
+      OBJ: newPosObj.OBJ,
+    }
+    this.setAttr(layer, container, 0, 'groupObjs', [
+      ...originGroupObjs,
+      newAddedObj,
+    ])
     // console.log(gameLayer.layerObjs)
     if(selfDestroy) {
       setTimeout(() => {
