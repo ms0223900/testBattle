@@ -42,7 +42,7 @@ export const shopUIActions = (gameInstanse) => {
         const { countNum } = MyShopContainer.containerStates
         
         MyShopContainer.setContainerState({
-          countNum: countNum.map(num => num + 10)
+          countNum: [countNum[0] + 1, ...countNum.slice(1, 4)]
         })
         // console.log(MyShopContainer)
         // const newCount = MyShopContainer.containerStates.countNum[2] += 1 
@@ -60,6 +60,7 @@ export const shopUIActions = (gameInstanse) => {
             objFnParas: { id: con.id, iconImgSrc: con.imgSrc, iconCount: 1 }
           }))
         } else {
+          console.log(gameInstanse.getAttr('UILayer', 'ItemsContainer', 0, 'groupObjs'))
           // gameInstanse.setAttr('UILayer', 'shopCount_ShopIcon_hotDog', 0, 'count', newCount, false)
         }
       },
@@ -77,6 +78,13 @@ export const shopUIActions = (gameInstanse) => {
       fn: () => {
         const originX = gameInstanse.getAttr('UILayer', 'ShopContainer', 0, 'x')
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'x', originX + 5)
+      },
+    },
+    {
+      layer: UILayer, 
+      id: 'ShopIcon_hotDog', cloneId: 1, 
+      fn: () => {
+        
       },
     },
   ])

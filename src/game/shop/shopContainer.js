@@ -86,25 +86,7 @@ export class Container {
       ...newState,
     }
     this.updateComponents()
-    // const componentsAction = this.subscribedComponents
-    // if(componentsAction.length > 0) {
-    //   console.log(this.containerStates)
-    //   for (let i = 0; i < componentsAction.length; i++) {
-    //     componentsAction[i]()
-    //   }
-    // }
   }
-  // subscribeAttrToUpdate({ id, attr, containerStates }) {
-  //   // const Layer = this.layer
-  //   // const componentProp = this.containerStates.stateToProp
-  //   const newUpdateAction = () => 
-  //     this.setAttr(id, 0, attr, containerStates)
-  //   this.subscribedComponents = [
-  //     ...this.subscribedComponents,
-  //     newUpdateAction,
-  //   ]
-  //   console.log('container set Attr')
-  // }
 }
 const subscribeIds = [
   { id: 'shopCount_ShopIcon_shop', attr: 'count', },
@@ -122,7 +104,6 @@ export class ShopContainer extends Container {
     const mergeStates = mergeArrObjs(subscribeIds, countNumObj)
     console.log(mergeStates)
     mergeStates.map(st => this.setAttr(st.id, 0, st.attr, st.num))
-    
   }
 }
 // MyShopContainer.subscribeAttrToUpdate({ 
@@ -134,5 +115,6 @@ export const MyShopContainer = new ShopContainer({
   containerStates: { countNum: [40, 30, 40, 99] },
   containerGroup: shopContainerGroup(22, 99),
 })
+MyShopContainer.updateComponents()
 // MyShopContainer.subscribeAttrToUpdate()
 // MyShopContainer.setAttr('shopCount_ShopIcon_shop', 0, 'count', 200) 
