@@ -1,4 +1,6 @@
 import React from 'react'
+import { database } from './avatar'
+import { REF } from '../config'
 import { DownloadJSONLink } from './TestPaper'
 import { 
   setValueOfArrObj, 
@@ -12,6 +14,9 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faMinusCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 library.add(faMinusCircle)
+
+
+
 
 export const SingleOption = ({id='option-0-0', changeFn, choice='A', value='', placeholder='option here'}) => (
   <div className={'single-option-container'}>
@@ -185,9 +190,12 @@ class CreateQAPanel extends React.Component {
       window.alert('題目或是選項還有未填寫的喔～')
     }else {
       this.props.setCoin(createQAData.length * 100)
+      const res = [...oldData, ...this.convertDataToJSON(createQAData)]
       this.setState({
-        resultJSON: [...oldData, ...this.convertDataToJSON(createQAData)],
+        resultJSON: res,
       })
+      database.ref(REF).set(res)
+      window.alert('database have been updated')
     }
     
   }

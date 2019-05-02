@@ -15,7 +15,9 @@ import { WholeTestPaper, SingleTestPaper } from './TestPaper'
 import { SelectMenuBar } from './selectDatabase'
 import CreateQAPanel from './createQA'
 import Timer from './Timer'
-import Game from './avatar'
+import Game, { database } from './avatar'
+import { REF } from '../config'
+
 
 import { en_US, zh_TW } from './lang'
 import { IntlProvider, FormattedMessage, addLocaleData } from 'react-intl'
@@ -133,29 +135,51 @@ export default class App extends React.PureComponent {
   }
   componentWillMount = () => {
     // const updateFromLS_QAs = QAs.map(qa => qa = qa)
-    getFetchQA(QAfileDir)
-      .then(json => {
-        const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
-        let setData = json
-        if(LSdata) {
-          for (let i = 0; i < LSdata.length; i++) {
-            setData = setValueOfArrObj(setData, LSdata[i].id, 'star', LSdata[i].star)
-          }
+    database.ref(REF).on('value', data => {
+      const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
+      let setData = data.val()
+      if(LSdata) {
+        for (let i = 0; i < LSdata.length; i++) {
+          setData = setValueOfArrObj(setData, LSdata[i].id, 'star', LSdata[i].star)
         }
-        const Q = setData.map(q => q = {
-          id: q.id, 
-          answer: '', 
-          correctAnswer: q.correctAnswer, 
-          checked: 'notYet',
-        })
-        this.setState({
-          allTestQA: setData,
-          filterAllTestQA: setData,
-          myAnswer: Q,
-          allTestFilterConditions: getNoSameArr(setData.map(s => s = s.databaseSort || ''))
-        })
-        console.log(getNoSameArr(setData.map(s => s = s.databaseSort || '')))
+      }
+      const Q = setData.map(q => q = {
+        id: q.id, 
+        answer: '', 
+        correctAnswer: q.correctAnswer, 
+        checked: 'notYet',
       })
+      this.setState({
+        allTestQA: setData,
+        filterAllTestQA: setData,
+        myAnswer: Q,
+        allTestFilterConditions: getNoSameArr(setData.map(s => s = s.databaseSort || ''))
+      })
+      console.log(getNoSameArr(setData.map(s => s = s.databaseSort || '')))
+    })
+    // getFetchQA(QAfileDir)
+    //   .then(json => {
+    //     const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
+    //     let setData = json
+    //     if(LSdata) {
+    //       for (let i = 0; i < LSdata.length; i++) {
+    //         setData = setValueOfArrObj(setData, LSdata[i].id, 'star', LSdata[i].star)
+    //       }
+    //     }
+    //     const Q = setData.map(q => q = {
+    //       id: q.id, 
+    //       answer: '', 
+    //       correctAnswer: q.correctAnswer, 
+    //       checked: 'notYet',
+    //     })
+    //     this.setState({
+    //       allTestQA: setData,
+    //       filterAllTestQA: setData,
+    //       myAnswer: Q,
+    //       allTestFilterConditions: getNoSameArr(setData.map(s => s = s.databaseSort || ''))
+    //     })
+    //     console.log(getNoSameArr(setData.map(s => s = s.databaseSort || '')))
+    //   })
    
     if(!localStorage.getItem('noteContent')) {
       localStorage.setItem('noteContent', '')

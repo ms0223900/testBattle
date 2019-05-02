@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
+import { firebaseConfig } from '../config'
 //game
 import { 
   canvasSpec,
@@ -17,17 +18,10 @@ import {
 import { tapActionHolder } from './game/tapActionsHolder'
 import firebase from 'firebase'
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyCcmyf7VijRIBE1EgkK1CDYGvcBRnz6KJc',
-  authDomain: 'test-253f3.firebaseapp.com',
-  databaseURL: 'https://test-253f3.firebaseio.com',
-  projectId: 'test-253f3',
-  storageBucket: 'test-253f3.appspot.com',
-  messagingSenderId: '8727978886'
-}
+
 firebase.initializeApp(firebaseConfig)
 
-const database = firebase.database()
+export const database = firebase.database()
 // const admin = firebase.admin
 
 const gameData = {
