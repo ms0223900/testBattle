@@ -135,64 +135,42 @@ export default class App extends React.PureComponent {
   }
   componentWillMount = () => {
     // const updateFromLS_QAs = QAs.map(qa => qa = qa)
-    database.ref(REF).on('value', data => {
-      const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
-      let setData = data.val()
-      if(LSdata) {
-        for (let i = 0; i < LSdata.length; i++) {
-          setData = setValueOfArrObj(setData, LSdata[i].id, 'star', LSdata[i].star)
-        }
-      }
-      const Q = setData.map(q => q = {
-        id: q.id, 
-        answer: '', 
-        correctAnswer: q.correctAnswer, 
-        checked: 'notYet',
-      })
-      this.setState({
-        allTestQA: setData,
-        filterAllTestQA: setData,
-        myAnswer: Q,
-        allTestFilterConditions: getNoSameArr(setData.map(s => s = s.databaseSort || ''))
-      })
-      console.log(getNoSameArr(setData.map(s => s = s.databaseSort || '')))
-    })
-    // getFetchQA(QAfileDir)
-    //   .then(json => {
-    //     const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
-    //     let setData = json
-    //     if(LSdata) {
-    //       for (let i = 0; i < LSdata.length; i++) {
-    //         setData = setValueOfArrObj(setData, LSdata[i].id, 'star', LSdata[i].star)
-    //       }
+    // database.ref(REF).on('value', data => {
+    //   const LSdata = JSON.parse(localStorage.getItem('starAndNote'))
+    //   let setData = data.val()
+    //   if(LSdata) {
+    //     for (let i = 0; i < LSdata.length; i++) {
+    //       setData = setValueOfArrObj(setData, LSdata[i].id, 'star', LSdata[i].star)
     //     }
-    //     const Q = setData.map(q => q = {
-    //       id: q.id, 
-    //       answer: '', 
-    //       correctAnswer: q.correctAnswer, 
-    //       checked: 'notYet',
-    //     })
-    //     this.setState({
-    //       allTestQA: setData,
-    //       filterAllTestQA: setData,
-    //       myAnswer: Q,
-    //       allTestFilterConditions: getNoSameArr(setData.map(s => s = s.databaseSort || ''))
-    //     })
-    //     console.log(getNoSameArr(setData.map(s => s = s.databaseSort || '')))
+    //   }
+    //   const Q = setData.map(q => q = {
+    //     id: q.id, 
+    //     answer: '', 
+    //     correctAnswer: q.correctAnswer, 
+    //     checked: 'notYet',
     //   })
+    //   this.setState({
+    //     allTestQA: setData,
+    //     filterAllTestQA: setData,
+    //     myAnswer: Q,
+    //     allTestFilterConditions: getNoSameArr(setData.map(s => s = s.databaseSort || ''))
+    //   })
+    //   console.log(getNoSameArr(setData.map(s => s = s.databaseSort || '')))
+    // })
+    
    
-    if(!localStorage.getItem('noteContent')) {
-      localStorage.setItem('noteContent', '')
-    }
-    if(!localStorage.getItem('coin')) {
-      localStorage.setItem('coin', 0)
-    }
-    const coin = localStorage.getItem('coin') * 1
-    const latestNoteContent = localStorage.getItem('noteContent')
-    this.setState({
-      noteContent: latestNoteContent,
-      coin: coin,
-    })
+    // if(!localStorage.getItem('noteContent')) {
+    //   localStorage.setItem('noteContent', '')
+    // }
+    // if(!localStorage.getItem('coin')) {
+    //   localStorage.setItem('coin', 0)
+    // }
+    // const coin = localStorage.getItem('coin') * 1
+    // const latestNoteContent = localStorage.getItem('noteContent')
+    // this.setState({
+    //   noteContent: latestNoteContent,
+    //   coin: coin,
+    // })
   }
   setTestRecord = () => {
     const { testRecord, testQA, myAnswer } = this.state

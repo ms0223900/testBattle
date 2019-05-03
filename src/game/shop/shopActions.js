@@ -1,5 +1,6 @@
 // import { TABconfig } from '../gameConfig'
-import { MyShopContainer } from './shopContainer'
+// import { MyShopContainer } from './shopContainer'
+import { MyItemsContainer } from '../items/itemsContainer'
 import { ShopIconConfig } from '../gameConfig'
 import { ShopIcon } from './shopIcon'
 
@@ -19,6 +20,8 @@ import { ShopIcon } from './shopIcon'
 //   }
 // ))
 
+const SHOPICON = ShopIconConfig.slice(0, 4).map(con => con = con.id)
+
 export const shopUIActions = (gameInstanse) => {
   const { UILayer } = gameInstanse.myLayers
   // const myShopContainer = MyShopContainer(gameInstanse)
@@ -35,36 +38,8 @@ export const shopUIActions = (gameInstanse) => {
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', false)
       },
     },
-    {
-      layer: UILayer, 
-      id: 'ShopIcon_shop', cloneId: 0, 
-      fn: () => {
-        const { countNum } = MyShopContainer.containerStates
-        
-        MyShopContainer.setContainerState({
-          countNum: [countNum[0] + 1, ...countNum.slice(1, 4)]
-        })
-        // console.log(MyShopContainer)
-        // const newCount = MyShopContainer.containerStates.countNum[2] += 1 
-        // gameInstanse.setAttr('UILayer', 'shopCount_ShopIcon_shop', 0, 'count', newCount, false)
-
-        const ICONconfig = ShopIconConfig.filter(config => config.id === 'ShopIcon_hotDog')
-        
-        const isExist = gameInstanse.checkObjExist('UILayer', 'ItemsContainer', 'ShopIcon_hotDog')
-        if(!isExist) {
-          ICONconfig.map(con => gameInstanse.spawnObjToLayer({ 
-            layer: 'UILayer',
-            container: 'ItemsContainer',
-            objFn: ShopIcon,
-            pos: { x: 60, y: 100 },
-            objFnParas: { id: con.id, iconImgSrc: con.imgSrc, iconCount: 1 }
-          }))
-        } else {
-          console.log(gameInstanse.getAttr('UILayer', 'ItemsContainer', 0, 'groupObjs'))
-          // gameInstanse.setAttr('UILayer', 'shopCount_ShopIcon_hotDog', 0, 'count', newCount, false)
-        }
-      },
-    },
+    ...SHOPICON.map(icon => buyItems(gameInstanse, icon)),
+    ...SHOPICON.map(icon => consumeItems(gameInstanse, icon)),
     {
       layer: UILayer, 
       id: 'ShopOpenIcon', cloneId: 0, 
@@ -82,10 +57,66 @@ export const shopUIActions = (gameInstanse) => {
     },
     {
       layer: UILayer, 
-      id: 'ShopIcon_hotDog', cloneId: 1, 
+      id: 'ShopIcon_shop', cloneId: 1, 
       fn: () => {
+        const originCount = MyItemsContainer.getContainerAttr(MyItemsContainer.containerStates.items, 'shopCount_ShopIcon_shop').count
+        if(originCount - 1 > 0) {
+          const MINUS = (num) => num - 1
+          MyItemsContainer.updateCount('shopCount_ShopIcon_shop', 'items', 'count', MINUS)
+        } else {
+          MyItemsContainer.removeObjInContainer('ShopIcon_shop', 1)
+        }
         
       },
     },
   ])
 }
+const buyItems = (gameInstanse, id) => ({
+  layer: gameInstanse.myLayers.UILayer, 
+  id: id, cloneId: 0, 
+  fn: () => {
+    // const { countNum } = MyShopContainer.containerStates
+    // const newCount = countNum[0] + 1
+    // MyShopContainer.setContainerState({
+    //   countNum: [newCount, ...countNum.slice(1, 4)]
+    // })
+
+    const ICONconfig = ShopIconConfig.filter(config => config.id === id)
+    
+    const isExist = gameInstanse.checkObjExist('UILayer', 'ItemsContainer', id)
+    const containerObjsLength = MyItemsContainer.OBJ.groupObjs.length
+    if(!isExist) {
+      ICONconfig.map(con => gameInstanse.spawnObjToLayer({ 
+        layer: 'UILayer',
+        container: 'ItemsContainer',
+        objFn: ShopIcon,
+        pos: { x: 60 * containerObjsLength, y: 100 },
+        objFnParas: { id: con.id, iconImgSrc: con.imgSrc, iconCount: 1 }
+      }))
+
+      console.log(MyItemsContainer.containerStates)
+      MyItemsContainer.setContainerState({
+        items: [
+          ...MyItemsContainer.containerStates.items.filter(it => it.id !== 'shopCount_' + id), 
+          { id: 'shopCount_' + id, count: 1 }
+        ]
+      })
+    } else {
+      const ADD = (num) => num + 1
+      MyItemsContainer.updateCount('shopCount_' + id, 'items', 'count', ADD)
+    }
+  },
+})
+const consumeItems = (gameInstanse, id) => ({
+  layer: gameInstanse.myLayers.UILayer, 
+  id: id, cloneId: 1, 
+  fn: () => {
+    const originCount = MyItemsContainer.getContainerAttr(MyItemsContainer.containerStates.items, 'shopCount_' + id).count
+    if(originCount - 1 > 0) {
+      const MINUS = (num) => num - 1
+      MyItemsContainer.updateCount('shopCount_' + id, 'items', 'count', MINUS)
+    } else {
+      MyItemsContainer.removeObjInContainer(id, 1)
+    }
+  },
+})

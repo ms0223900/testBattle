@@ -24,36 +24,36 @@ firebase.initializeApp(firebaseConfig)
 export const database = firebase.database()
 // const admin = firebase.admin
 
-const gameData = {
-  userName: 'penguin',
-  level: 20,
-}
-const gameData2 = {
-  userName: 'penguin',
-  level: 30,
-}
-const gameDataHandler = (newKey) => ({
-  userName: 'penguin' + newKey,
-  level: newKey * 10,
-})
-database.ref('member/0').set(gameData)
-database.ref('member')
-  .on('value', snapshot => console.log( snapshot.val().length ))
-const writeNew = () => {
-  let count = 0
-  database.ref('member').on('value', snapshot => { 
-    count ++
-    if(count === 1) {
-      const newKey = snapshot.val().length 
-      // const originData = snapshot.val()
-      const newData = gameDataHandler(newKey)
-      database.ref('/member/' + newKey).set(newData)
-      window.alert('add successful~')
-      return
-    }
-  })
-  // const update = newData
-} 
+// const gameData = {
+//   userName: 'penguin',
+//   level: 20,
+// }
+// const gameData2 = {
+//   userName: 'penguin',
+//   level: 30,
+// }
+// const gameDataHandler = (newKey) => ({
+//   userName: 'penguin' + newKey,
+//   level: newKey * 10,
+// })
+// database.ref('member/0').set(gameData)
+// database.ref('member')
+//   .on('value', snapshot => console.log( snapshot.val().length ))
+// const writeNew = () => {
+//   let count = 0
+//   database.ref('member').on('value', snapshot => { 
+//     count ++
+//     if(count === 1) {
+//       const newKey = snapshot.val().length 
+//       // const originData = snapshot.val()
+//       const newData = gameDataHandler(newKey)
+//       database.ref('/member/' + newKey).set(newData)
+//       window.alert('add successful~')
+//       return
+//     }
+//   })
+//   // const update = newData
+// } 
 
 
 export default class Game extends React.PureComponent {
@@ -203,7 +203,7 @@ export default class Game extends React.PureComponent {
     return (
       <div>
         <button onClick={this._handleOpenGame}>Open Game</button>
-        <button onClick={ writeNew }>Add Firebase data</button>
+        {/* <button onClick={ writeNew }>Add Firebase data</button> */}
           <div id={'game-canvas'} style={{ display: gameOpen ? 'block' : 'none' }} >
             <canvas 
               ref={this.setCanvas} 

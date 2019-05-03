@@ -11,9 +11,9 @@ import {
 } from '../gameConfig'
 import { 
   getCanvasGroup, 
-  getLayerObjByIdCloneId,
   mergeArrObjs,
 } from '../gameFunc'
+import { Container } from '../gameLib'
 import { handleBlockLineBreak } from '../../functions'
 
 
@@ -56,38 +56,7 @@ export const shopContainerGroup = (x, y) => {
   })
 }
 
-export class Container {
-  constructor({ containerStates={}, containerGroup=[] }) {
-    this.containerStates = containerStates || {}
-    this.id = containerGroup.id || ''
-    this.cloneId = 0
-    this.OBJ = containerGroup.OBJ || {}
-    this.subscribedComponents = []
-  }
-  setState(state, value) {
-    this.containerStates = {
-      ...this.containerStates,
-      [state]: value,
-    }
-  }
-  setAttr(id, cloneId, attr, value) {
-    console.log(this.containerStates)
-    const target = getLayerObjByIdCloneId(this.OBJ.groupObjs, id, cloneId, false)
-    if(target && target.length > 0) {
-      target[0].OBJ.setAttr(attr, value)
-    }
-  }
-  updateComponents() {
-    console.log('this.containerStates: ', this.containerStates)
-  }
-  setContainerState = (newState) => {
-    this.containerStates = {
-      ...this.containerStates,
-      ...newState,
-    }
-    this.updateComponents()
-  }
-}
+
 const subscribeIds = [
   { id: 'shopCount_ShopIcon_shop', attr: 'count', },
   { id: 'shopCount_ShopIcon_info', attr: 'count', },
