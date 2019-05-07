@@ -40,4 +40,7 @@ export const freeIcon = {
   hotDog: 'https://freeiconshop.com/wp-content/uploads/edd/hotdog-flat.png',
   close: 'https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png',
   item: 'https://freeiconshop.com/wp-content/uploads/edd/list-flat.png',
+  heart: 'https://freeiconshop.com/wp-content/uploads/edd/heart-curvy-flat.png',
+  power: 'https://freeiconshop.com/wp-content/uploads/edd/lightning-flat.png',
+  book: 'https://freeiconshop.com/wp-content/uploads/edd/book-flat.png',
 }
