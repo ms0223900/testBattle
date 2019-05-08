@@ -17,7 +17,7 @@ import * as gameComponents from './gameComponents'
 
 
 export class drawRect {
-  constructor({ id, cloneId, display=true, x, y, w, h, fillStyle='transparent', strokeStyle='transparent' }) {
+  constructor({ id, cloneId=0, display=true, x, y, w, h, fillStyle='transparent', strokeStyle='transparent' }) {
     // this.ctx = canvas.getContext('2d')
     this.id = id
     this.cloneId = cloneId
@@ -427,12 +427,12 @@ export class myGame {
     if(!localStorage.getItem('gameSpawnObjConfig')) {
       localStorage.setItem('gameSpawnObjConfig', JSON.stringify([]))
     }
-    for (let i = 0; i < initGameConfig.length; i++) {
-      const { layer, id, objProp, value } = initGameConfig[i]
-      const thatConfig = originLS.filter(or => or.id === id)
-      const setValue = originLS.length > 0 && thatConfig ? thatConfig[0].value : value
-      this.updateStateNum(layer, id, objProp, setValue, true)
-    }
+    // for (let i = 0; i < initGameConfig.length; i++) {
+    //   const { layer, id, objProp, value } = initGameConfig[i]
+    //   const thatConfig = originLS.filter(or => or.id === id)
+    //   const setValue = originLS.length > 0 && thatConfig ? thatConfig[0].value : value
+    //   this.updateStateNum(layer, id, objProp, setValue, true)
+    // }
     for (let i = 0; i < orginGameSpawnObj.length; i++) {
       this.spawnObjToLayer({
         layer: 'ObjLayer',
@@ -603,6 +603,7 @@ export class Container {
     const target = getLayerObjByIdCloneId(this.OBJ.groupObjs, id, cloneId, false)
     if(target && target.length > 0) {
       target[0].OBJ.setAttr(attr, value)
+      console.log(target[0].OBJ)
     }
   }
   updateComponents() {
@@ -611,16 +612,20 @@ export class Container {
   getContainerAttr(containerStateToFilter, attrId) {
     return containerStateToFilter.filter(con => con.id === attrId)[0]
   }
-  updateCount(id, propName, countPropName, countFn) {
+  updateCount(id='', propName='', countPropName='', countUnit=0) {
     const origin = this.containerStates
-    const originCount = origin[propName].filter(it => it.id === id)[0][countPropName]
-    const newCount = countFn(originCount)
-    this.setContainerState({
-      [propName]: [
-        ...origin[propName].filter(it => it.id !== id),
-        { id, [countPropName]: newCount }
-      ]
-    })
+    console.log(origin[propName])
+    const filterProp = origin[propName].filter(it => it.id === id)
+    if(filterProp.length > 0) {
+      const originCount = filterProp[0][countPropName]
+      const newCount = originCount + countUnit
+      this.setContainerState({
+        [propName]: [
+          ...origin[propName].filter(it => it.id !== id),
+          { id, [countPropName]: newCount }
+        ]
+      })
+    }
   }
   setContainerState = (newState) => {
     this.containerStates = {

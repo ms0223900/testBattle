@@ -85,5 +85,5 @@ export const MyShopContainer = new ShopContainer({
   containerGroup: shopContainerGroup(22, 99),
 })
 MyShopContainer.updateComponents()
-// MyShopContainer.subscribeAttrToUpdate()
-// MyShopContainer.setAttr('shopCount_ShopIcon_shop', 0, 'count', 200) 
+console.log(MyShopContainer)
+MyShopContainer.setAttr('ShopContainer', 0, 'display', false)

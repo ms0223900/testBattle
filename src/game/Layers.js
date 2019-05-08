@@ -4,7 +4,8 @@ import {
 import { 
   ShopOpenIcon,
   ItemOpenIcon,
-} from './components/Icon'
+} from './mainGameUI/mainUIGameIcons'
+import mainUIContainer from './mainGameUI/mainUIContainer'
 import { MyShopContainer } from './shop/shopContainer'
 import { MyItemsContainer } from './items/itemsContainer'
 import { 
@@ -28,6 +29,7 @@ export class myLayer {
 
 export const UILayer = new myLayer([
   // testGroupMap(100, 100),
+  mainUIContainer,
   MyItemsContainer,
   ItemOpenIcon,
   ShopOpenIcon,

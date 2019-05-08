@@ -4,8 +4,10 @@ import {
 import { 
   ItemsActions,  } from './items/itemsActions'
 
-export const alertUIActions = (gameInstanse) => {
-  const { UILayer } = gameInstanse.myLayers
+import mainUIActions from './mainGameUI/mainUI_actions'
+
+export const alertUIActions = (gameInstance) => {
+  const { UILayer } = gameInstance.myLayers
 
   return ([
     { layer: UILayer, id: 'UIDisplayComponent_A', cloneId: 0, fn: () => {
@@ -13,7 +15,7 @@ export const alertUIActions = (gameInstanse) => {
     } },
   
     { layer: UILayer, id: 'cancelIcon', cloneId: 0, fn: () => {
-      gameInstanse.removeObjFromLayer('UILayer', 'alertUI', 1)
+      gameInstance.removeObjFromLayer('UILayer', 'alertUI', 1)
     } },
   
     { layer: UILayer, id: 'alertBack', cloneId: 0, fn: () => {
@@ -23,12 +25,13 @@ export const alertUIActions = (gameInstanse) => {
 }
 
 
-export const tapActionHolder = (gameInstanse) => {
+export const tapActionHolder = (gameInstance) => {
   //順序很重要, 越前面的層級越大
   return [
-    ...alertUIActions(gameInstanse),
-    // ...tabActions(gameInstanse),
-    ...shopUIActions(gameInstanse),
-    ...ItemsActions(gameInstanse),
+    ...alertUIActions(gameInstance),
+    // ...tabActions(gameInstance),
+    ...shopUIActions(gameInstance),
+    ...ItemsActions(gameInstance),
+    ...mainUIActions(gameInstance)
   ]
 }

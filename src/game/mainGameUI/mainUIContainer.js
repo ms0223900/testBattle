@@ -1,22 +1,26 @@
 import { getCanvasGroup } from '../gameFunc'
 import { Container } from '../gameLib'
-import { ShopOpenIcon, ItemOpenIcon } from './mainUIGameIcons'
+import { HealthBar, PowerBar, SmartBar } from './statusBar'
 
-const containerState = {
-  health: 100,
-  power: 10,
-  smartPower: 20,
+const containerStates = {
+  barState: [
+    { id: 'healthBar_barRect', length: 100, },
+    { id: 'powerBar_barRect', length: 100, },
+    { id: 'smartBar_barRect', length: 100, },
+  ]
 }
+export const barRect = ['healthBar_barRect', 'powerBar_barRect', 'smartBar_barRect']
+
 
 const mainContainerGroup = (x, y) => getCanvasGroup({
   id: 'MainContainer',
   spec: [x, y],
   groupObjs: [
-    ShopOpenIcon,
-    ItemOpenIcon,
+    HealthBar, 
+    PowerBar, 
+    SmartBar
   ]
 })
-
 
 class MainContainer extends Container {
   constructor(props) {
@@ -24,11 +28,12 @@ class MainContainer extends Container {
   }
   updateComponents() {
     // const { health, power, smartPower } = this.containerState
-
+    const { barState } = this.containerStates
+    barState.map(bar => this.setAttr(bar.id, 0, 'length', bar.length))
   }
 }
 
 export default new MainContainer({
-  containerState,
-  containerGroup: mainContainerGroup(0, 0),
+  containerStates,
+  containerGroup: mainContainerGroup(20, 20),
 })
