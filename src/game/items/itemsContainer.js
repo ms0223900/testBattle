@@ -27,5 +27,5 @@ export class ItemsContainer extends Container {
 }
 export const MyItemsContainer = new ItemsContainer({
   containerStates: { items: [] },
-  containerGroup: ItemsContainerGroup(20, 30),
+  containerGroup: ItemsContainerGroup(30, 100),
 })

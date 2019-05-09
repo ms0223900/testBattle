@@ -27,7 +27,11 @@ export class drawNumberCountTest extends drawUIText {
     if(this.display) { this.draw(ctx) }
   }
 }
+// export class PopUpText extends drawUIText {
+//   super(props) {
 
+//   }
+// }
 
 export const ShopCount = ({ id, count=0, }) => ({
   id: 'shopCount_' + id,

@@ -87,12 +87,11 @@ export const spawnRandomPosObj = (gameInstanceLayer, objFn, ...objFnParas) => {
     ]
   } )
 }
-export const destroyObj = (gameInstanceLayer, id='', cloneId=0) => {
-  const originObj = gameInstanceLayer.layerObjs
+export const destroyObj = (originObjs, id='', cloneId=0) => {
   if(typeof(id) === 'undefined' | typeof(cloneId) === 'undefined') {
     throw 'Your object id or clone id is undefined.'
   }
-  return (originObj.filter(o => !(o.id === id && o.cloneId === cloneId) ))
+  return (originObjs.filter(o => !(o.id === id && o.cloneId === cloneId) ))
 }
 
 export const getTap = (e, canvas, layerInstanse, id, cloneId=0, actionFn, allCloneAction=false) => {

@@ -498,8 +498,8 @@ export class myGame {
     const storeData = setValueOfArrObj(originLS, id, 'value', resultVal)
     localStorage.setItem('gameConfig', JSON.stringify(storeData))
   }
-  setLayerObjs(layer, newObjs) {
-    this.myLayers[layer].layerObjs = newObjs
+  setLayerObjs(layer, container, newObjs) {
+    this.myLayers[layer].layerObjs.filter(obj => obj.id === container)[0].OBJ.groupObjs = newObjs
   }
   spawnObjToLayer({layer, container='', objFn, pos={ useRandom: true, x: 0, y: 0, }, objFnParas={}, selfDestroy=false, destroyTime=600, isInit=false, isUI=true, i=0, }) {
     const originLS = JSON.parse(localStorage.getItem('gameSpawnObjConfig'))
@@ -533,7 +533,7 @@ export class myGame {
     // console.log(gameLayer.layerObjs)
     if(selfDestroy) {
       setTimeout(() => {
-        this.setLayerObjs(layer, destroyObj(gameLayer, newPosObj.id, newCloneId))
+        this.setLayerObjs(layer, container, destroyObj(originGroupObjs, newPosObj.id, newCloneId))
       }, destroyTime)
     } else if(!selfDestroy && !isInit && !isUI) {
       localStorage.setItem('gameSpawnObjConfig', JSON.stringify(newGameSpawnObjConfig))
@@ -603,7 +603,7 @@ export class Container {
     const target = getLayerObjByIdCloneId(this.OBJ.groupObjs, id, cloneId, false)
     if(target && target.length > 0) {
       target[0].OBJ.setAttr(attr, value)
-      console.log(target[0].OBJ)
+      // console.log(target[0].OBJ)
     }
   }
   updateComponents() {

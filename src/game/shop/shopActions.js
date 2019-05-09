@@ -24,11 +24,6 @@ const SHOPICON = ShopIconConfig.slice(0, 4).map(con => con = con.id)
 
 export const shopUIActions = (gameInstanse) => {
   const { UILayer } = gameInstanse.myLayers
-  // const myShopContainer = MyShopContainer(gameInstanse)
-  // myShopContainer.subscribeAttrToUpdate({ 
-  //   id: 'shopCount_ShopIcon_shop', attr: 'count',
-  //   containerStates: myShopContainer.containerStates.countNum[0]
-  // })
 
   return ([
     {
@@ -39,7 +34,6 @@ export const shopUIActions = (gameInstanse) => {
       },
     },
     ...SHOPICON.map(icon => buyItems(gameInstanse, icon)),
-    ...SHOPICON.map(icon => consumeItems(gameInstanse, icon)),
     {
       layer: UILayer, 
       id: 'ShopOpenIcon', cloneId: 0, 
@@ -53,20 +47,6 @@ export const shopUIActions = (gameInstanse) => {
       fn: () => {
         const originX = gameInstanse.getAttr('UILayer', 'ShopContainer', 0, 'x')
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'x', originX + 5)
-      },
-    },
-    {
-      layer: UILayer, 
-      id: 'ShopIcon_shop', cloneId: 1, 
-      fn: () => {
-        const originCount = MyItemsContainer.getContainerAttr(MyItemsContainer.containerStates.items, 'shopCount_ShopIcon_shop').count
-        if(originCount - 1 > 0) {
-          const MINUS = (num) => num - 1
-          MyItemsContainer.updateCount('shopCount_ShopIcon_shop', 'items', 'count', MINUS)
-        } else {
-          MyItemsContainer.removeObjInContainer('ShopIcon_shop', 1)
-        }
-        
       },
     },
   ])
@@ -91,7 +71,9 @@ const buyItems = (gameInstanse, id) => ({
         container: 'ItemsContainer',
         objFn: ShopIcon,
         pos: { x: 60 * containerObjsLength, y: 100 },
-        objFnParas: { id: con.id, iconImgSrc: con.imgSrc, iconCount: 1 }
+        objFnParas: { id: con.id, iconImgSrc: con.imgSrc, iconCount: 1 },
+        selfDestroy: true,
+        destroyTime: 3000,
       }))
 
       console.log(MyItemsContainer.containerStates)
@@ -103,20 +85,6 @@ const buyItems = (gameInstanse, id) => ({
       })
     } else {
       MyItemsContainer.updateCount('shopCount_' + id, 'items', 'count', +1)
-    }
-  },
-})
-const consumeItems = (gameInstanse, id) => ({
-  layer: gameInstanse.myLayers.UILayer, 
-  id: id, cloneId: 1, 
-  fn: () => {
-    const originCount = MyItemsContainer
-      .getContainerAttr(
-        MyItemsContainer.containerStates.items, 'shopCount_' + id).count
-    if(originCount - 1 > 0) {
-      MyItemsContainer.updateCount('shopCount_' + id, 'items', 'count', -1)
-    } else {
-      MyItemsContainer.removeObjInContainer(id, 1)
     }
   },
 })

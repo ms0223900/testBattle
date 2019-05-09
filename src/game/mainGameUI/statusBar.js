@@ -1,6 +1,6 @@
 import { HealthIcon, PowerIcon, SmartIcon } from './mainUIGameIcons'
 import { getCanvasGroup } from '../gameFunc'
-import { drawRect } from '../gameLib'
+import { drawRect, drawUIText } from '../gameLib'
 
 export class Bar extends drawRect {
   constructor(props) {
@@ -26,6 +26,33 @@ export class Bar extends drawRect {
   }
 }
 
+export class BarStatusCountText extends drawUIText {
+  constructor(props) {
+    super(props)
+    this.count = 0
+    this.text = this.count + ' / 100'
+    this.textConfig = '14px Arial'
+    this.prev = {
+      ...this.prev,
+      count: this.count,
+    }
+  }
+  updateCountText() {
+    if(this.prev.count !== this.count) {
+      this.text = this.count + ' / 100'
+      this.prev = {
+        ...this.prev,
+        count: this.count,
+      }
+    }
+  }
+  render(ctx) {
+    this.updateCountText()
+    if(this.display) { this.draw(ctx) }
+  }
+}
+
+
 const barRect = (id, barColor) => ({
   id: id + '_barRect',
   cloneId: 0,
@@ -38,12 +65,25 @@ const barRect = (id, barColor) => ({
 })
 
 
+
+const statusCount = (id) => ({
+  id: id + '_statusCount',
+  cloneId: 0,
+  OBJ: new BarStatusCountText({
+    x: 40, y: 20,
+
+  })
+})
+
+
+
 export const StatusBar = ({ id, icon, barColor }) => (x, y) => getCanvasGroup({
   id, 
   spec: [x, y],
   groupObjs: [
     barRect(id, barColor),
     icon,
+    statusCount(id),
   ]
 })
 

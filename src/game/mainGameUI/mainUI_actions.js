@@ -10,7 +10,7 @@ export default (gameInstance) => {
       fn: () => {
         // gameInstance.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', false)
         // window.alert('aa')
-        mainUIContainer.updateCount('healthBar_barRect', 'barState', 'length', 10)
+        mainUIContainer.updateCount('healthBar', 'barState', 'length', 10)
       },
     }
   ])
