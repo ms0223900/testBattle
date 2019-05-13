@@ -15,14 +15,16 @@ import {
 } from '../gameFunc'
 import { Container } from '../gameLib'
 import { handleBlockLineBreak } from '../../functions'
+import ShopTabs from './shopTabs'
 
 
 const { width: backW, height: backH, imgSrc: backImgSrc } = ShopUIConfig.backGround
 
 
-
-export const shopContainerGroup = (x, y) => {
-  const xy = ShopIconConfig.slice(0, 4).map(config => handleBlockLineBreak(config.posId, 3, 80, backW, 40))
+export const shopItems1 = () => {
+  const groupYDis = 100
+  const xy = ShopIconConfig.slice(0, 4)
+    .map(config => handleBlockLineBreak(config.posId, 3, 80, backW, 40))
   let iconConfig = []
   for (let i = 0; i < xy.length; i++) {
     iconConfig[i] = {
@@ -31,15 +33,11 @@ export const shopContainerGroup = (x, y) => {
       y: xy[i].y,
     }
   }
+
   return getCanvasGroup({
-    id: 'ShopContainer', 
-    spec: [x, y], 
+    id: 'shoptItems1',
+    spec: [0, groupYDis],
     groupObjs: [
-      ShopBG_B({
-        imgSrc: backImgSrc,
-        x: 0, y: 0,
-        w: backW, h: backH,
-      }),
       ...iconConfig.map(iconConfig => ShopIcon({
         id: iconConfig.id,
         x: iconConfig.x,
@@ -47,11 +45,30 @@ export const shopContainerGroup = (x, y) => {
         iconImgSrc: iconConfig.imgSrc,
         iconCount: 0,
       })),
-      Icon({
-        id: 'closeIcon',
-        imgSrc: freeIcon.close,
-        x: 280, y: -20,
-      }),
+    ]
+  })
+}
+  
+export const CloseIcon = Icon({
+  id: 'closeIcon',
+  imgSrc: freeIcon.close,
+  x: 280, y: -20,
+})
+export const ShopBG = ShopBG_B({
+  imgSrc: backImgSrc,
+  x: 0, y: 0,
+  w: backW, h: backH,
+})
+
+export const shopContainerGroup = (x, y) => {
+  return getCanvasGroup({
+    id: 'ShopContainer', 
+    spec: [x, y], 
+    groupObjs: [
+      ShopBG,
+      shopItems1(),
+      ShopTabs(),
+      CloseIcon,
     ]
   })
 }
