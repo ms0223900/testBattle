@@ -59,7 +59,7 @@ module.exports = {
 		},
 	},
 	devServer: {
-		// contentBase: path.resolve(__dirname, './public/'),
+		contentBase: path.resolve(__dirname, './public/'),
 		port: 9200,
 		stats: 'errors-only',
 	},
@@ -70,5 +70,5 @@ module.exports = {
 	node: {
 		fs: 'empty',
 	},
-	plugins: [new HtmlWebpackPlugin()]
+	// plugins: [new HtmlWebpackPlugin()]
 }

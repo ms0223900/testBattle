@@ -43,4 +43,8 @@ export const freeIcon = {
   heart: 'https://freeiconshop.com/wp-content/uploads/edd/heart-curvy-flat.png',
   power: 'https://freeiconshop.com/wp-content/uploads/edd/lightning-flat.png',
   book: 'https://freeiconshop.com/wp-content/uploads/edd/book-flat.png',
+  car: 'https://freeiconshop.com/wp-content/uploads/edd/car-flat.png',
+  iceCream: 'https://freeiconshop.com/wp-content/uploads/edd/ice-cream-cone-flat.png',
+  cheese: 'https://freeiconshop.com/wp-content/uploads/edd/cheese-flat.png',
+  beer: 'https://freeiconshop.com/wp-content/uploads/edd/beer-flat.png',
 }

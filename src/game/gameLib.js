@@ -279,7 +279,7 @@ export class myGroupObjs {
   constructor({ id, cloneId=0, groupDisplay=true, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: false, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
     this.id = id
     this.cloneId = cloneId
-    this.groupDisplay = groupDisplay
+    this.groupDisplay = [groupDisplay]
     this.x = x
     this.y = y
     this.translateXY = {
@@ -293,6 +293,7 @@ export class myGroupObjs {
     this.groupObjs = groupObjs
     // this.reset = false
     this.prevProps = {
+      groupDisplay: null,
       groupObjs: this.groupObjs,
       x: null, 
       y: null,
@@ -358,14 +359,29 @@ export class myGroupObjs {
   }
   draw(ctx) {
     // if(!this.display) { console.log('groupObj', this.display, this.groupObjs) } 
-    for (let i = 0; i < this.groupObjs.length; i++) {
-      if(this.groupObjs[i].OBJ.hasOwnProperty('groupDisplay')) {
-        this.groupObjs[i].OBJ.groupDisplay = this.groupDisplay
-      } else {
-        this.groupObjs[i].OBJ.display = this.groupDisplay
+    if(this.prevProps.groupDisplay !== this.groupDisplay) {
+      for (let i = 0; i < this.groupObjs.length; i++) {
+        const hasGroupDisAttr = this.groupObjs[i].OBJ.hasOwnProperty('groupDisplay')
+        // pass groupDisplay to children
+        if(hasGroupDisAttr) {
+          // console.log(this.groupObjs[i].OBJ.groupDisplay)
+          this.groupObjs[i].OBJ.groupDisplay = 
+            [...this.groupObjs[i].OBJ.groupDisplay, ...this.groupDisplay]
+          
+        } else {
+          // this.groupObjs[i].OBJ.display = 
+          //   [...this.groupObjs[i].OBJ.display, this.groupDisplay]
+        }
+        if(this.groupDisplay) {
+          this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
+
+        }
+          // this.groupObjs[i].OBJ.display = true
       }
-      this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
-        // this.groupObjs[i].OBJ.display = true
+      this.prevProps = {
+        ...this.prevProps,
+        groupDisplay: this.groupDisplay,
+      }
     }
     this.setAttr()
   }
@@ -635,8 +651,15 @@ export class Container {
     this.updateComponents()
   }
   removeObjInContainer(id='', cloneId=0) {
+    console.log(this.OBJ.groupObjs)
     this.OBJ.groupObjs = [
       ...this.OBJ.groupObjs.filter(gro => !(gro.id === id && gro.cloneId === cloneId)),
+    ]
+  }
+  addObjToContainer(obj) {
+    this.OBJ.groupObjs = [
+      ...this.OBJ.groupObjs,
+      obj,
     ]
   }
 }

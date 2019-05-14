@@ -21,21 +21,23 @@ import ShopTabs from './shopTabs'
 const { width: backW, height: backH, imgSrc: backImgSrc } = ShopUIConfig.backGround
 
 
-export const shopItems1 = () => {
+export const shopItems = (itemsId=1) => {
   const groupYDis = 100
-  const xy = ShopIconConfig.slice(0, 4)
-    .map(config => handleBlockLineBreak(config.posId, 3, 80, backW, 40))
+  const itemsStartPos = 4 * (itemsId - 1)
+  const shopIcons = ShopIconConfig.slice(itemsStartPos, 4 * itemsId)
+  const xy = shopIcons
+    .map(config => handleBlockLineBreak(config.posId - itemsStartPos, 3, 80, backW, 40))
   let iconConfig = []
   for (let i = 0; i < xy.length; i++) {
     iconConfig[i] = {
-      ...ShopIconConfig[i],
+      ...shopIcons[i],
       x: xy[i].x,
       y: xy[i].y,
     }
   }
 
   return getCanvasGroup({
-    id: 'shoptItems1',
+    id: 'shopItems' + itemsId,
     spec: [0, groupYDis],
     groupObjs: [
       ...iconConfig.map(iconConfig => ShopIcon({
@@ -48,7 +50,10 @@ export const shopItems1 = () => {
     ]
   })
 }
-  
+export const shopItems1 = shopItems(1)
+export const shopItems2 = shopItems(2)
+
+
 export const CloseIcon = Icon({
   id: 'closeIcon',
   imgSrc: freeIcon.close,
@@ -66,7 +71,8 @@ export const shopContainerGroup = (x, y) => {
     spec: [x, y], 
     groupObjs: [
       ShopBG,
-      shopItems1(),
+      shopItems1,
+      shopItems2,
       ShopTabs(),
       CloseIcon,
     ]
@@ -101,6 +107,7 @@ export const MyShopContainer = new ShopContainer({
   containerStates: { countNum: [40, 30, 40, 99] },
   containerGroup: shopContainerGroup(22, 99),
 })
+//init container
 MyShopContainer.updateComponents()
+MyShopContainer.setAttr('shopItems2', 0, 'groupDisplay', [false])
 console.log(MyShopContainer)
-MyShopContainer.setAttr('ShopContainer', 0, 'display', false)

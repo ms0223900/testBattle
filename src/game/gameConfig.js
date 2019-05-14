@@ -49,6 +49,9 @@ export const ShopIconConfig = [
   { posId: 2, id: 'ShopIcon_coins', imgSrc: freeIcon.coins },
   { posId: 3, id: 'ShopIcon_burger', imgSrc: freeIcon.burger },
   { posId: 4, id: 'ShopIcon_hotDog', imgSrc: freeIcon.hotDog },
+  { posId: 5, id: 'ShopIcon_car', imgSrc: freeIcon.car },
+  { posId: 6, id: 'ShopIcon_iceCream', imgSrc: freeIcon.iceCream },
+  { posId: 7, id: 'ShopIcon_cheese', imgSrc: freeIcon.cheese },
 ]
 export const ShopUIConfig = {
   backGround: { 
