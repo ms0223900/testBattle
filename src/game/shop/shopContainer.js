@@ -109,5 +109,5 @@ export const MyShopContainer = new ShopContainer({
 })
 //init container
 MyShopContainer.updateComponents()
-MyShopContainer.setAttr('shopItems2', 0, 'groupDisplay', [false])
+MyShopContainer.setAttr('shopItems2', 0, 'groupDisplay', false)
 console.log(MyShopContainer)

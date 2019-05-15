@@ -9,7 +9,7 @@ export const getMultiAction = (times, fn) => {
 }
 export const checkCollideWithPoint = (point={x: 0, y: 0}, collideObj={x: 0, y: 0, w: 0, h: 0}) => {
   // console.log(collideObj)
-  if(collideObj.display || collideObj.groupDisplay) {
+  if( collideObj.display && !collideObj.groupDisplay.includes(false) ) {
     if(point.x < collideObj.x + collideObj.w && point.x > collideObj.x && 
       point.y < collideObj.y + collideObj.h && point.y > collideObj.y) {
         return true

@@ -13,6 +13,7 @@ import {
   getLayerObjByIdCloneId
 } from './gameFunc'
 import * as gameComponents from './gameComponents'
+import { isArray } from 'util';
 // import './gameObj'
 
 
@@ -22,6 +23,7 @@ export class drawRect {
     this.id = id
     this.cloneId = cloneId
     this.display = display
+    this.groupDisplay = []
     this.x = x
     this.y = y
     this.translateXY = {
@@ -52,6 +54,7 @@ export class drawRect {
 export class drawUIText {
   constructor({ x=0, y=0, display=true, fillStyle, textConfig, text='Hi', lineHeight=1.2, containerWidth=100, textAlignCenter=true, textBreak=false }) {
     this.display = display
+    this.groupDisplay = []
     this.textConfig = textConfig
     this.text = text
     this.textBreak = textBreak
@@ -70,6 +73,7 @@ export class drawUIText {
     this.textAlignCenter = textAlignCenter
     this.prevProps = {
       x: this.x, y: this.y,
+      groupDisplay: ['nothing'],
     }
   }
   setAttr(attr, value) {
@@ -113,15 +117,25 @@ export class drawUIText {
       ctx.fillText(this.text, this.x, this.y)
     }
     ctx.restore()
+    if(this.prevProps.groupDisplay.toString() !== this.groupDisplay.toString()) {
+      this.setAttr('groupDisplay', this.groupDisplay)
+      console.log(!this.groupDisplay.includes(false))
+    }
   }
   render(ctx) {
-    if(this.display) { this.draw(ctx) }
+    if(!this.groupDisplay.includes(false)) {
+      this.display = true
+      this.draw(ctx)
+    } else {
+      this.display = false
+    }
   }
 }
 export class drawStaticImg {
   constructor({ id, cloneId, imgSrc, width, height, x=0, y=0, imgRatio=1, status=[], opacity=1 }) {
     this.id = id
     this.cloneId = cloneId
+    this.groupDisplay = []
     this.display = true
     this.imgSrc = imgSrc
     this.image = new Image()
@@ -208,7 +222,13 @@ export class drawStaticImg {
     ctx.restore()
   }
   render(ctx) {
-    if(this.display) { this.draw(ctx) }
+    // console.log(this.display)
+    if(!this.groupDisplay.includes(false)) {
+      this.display = true
+      this.draw(ctx)
+    } else {
+      this.display = false
+    }
   }
 }
 
@@ -276,10 +296,11 @@ export class actionUpObj extends drawSpriteImg {
 }
 
 export class myGroupObjs {
-  constructor({ id, cloneId=0, groupDisplay=true, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio, clip={ isClip: false, clipX: 100, clipY: 100, clipW: 200, clipH: 300 } }) {
+  constructor({ id, cloneId=0, groupDisplay=true, x, y, groupObjs=[{ id: 0, OBJ: {} }], groupRatio }) {
     this.id = id
     this.cloneId = cloneId
     this.groupDisplay = [groupDisplay]
+    this.display = true
     this.x = x
     this.y = y
     this.translateXY = {
@@ -289,11 +310,11 @@ export class myGroupObjs {
       x: 0, y: 0, setToGroupXY: false,
     }
     this.groupRatio = groupRatio
-    this.clip = clip
     this.groupObjs = groupObjs
     // this.reset = false
     this.prevProps = {
-      groupDisplay: null,
+      groupDisplay: [],
+      display: null,
       groupObjs: this.groupObjs,
       x: null, 
       y: null,
@@ -312,7 +333,7 @@ export class myGroupObjs {
       // }
       
       if(this.prevProps.x !== this.x || this.prevProps.y !== this.y) {
-        console.log(this.x, this.prevProps.x,';', this.y, this.prevProps.y)
+        // console.log(this.x, this.prevProps.x,';', this.y, this.prevProps.y)
         this.setObjInGroup()
         // console.log('setAttr prevProps.x')
       }
@@ -359,30 +380,33 @@ export class myGroupObjs {
   }
   draw(ctx) {
     // if(!this.display) { console.log('groupObj', this.display, this.groupObjs) } 
-    if(this.prevProps.groupDisplay !== this.groupDisplay) {
+    if(this.prevProps.display !== this.display || this.prevProps.groupDisplay.toString() !== this.groupDisplay.toString()) {
+      console.log('changed display')
       for (let i = 0; i < this.groupObjs.length; i++) {
-        const hasGroupDisAttr = this.groupObjs[i].OBJ.hasOwnProperty('groupDisplay')
+        // const hasGroupDisAttr = this.groupObjs[i].OBJ.hasOwnProperty('groupDisplay')
         // pass groupDisplay to children
-        if(hasGroupDisAttr) {
-          // console.log(this.groupObjs[i].OBJ.groupDisplay)
-          this.groupObjs[i].OBJ.groupDisplay = 
-            [...this.groupObjs[i].OBJ.groupDisplay, ...this.groupDisplay]
+        this.groupObjs[i].OBJ.groupDisplay = 
+            [ ...this.groupDisplay, this.display ]
+        // if(hasGroupDisAttr) {
+        //   // console.log(this.groupObjs[i].OBJ.groupDisplay)
           
-        } else {
-          // this.groupObjs[i].OBJ.display = 
-          //   [...this.groupObjs[i].OBJ.display, this.groupDisplay]
-        }
-        if(this.groupDisplay) {
-          this.groupObjs[i].OBJ ? this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
-
-        }
-          // this.groupObjs[i].OBJ.display = true
+          
+        // } else {
+        //   this.groupObjs[i].OBJ.display = 
+        //     [...this.groupDisplay, this.groupObjs[i].OBJ.display]
+        // }
       }
       this.prevProps = {
         ...this.prevProps,
+        display: this.display,
         groupDisplay: this.groupDisplay,
       }
     }
+    for (let i = 0; i < this.groupObjs.length; i++) {
+      this.groupObjs[i].OBJ ? 
+        this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
+    }
+    
     this.setAttr()
   }
   render(ctx) {
@@ -490,7 +514,11 @@ export class myGame {
     // console.log(this.myLayers[layerName].layerObjs)
     const targetArr = getLayerObjByIdCloneId(this.myLayers[layerName].layerObjs, id, cloneId, allClone)
     for (let i = 0; i < targetArr.length; i++) {
-      targetArr[i]['OBJ'].setAttr(attr, value)
+      if(attr === 'groupDisplay' && !isArray(value)) {
+        targetArr[i]['OBJ'].setAttr(attr, [value])
+      } else {
+        targetArr[i]['OBJ'].setAttr(attr, value)
+      }
     }
     console.log('gameSetAttr: ', value, targetArr)
   }
@@ -618,7 +646,11 @@ export class Container {
     console.log(this.containerStates)
     const target = getLayerObjByIdCloneId(this.OBJ.groupObjs, id, cloneId, false)
     if(target && target.length > 0) {
-      target[0].OBJ.setAttr(attr, value)
+      if(attr === 'groupDisplay' && typeof(attr) === 'string') {
+        target[0].OBJ.setAttr(attr, [value])
+      } else {
+        target[0].OBJ.setAttr(attr, value)
+      }
       // console.log(target[0].OBJ)
     }
   }

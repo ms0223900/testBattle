@@ -40,7 +40,8 @@ export const shopUIActions = (gameInstanse) => {
       layer: UILayer, 
       id: 'closeIcon', cloneId: 0, 
       fn: () => {
-        gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', false)
+        gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'display', false)
+        // gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', false)
       },
     },
     ...SHOPICON.map(icon => buyItems(gameInstanse, icon)),
@@ -48,7 +49,7 @@ export const shopUIActions = (gameInstanse) => {
       layer: UILayer, 
       id: 'ShopOpenIcon', cloneId: 0, 
       fn: () => {
-        gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', true)
+        gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'display', true)
       },
     },
     {

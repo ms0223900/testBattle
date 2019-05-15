@@ -23,8 +23,13 @@ export class drawNumberCountTest extends drawUIText {
   }
   render(ctx) {
     // this.ctx.restore()
+    if(!this.groupDisplay.includes(false)) {
+      this.display = true
+      this.draw(ctx)
+    } else {
+      this.display = false
+    }
     this.updateWithProps()
-    if(this.display) { this.draw(ctx) }
   }
 }
 // export class PopUpText extends drawUIText {
