@@ -96,7 +96,7 @@ export class drawUIText {
     this.w = ctx.measureText(this.text).width
     this.h = ctx.measureText(this.text).height
   }
-  draw(ctx) {
+  drawOnCanvas(ctx) {
     ctx.save()
     ctx.font = this.textConfig
     ctx.fillStyle = this.fillStyle
@@ -117,18 +117,20 @@ export class drawUIText {
       ctx.fillText(this.text, this.x, this.y)
     }
     ctx.restore()
+  }
+  draw(ctx) {
     if(this.prevProps.groupDisplay.toString() !== this.groupDisplay.toString()) {
       this.setAttr('groupDisplay', this.groupDisplay)
-      console.log(!this.groupDisplay.includes(false))
     }
-  }
-  render(ctx) {
     if(!this.groupDisplay.includes(false)) {
       this.display = true
-      this.draw(ctx)
+      this.drawOnCanvas(ctx)
     } else {
       this.display = false
     }
+  }
+  render(ctx) {
+    this.draw(ctx)
   }
 }
 export class drawStaticImg {
@@ -209,7 +211,7 @@ export class drawStaticImg {
       this.image.src = IMG[0].img
     }
   }
-  draw(ctx) {
+  drawOnCanvas(ctx) {
     ctx.save()
     ctx.globalAlpha = this.opacity
     ctx.drawImage(
@@ -221,14 +223,17 @@ export class drawStaticImg {
     )
     ctx.restore()
   }
-  render(ctx) {
-    // console.log(this.display)
-    if(!this.groupDisplay.includes(false)) {
+  draw(ctx) {
+    if( !this.groupDisplay.includes(false) ) {
       this.display = true
-      this.draw(ctx)
+      this.drawOnCanvas(ctx)
     } else {
       this.display = false
     }
+  }
+  render(ctx) {
+    // console.log(this.display)
+    this.draw(ctx)
   }
 }
 
@@ -328,10 +333,6 @@ export class myGroupObjs {
       this[attr] = value
       // console.log('this.' + attr + ':' , this[attr])
     } else {
-      // if(translateXY.x !== this.translateXY.x || translateXY.y !== this.translateXY.y) {
-      //   this.setObjInGroup()
-      // }
-      
       if(this.prevProps.x !== this.x || this.prevProps.y !== this.y) {
         // console.log(this.x, this.prevProps.x,';', this.y, this.prevProps.y)
         this.setObjInGroup()
@@ -379,34 +380,28 @@ export class myGroupObjs {
     }
   }
   draw(ctx) {
-    // if(!this.display) { console.log('groupObj', this.display, this.groupObjs) } 
-    if(this.prevProps.display !== this.display || this.prevProps.groupDisplay.toString() !== this.groupDisplay.toString()) {
+    const checkGroupPropsChanged = 
+      this.prevProps.display !== this.display || 
+      this.prevProps.groupDisplay.toString() !== this.groupDisplay.toString() ||
+      this.prevProps.groupObjs.length !== this.groupObjs.length
+    
+    if(checkGroupPropsChanged) {
       console.log('changed display')
       for (let i = 0; i < this.groupObjs.length; i++) {
-        // const hasGroupDisAttr = this.groupObjs[i].OBJ.hasOwnProperty('groupDisplay')
-        // pass groupDisplay to children
         this.groupObjs[i].OBJ.groupDisplay = 
             [ ...this.groupDisplay, this.display ]
-        // if(hasGroupDisAttr) {
-        //   // console.log(this.groupObjs[i].OBJ.groupDisplay)
-          
-          
-        // } else {
-        //   this.groupObjs[i].OBJ.display = 
-        //     [...this.groupDisplay, this.groupObjs[i].OBJ.display]
-        // }
       }
       this.prevProps = {
         ...this.prevProps,
         display: this.display,
         groupDisplay: this.groupDisplay,
+        groupObjs: this.groupObjs,
       }
     }
     for (let i = 0; i < this.groupObjs.length; i++) {
       this.groupObjs[i].OBJ ? 
         this.groupObjs[i].OBJ.render(ctx) : this.groupObjs[i].render(ctx)
     }
-    
     this.setAttr()
   }
   render(ctx) {

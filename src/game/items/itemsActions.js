@@ -13,8 +13,8 @@ export const ItemsActions = (gameInstanse) => {
       layer: UILayer, 
       id: 'ItemOpenIcon', cloneId: 0, 
       fn: () => {
-        const  ItemsContainerGroupDisplay = gameInstanse.getAttr('UILayer', 'ItemsContainer', 0,'groupDisplay')
-        gameInstanse.setAttr('UILayer', 'ItemsContainer', 0, 'groupDisplay', !ItemsContainerGroupDisplay)
+        const  ItemsContainerGroupDisplay = gameInstanse.getAttr('UILayer', 'ItemsContainer', 0,'display')
+        gameInstanse.setAttr('UILayer', 'ItemsContainer', 0, 'display', !ItemsContainerGroupDisplay)
         console.log(getLayerObjByIdCloneId(MyItemsContainer.OBJ.groupObjs, 'shopCount_ShopIcon_shop', 0))
       },
     },

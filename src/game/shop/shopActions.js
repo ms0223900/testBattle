@@ -67,8 +67,8 @@ export const shopUIActions = (gameInstanse) => {
         // window.alert('tabA')
 
         // MyShopContainer.removeObjInContainer('shopItems1', 0)
-        MyShopContainer.setAttr('shopItems1', 0, 'groupDisplay', true)
-        MyShopContainer.setAttr('shopItems2', 0, 'groupDisplay', false)
+        MyShopContainer.setAttr('shopItems1', 0, 'display', true)
+        MyShopContainer.setAttr('shopItems2', 0, 'display', false)
         MyShopContainer.setAttr('tabA', 0, 'opacity', 1)
         MyShopContainer.setAttr('tabB', 0, 'opacity', 0.4)
       },
@@ -78,8 +78,8 @@ export const shopUIActions = (gameInstanse) => {
       id: 'tabB', cloneId: 0, 
       fn: () => {
         // MyShopContainer.addObjToContainer( shopItems1() )
-        MyShopContainer.setAttr('shopItems1', 0, 'groupDisplay', false)
-        MyShopContainer.setAttr('shopItems2', 0, 'groupDisplay', true)
+        MyShopContainer.setAttr('shopItems1', 0, 'display', false)
+        MyShopContainer.setAttr('shopItems2', 0, 'display', true)
         MyShopContainer.setAttr('tabA', 0, 'opacity', 0.4)
         MyShopContainer.setAttr('tabB', 0, 'opacity', 1)
       },
