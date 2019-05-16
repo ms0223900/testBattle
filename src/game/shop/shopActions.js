@@ -24,11 +24,26 @@ import { ShopIcon } from './shopIcon'
 // ))
 
 const SHOPICON = ShopIconConfig.slice(0, 8).map(con => con = con.id)
+const TABs = [
+  { tab: 'tabA', items: 'shopItems1', },
+  { tab: 'tabB', items: 'shopItems2', },
+  { tab: 'tabC', items: 'shopItems3', },
+]
+
 
 export const shopUIActions = (gameInstanse) => {
   const { UILayer } = gameInstanse.myLayers
 
   return ([
+
+    {
+      layer: UILayer, 
+      id: 'Icon', cloneId: 0, 
+      fn: () => {
+
+        
+      },
+    },
     {
       layer: UILayer, 
       id: 'ShopIcon_hotDog', cloneId: 0, 
@@ -41,15 +56,18 @@ export const shopUIActions = (gameInstanse) => {
       id: 'closeIcon', cloneId: 0, 
       fn: () => {
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'display', false)
+        // gameInstanse.setAttr('UILayer', 'closeIcon', 0, 'bounceStart', true)
         // gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'groupDisplay', false)
       },
     },
     ...SHOPICON.map(icon => buyItems(gameInstanse, icon)),
+    ...TABs.map(tab => switchTabs(gameInstanse, MyShopContainer, TABs, tab.tab, tab.items)),
     {
       layer: UILayer, 
       id: 'ShopOpenIcon', cloneId: 0, 
       fn: () => {
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'display', true)
+        gameInstanse.setAttr('UILayer', 'ShopOpenIcon', 0, 'bounceStart', true)
       },
     },
     {
@@ -58,30 +76,6 @@ export const shopUIActions = (gameInstanse) => {
       fn: () => {
         const originX = gameInstanse.getAttr('UILayer', 'ShopContainer', 0, 'x')
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'x', originX + 5)
-      },
-    },
-    {
-      layer: UILayer, 
-      id: 'tabA', cloneId: 0, 
-      fn: () => {
-        // window.alert('tabA')
-
-        // MyShopContainer.removeObjInContainer('shopItems1', 0)
-        MyShopContainer.setAttr('shopItems1', 0, 'display', true)
-        MyShopContainer.setAttr('shopItems2', 0, 'display', false)
-        MyShopContainer.setAttr('tabA', 0, 'opacity', 1)
-        MyShopContainer.setAttr('tabB', 0, 'opacity', 0.4)
-      },
-    },
-    {
-      layer: UILayer, 
-      id: 'tabB', cloneId: 0, 
-      fn: () => {
-        // MyShopContainer.addObjToContainer( shopItems1() )
-        MyShopContainer.setAttr('shopItems1', 0, 'display', false)
-        MyShopContainer.setAttr('shopItems2', 0, 'display', true)
-        MyShopContainer.setAttr('tabA', 0, 'opacity', 0.4)
-        MyShopContainer.setAttr('tabB', 0, 'opacity', 1)
       },
     },
   ])
@@ -115,5 +109,19 @@ const buyItems = (gameInstanse, id) => ({
     } else {
       MyItemsContainer.updateCount('shopCount_' + id, 'items', 'count', +1)
     }
+  },
+})
+
+const switchTabs = (gameInstanse, container, tabs, targetTabId, targetItemId) => ({
+  layer: gameInstanse.myLayers.UILayer, 
+  id: targetTabId, cloneId: 0, 
+  fn: () => {
+    for (let i = 0; i < tabs.length; i++) {
+      const { tab, items } = tabs[i]
+      container.setAttr(items, 0, 'display', false)
+      container.setAttr(tab, 0, 'opacity', 0.4)
+    }
+    container.setAttr(targetItemId, 0, 'display', true)
+    container.setAttr(targetTabId, 0, 'opacity', 1)
   },
 })

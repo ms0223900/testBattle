@@ -155,6 +155,13 @@ export class drawStaticImg {
     this.dir = true
     this.w = this.width
     this.h = this.height
+    this.bounceStart = false
+    this.bounceState = {
+      bounceTimes: 4,
+      bounceLimit: 6,
+      bounceNow: 0,
+      bounceDirec: 'big',
+    }
     this.status = [
       {
         statusName: 'origin',
@@ -175,6 +182,33 @@ export class drawStaticImg {
       ...this.prevProps,
       [attr]: value
     }
+  }
+  bounceLoop() {
+    const {  bounceLimit, bounceNow, bounceDirec } = this.bounceState
+    
+    if(bounceNow < bounceLimit * 2) {
+      console.log(bounceDirec)
+      if(bounceNow >= bounceLimit - 1) {
+        this.bounceState.bounceDirec = 'small'
+      }
+      this.bounce(bounceDirec)
+      this.bounceState.bounceNow ++
+    } else {
+      this.bounceState.bounceDirec = 'big'
+      this.bounceState.bounceNow = 0
+      this.bounceStart = false
+    }
+    // for (let i = 0; i < bounceTimes.length; i++) {
+    //   for (let j = 0; j < bounceLimit.length * 2; j++) {
+        
+    //   }
+    // }
+  }
+  bounce(bounceDirec) {
+    this.x = bounceDirec === 'big' ? this.x - 1 : this.x + 1
+    this.y = bounceDirec === 'big' ? this.y - 1 : this.y + 1
+    this.width = bounceDirec === 'big' ? this.width + 2 : this.width - 2
+    this.height = bounceDirec === 'big' ? this.height + 2 : this.height - 2
   }
   moveByUser(e) {
     if(e.keyCode - 37 >= 0 && e.keyCode - 37 <=3) {
@@ -212,6 +246,7 @@ export class drawStaticImg {
     }
   }
   drawOnCanvas(ctx) {
+    if(this.bounceStart) { this.bounceLoop() }
     ctx.save()
     ctx.globalAlpha = this.opacity
     ctx.drawImage(
@@ -316,7 +351,7 @@ export class myGroupObjs {
     }
     this.groupRatio = groupRatio
     this.groupObjs = groupObjs
-    // this.reset = false
+    this.bounceStart = false
     this.prevProps = {
       groupDisplay: [],
       display: null,
@@ -334,14 +369,21 @@ export class myGroupObjs {
       // console.log('this.' + attr + ':' , this[attr])
     } else {
       if(this.prevProps.x !== this.x || this.prevProps.y !== this.y) {
-        // console.log(this.x, this.prevProps.x,';', this.y, this.prevProps.y)
         this.setObjInGroup()
-        // console.log('setAttr prevProps.x')
       }
       if(this.prevProps.groupObjs.length < this.groupObjs.length) {
         this.setObjInGroup('single', this.groupObjs.length - 1)
         // console.log('setAttr groupObjs.length')
       }
+      if(this.bounceStart) {
+        for (let i = 0; i < this.groupObjs.length; i++) {
+          if(this.groupObjs[i].OBJ.hasOwnProperty('bounceStart')) {
+            this.groupObjs[i].OBJ.bounceStart = true
+          }
+          
+        }
+      }
+
     }
   }
   setObjInGroup(singleOrAll='all', singleIndex=0) {
