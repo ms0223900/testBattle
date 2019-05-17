@@ -582,23 +582,21 @@ export class myGame {
   setLayerObjs(layer, container, newObjs) {
     this.myLayers[layer].layerObjs.filter(obj => obj.id === container)[0].OBJ.groupObjs = newObjs
   }
-  spawnObjToLayer({layer, container='', objFn, pos={ useRandom: true, x: 0, y: 0, }, objFnParas={}, selfDestroy=false, destroyTime=600, isInit=false, isUI=true, i=0, }) {
-    const originLS = JSON.parse(localStorage.getItem('gameSpawnObjConfig'))
+  spawnObjToLayer({layer, container='', objFn, pos={ useRandom: true, x: 0, y: 0, }, objFnParas={}, selfDestroy=false, destroyTime=600, isInit=false, isUI=true, }) {
     const gameLayer = this.myLayers[layer]
     const newObj = objFn({ x: pos.x, y: pos.y, ...objFnParas })
     const getRandXY = getCanvasRandPos(canvasObjAreaSpec, newObj, pos.x, pos.y)
     const newPosObj = pos.useRandom ? objFn(getRandXY.x, getRandXY.y, ...objFnParas) : newObj
-    const newCloneId = originLS.filter(or => or.id === newPosObj.id).length > 0 ? 
-      (originLS.filter(or => or.id === newPosObj.id)[i].cloneId) : 
+    const newCloneId = 
       (gameLayer.layerObjs.filter(lo => lo.id === newPosObj.id).length + 1 || 1)
     // console.log('newCloneId: ', newCloneId)
-    const gameSpawnObjConfigSetting = {
-      id: newPosObj.id,
-      cloneId: newCloneId,
-      pos: { x: getRandXY.x, y: getRandXY.y },
-      objFn: objFn.name,
-    }
-    const newGameSpawnObjConfig = [...originLS, gameSpawnObjConfigSetting]
+    // const gameSpawnObjConfigSetting = {
+    //   id: newPosObj.id,
+    //   cloneId: newCloneId,
+    //   pos: { x: getRandXY.x, y: getRandXY.y },
+    //   objFn: objFn.name,
+    // }
+    // const newGameSpawnObjConfig = [...originLS, gameSpawnObjConfigSetting]
     //
     const originGroupObjs = 
       gameLayer.layerObjs.filter(obj => obj.id === container)[0].OBJ.groupObjs
@@ -617,7 +615,7 @@ export class myGame {
         this.setLayerObjs(layer, container, destroyObj(originGroupObjs, newPosObj.id, newCloneId))
       }, destroyTime)
     } else if(!selfDestroy && !isInit && !isUI) {
-      localStorage.setItem('gameSpawnObjConfig', JSON.stringify(newGameSpawnObjConfig))
+      // localStorage.setItem('gameSpawnObjConfig', JSON.stringify(newGameSpawnObjConfig))
     }
   }
   removeObjFromLayer(layer='', objId='', cloneId=0) {
