@@ -68,7 +68,7 @@ export const shopUIActions = (gameInstanse) => {
           pos: { x: 100 , y: 170 },
           objFnParas: { id: 'count1', count: 1,  },
           selfDestroy: true,
-          destroyTime: 3000,
+          destroyTime: 2000,
         })
       },
     },

@@ -122,11 +122,11 @@ export class drawUIText {
     if(this.prevProps.groupDisplay.toString() !== this.groupDisplay.toString()) {
       this.setAttr('groupDisplay', this.groupDisplay)
     }
-    if(!this.groupDisplay.includes(false)) {
+    if(this.groupDisplay.includes(false) || !this.display) {
+      this.display = false
+    } else {
       this.display = true
       this.drawOnCanvas(ctx)
-    } else {
-      this.display = false
     }
   }
   render(ctx) {
@@ -587,8 +587,10 @@ export class myGame {
     const newObj = objFn({ x: pos.x, y: pos.y, ...objFnParas })
     const getRandXY = getCanvasRandPos(canvasObjAreaSpec, newObj, pos.x, pos.y)
     const newPosObj = pos.useRandom ? objFn(getRandXY.x, getRandXY.y, ...objFnParas) : newObj
-    const newCloneId = 
-      (gameLayer.layerObjs.filter(lo => lo.id === newPosObj.id).length + 1 || 1)
+    const originGroupObjs = 
+      gameLayer.layerObjs.filter(obj => obj.id === container)[0].OBJ.groupObjs
+    const amountOfCloneObj = originGroupObjs.filter(lo => lo.id === newPosObj.id).length
+    const newCloneId = amountOfCloneObj && amountOfCloneObj < 20 ? amountOfCloneObj + 1 : 1
     // console.log('newCloneId: ', newCloneId)
     // const gameSpawnObjConfigSetting = {
     //   id: newPosObj.id,
@@ -598,21 +600,35 @@ export class myGame {
     // }
     // const newGameSpawnObjConfig = [...originLS, gameSpawnObjConfigSetting]
     //
-    const originGroupObjs = 
-      gameLayer.layerObjs.filter(obj => obj.id === container)[0].OBJ.groupObjs
+    
     const newAddedObj = {
       id: newPosObj.id,
       cloneId: newCloneId,
       OBJ: newPosObj.OBJ,
     }
-    this.setAttr(layer, container, 0, 'groupObjs', [
-      ...originGroupObjs,
-      newAddedObj,
-    ])
+    if(amountOfCloneObj < 20) {
+      this.setAttr(layer, container, 0, 'groupObjs', [
+        ...originGroupObjs,
+        newAddedObj,
+      ])
+    } else if(amountOfCloneObj >= 20) { //clear clone objs after more than 20
+      this.setAttr(layer, container, 0, 'groupObjs', [
+        ...originGroupObjs.filter(go => go.id !== newPosObj.id),
+        newAddedObj,
+      ])
+    }
     // console.log(gameLayer.layerObjs)
     if(selfDestroy) {
       setTimeout(() => {
-        this.setLayerObjs(layer, container, destroyObj(originGroupObjs, newPosObj.id, newCloneId))
+        console.log('delete', originGroupObjs, newCloneId)
+        // this.setLayerObjs(layer, container, [
+        //   ...originGroupObjs.filter(go => !(go.id === newPosObj.id && go.cloneId < newCloneId)),
+        // ])
+        this.setAttr(layer, newPosObj.id, newCloneId, 'display', false)
+        // originGroupObjs.filter(go => (go.id === newPosObj.id && go.cloneId === newCloneId)).display = false
+        // this.setAttr(layer, container, 0, 'groupObjs', [
+        //   ...originGroupObjs.filter(go => !(go.id === newPosObj.id && go.cloneId === newCloneId)),
+        // ])
       }, destroyTime)
     } else if(!selfDestroy && !isInit && !isUI) {
       // localStorage.setItem('gameSpawnObjConfig', JSON.stringify(newGameSpawnObjConfig))
