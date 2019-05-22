@@ -16,6 +16,7 @@ import {
 import { Container } from '../gameLib'
 import { handleBlockLineBreak } from '../../functions'
 import ShopTabs from './shopTabs'
+import { TestTimer } from '../components/countDownTimer'
 
 
 const { width: backW, height: backH, imgSrc: backImgSrc } = ShopUIConfig.backGround
@@ -75,6 +76,7 @@ export const shopContainerGroup = (x, y) => {
       shopItems2,
       ShopTabs(),
       CloseIcon,
+      TestTimer({}),
     ]
   })
 }

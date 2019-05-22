@@ -5,6 +5,8 @@ import {
 class effectNumberPopUp extends drawUIText {
   constructor(props) {
     super(props)
+    this.opacity = 1
+    this.opacityRate = 0.04
     this.pop = {
       limit: 30,
       now: 0,
@@ -13,12 +15,20 @@ class effectNumberPopUp extends drawUIText {
   popUp() {
     if(this.pop.now < this.pop.limit) {
       this.pop.now ++
+      if(this.opacity - this.opacityRate > 0) {
+        this.opacity = this.opacity - this.opacityRate
+      } else {
+        this.opacity = 0
+      }
       this.y -= 0.5
     }
   }
   render(ctx) {
+    ctx.save()
+    ctx.globalAlpha = this.opacity
     this.popUp()
     this.draw(ctx)
+    ctx.restore()
   }
 }
 

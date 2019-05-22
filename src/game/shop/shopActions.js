@@ -30,6 +30,15 @@ const TABs = [
   { tab: 'tabB', items: 'shopItems2', },
   { tab: 'tabC', items: 'shopItems3', },
 ]
+const popUpNumber = ({x=0, y=0}) => ({ 
+  layer: 'UILayer',
+  container: 'ShopContainer',
+  objFn: EffectNumberPopup,
+  pos: { x, y },
+  objFnParas: { id: 'count1', count: 1,  },
+  selfDestroy: true,
+  destroyTime: 2000,
+})
 
 
 export const shopUIActions = (gameInstanse) => {
@@ -61,11 +70,15 @@ export const shopUIActions = (gameInstanse) => {
       fn: () => {
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'display', true)
         gameInstanse.setAttr('UILayer', 'ShopOpenIcon', 0, 'bounceStart', true)
+        const numberPos = {
+          x: gameInstanse.getAttr('UILayer', 'ShopOpenIcon', 0, 'x', false),
+          y: gameInstanse.getAttr('UILayer', 'ShopOpenIcon', 0, 'y', false)
+        }
         gameInstanse.spawnObjToLayer({ 
           layer: 'UILayer',
           container: 'ShopContainer',
           objFn: EffectNumberPopup,
-          pos: { x: 100 , y: 170 },
+          pos: numberPos,
           objFnParas: { id: 'count1', count: 1,  },
           selfDestroy: true,
           destroyTime: 2000,
@@ -89,7 +102,13 @@ const buyItems = (gameInstanse, id) => ({
     const ICONconfig = ShopIconConfig.filter(config => config.id === id)
     
     const isExist = gameInstanse.checkObjExist('UILayer', 'ItemsContainer', id)
+    const numberPos = {
+      x: gameInstanse.getAttr('UILayer', id, 0, 'x', false),
+      y: gameInstanse.getAttr('UILayer', id, 0, 'y', false)
+    }
     const containerObjsLength = MyItemsContainer.OBJ.groupObjs.length
+    gameInstanse.spawnObjToLayer(popUpNumber(numberPos))
+
     if(!isExist) {
       ICONconfig.map(con => gameInstanse.spawnObjToLayer({ 
         layer: 'UILayer',
