@@ -4,10 +4,13 @@ import {
   MyShopContainer 
 } from './shopContainer'
 import { MyItemsContainer } from '../items/itemsContainer'
+import { ObjTimer } from './shopContainer'
 import { ShopIconConfig } from '../gameConfig'
 import EffectNumberPopup from '../components/effectNumberPopup'
 import { ShopIcon } from './shopIcon'
 
+
+let testCount = 0
 // export const tabActions = (gameInstanse) => TABconfig.map(config => (
 //   { 
 //     layer: gameInstanse['myLayers']['UILayer'], 
@@ -68,6 +71,7 @@ export const shopUIActions = (gameInstanse) => {
       layer: UILayer, 
       id: 'ShopOpenIcon', cloneId: 0, 
       fn: () => {
+        testCount += 1
         gameInstanse.setAttr('UILayer', 'ShopContainer', 0, 'display', true)
         gameInstanse.setAttr('UILayer', 'ShopOpenIcon', 0, 'bounceStart', true)
         const numberPos = {
@@ -80,8 +84,15 @@ export const shopUIActions = (gameInstanse) => {
           objFn: EffectNumberPopup,
           pos: numberPos,
           objFnParas: { id: 'count1', count: 1,  },
-          selfDestroy: true,
+          selfDestroy: false,
           destroyTime: 2000,
+        })
+        gameInstanse.spawnObjToLayer({ 
+          layer: 'UILayer',
+          container: 'ShopContainer',
+          objFn: ObjTimer,
+          pos: { x: 100 + testCount * 10, y: 300 + testCount * 10 },
+          selfDestroy: false,
         })
       },
     },

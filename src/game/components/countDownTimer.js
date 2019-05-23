@@ -45,7 +45,7 @@ class TimeRect extends drawRect {
   }
 }
 //
-const countDownTxt = ({
+const countDownTxt = () => ({
   id: 'countDownTxt', cloneId: 0,
   OBJ: new TimeText({
     x: 0, y: 40,
@@ -87,6 +87,7 @@ export default class Timer extends myGroupObjs {
   }
   checkTimer() {
     if(this.time <= 0) {
+      this.display = false
       clearInterval(this.timer)
     }
   }
@@ -100,15 +101,16 @@ export default class Timer extends myGroupObjs {
     ctx.restore()
   }
 }
-export const TestTimer = ({ x=100, y=200 }) => ({
-  id: 'TestTimer', cloneId: 0,
+export const DefaultTimer = ({ x=100, y=200, countDownTime=100, objsInTimer=[] }) => ({
+  id: 'DefaultTimer', cloneId: 0,
   OBJ: new Timer({
     x, y,
-    countDownTime: 13,
+    countDownTime,
     groupObjs: [
-      countDownTxt,
-      timerRectBG(100),
-      timerRectActive(100),
+      countDownTxt(),
+      timerRectBG(countDownTime),
+      timerRectActive(countDownTime),
+      ...objsInTimer,
     ]
   }),
 })

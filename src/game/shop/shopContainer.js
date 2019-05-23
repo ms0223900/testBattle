@@ -16,7 +16,7 @@ import {
 import { Container } from '../gameLib'
 import { handleBlockLineBreak } from '../../functions'
 import ShopTabs from './shopTabs'
-import { TestTimer } from '../components/countDownTimer'
+import { DefaultTimer } from '../components/countDownTimer'
 
 
 const { width: backW, height: backH, imgSrc: backImgSrc } = ShopUIConfig.backGround
@@ -66,6 +66,19 @@ export const ShopBG = ShopBG_B({
   w: backW, h: backH,
 })
 
+const IconInTimer = () => Icon({
+  id: IconInTimer,
+  imgSrc: freeIcon.power,
+  x: 0, y: 30,
+})
+export const ObjTimer = ({ x, y }) => DefaultTimer({
+  x, y,
+  countDownTime: 10,
+  objsInTimer: [
+    IconInTimer(),
+  ]
+})
+
 export const shopContainerGroup = (x, y) => {
   return getCanvasGroup({
     id: 'ShopContainer', 
@@ -76,7 +89,7 @@ export const shopContainerGroup = (x, y) => {
       shopItems2,
       ShopTabs(),
       CloseIcon,
-      TestTimer({}),
+      // ObjTimer,
     ]
   })
 }

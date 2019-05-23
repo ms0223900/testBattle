@@ -32,12 +32,16 @@ export class drawRect {
     this.w = w
     this.h = h
     this.fillStyle = fillStyle     
-    this.strokeStyle = strokeStyle        
+    this.strokeStyle = strokeStyle
+    this.prevProps = {
+      x: this.x, y: this.y,
+      groupDisplay: ['nothing'],
+    }        
   }
   setAttr(attr, value) {
     this[attr] = value
   }
-  draw(ctx) {
+  drawOnCanvas(ctx) {
     ctx.save()
     ctx.fillStyle = this.fillStyle
     ctx.fillRect(this.x, this.y, this.w, this.h)
@@ -46,9 +50,20 @@ export class drawRect {
     ctx.stroke()
     ctx.restore()
   }
+  draw(ctx) {
+    if(this.prevProps.groupDisplay.toString() !== this.groupDisplay.toString()) {
+      this.setAttr('groupDisplay', this.groupDisplay)
+    }
+    if(this.groupDisplay.includes(false) || !this.display) {
+      this.display = false
+    } else {
+      this.display = true
+      this.drawOnCanvas(ctx)
+    }
+  }
   render(ctx) {
     // this.ctx.restore()
-    if(this.display) { this.draw(ctx) }
+    this.draw(ctx)
   }
 }
 export class drawUIText {
