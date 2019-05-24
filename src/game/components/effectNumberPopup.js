@@ -10,6 +10,7 @@ class effectNumberPopUp extends drawUIText {
     this.pop = {
       limit: 30,
       now: 0,
+      originY: this.y,
     }
   }
   popUp() {
@@ -20,7 +21,7 @@ class effectNumberPopUp extends drawUIText {
       } else {
         this.opacity = 0
       }
-      this.y -= 0.5
+      this.y -= 0.35
     }
   }
   render(ctx) {

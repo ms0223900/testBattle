@@ -16,6 +16,7 @@ import {
 import { Container } from '../gameLib'
 import { handleBlockLineBreak } from '../../functions'
 import ShopTabs from './shopTabs'
+import EffectNumberPopup from '../components/effectNumberPopup'
 import { DefaultTimer } from '../components/countDownTimer'
 
 
@@ -67,7 +68,7 @@ export const ShopBG = ShopBG_B({
 })
 
 const IconInTimer = () => Icon({
-  id: IconInTimer,
+  id: 'IconInTimer',
   imgSrc: freeIcon.power,
   x: 0, y: 30,
 })
@@ -76,6 +77,9 @@ export const ObjTimer = ({ x, y }) => DefaultTimer({
   countDownTime: 10,
   objsInTimer: [
     IconInTimer(),
+  ],
+  popUpObjs: [
+    EffectNumberPopup({ x, y, id: 'timerPop', count: 10, }),
   ]
 })
 

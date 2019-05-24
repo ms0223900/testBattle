@@ -25,6 +25,8 @@ export const ItemsActions = (gameInstanse) => {
   ])
 }
 
+export const updateHealthBar = () => mainUIContainer.updateCount('healthBar', 'barState', 'length', 10)
+
 
 const consumeItems = (gameInstanse, id) => ({
   layer: gameInstanse.myLayers.UILayer, 
@@ -38,6 +40,6 @@ const consumeItems = (gameInstanse, id) => ({
     } else {
       MyItemsContainer.removeObjInContainer(id, 1)
     }
-    mainUIContainer.updateCount('healthBar', 'barState', 'length', 10)
+    updateHealthBar()
   },
 })

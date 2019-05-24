@@ -51,14 +51,11 @@ export class drawRect {
     ctx.restore()
   }
   draw(ctx) {
-    if(this.prevProps.groupDisplay.toString() !== this.groupDisplay.toString()) {
-      this.setAttr('groupDisplay', this.groupDisplay)
-    }
-    if(this.groupDisplay.includes(false) || !this.display) {
-      this.display = false
-    } else {
+    if( !this.groupDisplay.includes(false) ) {
       this.display = true
       this.drawOnCanvas(ctx)
+    } else {
+      this.display = false
     }
   }
   render(ctx) {
@@ -134,14 +131,11 @@ export class drawUIText {
     ctx.restore()
   }
   draw(ctx) {
-    if(this.prevProps.groupDisplay.toString() !== this.groupDisplay.toString()) {
-      this.setAttr('groupDisplay', this.groupDisplay)
-    }
-    if(this.groupDisplay.includes(false) || !this.display) {
-      this.display = false
-    } else {
+    if( !this.groupDisplay.includes(false) ) {
       this.display = true
       this.drawOnCanvas(ctx)
+    } else {
+      this.display = false
     }
   }
   render(ctx) {
@@ -728,7 +722,7 @@ export class Container {
   }
   updateCount(id='', propName='', countPropName='', countUnit=0) {
     const origin = this.containerStates
-    console.log(origin[propName])
+    // console.log(origin[propName])
     const filterProp = origin[propName].filter(it => it.id === id)
     if(filterProp.length > 0) {
       const originCount = filterProp[0][countPropName]
