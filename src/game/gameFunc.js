@@ -7,14 +7,14 @@ export const getMultiAction = (times, fn) => {
     fn()
   }
 }
+const getTRBL = (obj) => ({
+  t: obj.y,
+  l: obj.x,
+  b: obj.y + obj.h,
+  r: obj.x + obj.w
+})
 export const checkObjInsideCollideWithWall = (obj, wall) => {
   // if collided return true
-  const getTRBL = (obj) => ({
-    t: obj.y,
-    l: obj.x,
-    b: obj.y + obj.h,
-    r: obj.x + obj.w
-  })
   const objTRBL = getTRBL(obj)
   const wallTRBL = getTRBL(wall)
   console.log(objTRBL, wallTRBL)
@@ -24,29 +24,87 @@ export const checkObjInsideCollideWithWall = (obj, wall) => {
     return true
   }
 }
-export const checkObjCollideWithObj = (obj1, obj2) => {
+export const getIntersection = (a, b, c, d) => {
+  const areaABC = (a.x - c.x) * (b.y - c.y) - (a.y - c.y) * (b.x - c.x)
+  const areaABD = (a.x - d.x) * (b.y - d.y) - (a.y - d.y) * (b.x - d.x)
+  if(areaABC * areaABD >= 0) {
+    return false
+  }
+  const areaADC = (d.x - a.x) * (c.y - a.y) - (d.y - a.y) * (c.x - a.x)
+  const areaCDB = (d.x - c.x) * (b.y - c.y) - (d.y - c.y) * (b.x - c.x)
+  if(areaADC * areaCDB >= 0) {
+    return false
+  }
+  const t = areaADC / (areaABD - areaADC)
+  const dx = t * (b.x - a.x)
+  const dy = t * (b.y - a.y)
+  return { x: a.x + dx, y: a.y + dy }
+}
+
+
+
+export const checkMoveObjCollideWithObj = (obj1, obj2) => {
   // if collided return true
-  const getTRBL = (obj) => ({
-    t: obj.y,
-    l: obj.x,
-    b: obj.y + obj.h,
-    r: obj.x + obj.w
-  })
+  let collideRes = []
+  const { vx, vy } = obj1
+  
   const obj1TRBL = getTRBL(obj1)
   const obj2TRBL = getTRBL(obj2)
+  const obj1TopPoint = {
+    x: vx === 0 ? 
+      ( obj1TRBL.r <= obj2TRBL.r ? obj1TRBL.r : obj1TRBL.l) : 
+      (vx > 0 ? obj1TRBL.r : obj1TRBL.l),
+    y: vy === 0 ? 
+      ( obj1TRBL.b <= obj2TRBL.b ? obj1TRBL.b : obj1TRBL.t) : 
+      (vy > 0 ? obj1TRBL.b : obj1TRBL.t),
+  }
+  const nextObj1TopPoint = {
+    x: obj1TopPoint.x + vx,
+    y: obj1TopPoint.y + vy,
+  }
+  const obj2Points = [
+    { x: obj2TRBL.l, y: obj2TRBL.t, },
+    { x: obj2TRBL.r, y: obj2TRBL.t, },
+    { x: obj2TRBL.r, y: obj2TRBL.b, },
+    { x: obj2TRBL.l, y: obj2TRBL.b, },
+  ]
   console.log(obj1TRBL, obj2TRBL)
-  const leftCondition = obj1TRBL.r < obj2TRBL.l
-  const rightCondition = obj2TRBL.r < obj1TRBL.l 
-  const topCondition = obj1TRBL.t < obj2TRBL.b
-  const bottomCondition = obj1TRBL.b < obj2TRBL.t
-  if(leftCondition || rightCondition || topCondition || bottomCondition) {
+  if( getIntersection(obj1TopPoint, nextObj1TopPoint, obj2Points[0], obj2Points[1]) ) {
+    collideRes = [...collideRes, 'top']
+  }
+  if( getIntersection(obj1TopPoint, nextObj1TopPoint, obj2Points[1], obj2Points[2]) ) {
+    collideRes = [...collideRes, 'right']
+  }
+  if( getIntersection(obj1TopPoint, nextObj1TopPoint, obj2Points[2], obj2Points[3]) ) {
+    collideRes = [...collideRes, 'bottom']
+  }
+  if( getIntersection(obj1TopPoint, nextObj1TopPoint, obj2Points[3], obj2Points[0]) ) {
+    collideRes = [...collideRes, 'left']
+  }
+  console.log(collideRes)
+  if(collideRes.length === 0) {
     return false
   } else {
-    if(!leftCondition && !rightCondition) { //???
-      return 'leftOrRightCollide'
+    if(vy > 0) {
+      if(collideRes.indexOf('top')) { return 'top' }
+      else { return collideRes.filter(r => r !== 'bottom')[0] }
+    } else if(vy < 0) {
+      if(collideRes.indexOf('bottom')) { return 'bottom' }
+      else { return collideRes.filter(r => r !== 'top')[0] }
     }
-    return true
   }
+  // const leftCondition = obj1TRBL.r < obj2TRBL.l
+  // const rightCondition = obj2TRBL.l > obj1TRBL.r 
+  // const topCondition = obj1TRBL.b < obj2TRBL.t
+  // const bottomCondition = obj1TRBL.t > obj2TRBL.b
+  // if(leftCondition || rightCondition || topCondition || bottomCondition) {
+  //   return false
+  // } else {
+  //   if(!leftCondition && !topCondition && !bottomCondition && ) { 
+  //     return 'rightCollide'
+  //   }
+  //   return true
+  // }
 }
 export const checkCollideWithPoint = (point={x: 0, y: 0}, collideObj={x: 0, y: 0, w: 0, h: 0}) => {
   // console.log(collideObj)
