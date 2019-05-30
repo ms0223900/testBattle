@@ -7,6 +7,47 @@ export const getMultiAction = (times, fn) => {
     fn()
   }
 }
+export const checkObjInsideCollideWithWall = (obj, wall) => {
+  // if collided return true
+  const getTRBL = (obj) => ({
+    t: obj.y,
+    l: obj.x,
+    b: obj.y + obj.h,
+    r: obj.x + obj.w
+  })
+  const objTRBL = getTRBL(obj)
+  const wallTRBL = getTRBL(wall)
+  console.log(objTRBL, wallTRBL)
+  if(objTRBL.l > wallTRBL.l && objTRBL.t > wallTRBL.t && objTRBL.r < wallTRBL.r && objTRBL.b > wallTRBL.b) {
+    return false
+  } else {
+    return true
+  }
+}
+export const checkObjCollideWithObj = (obj1, obj2) => {
+  // if collided return true
+  const getTRBL = (obj) => ({
+    t: obj.y,
+    l: obj.x,
+    b: obj.y + obj.h,
+    r: obj.x + obj.w
+  })
+  const obj1TRBL = getTRBL(obj1)
+  const obj2TRBL = getTRBL(obj2)
+  console.log(obj1TRBL, obj2TRBL)
+  const leftCondition = obj1TRBL.r < obj2TRBL.l
+  const rightCondition = obj2TRBL.r < obj1TRBL.l 
+  const topCondition = obj1TRBL.t < obj2TRBL.b
+  const bottomCondition = obj1TRBL.b < obj2TRBL.t
+  if(leftCondition || rightCondition || topCondition || bottomCondition) {
+    return false
+  } else {
+    if(!leftCondition && !rightCondition) { //???
+      return 'leftOrRightCollide'
+    }
+    return true
+  }
+}
 export const checkCollideWithPoint = (point={x: 0, y: 0}, collideObj={x: 0, y: 0, w: 0, h: 0}) => {
   // console.log(collideObj)
   if( collideObj.display && !collideObj.groupDisplay.includes(false) ) {
