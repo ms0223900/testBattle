@@ -81,10 +81,12 @@ export class WanderingObj extends drawStaticImg {
       // console.log(this.speed.vx, this.speed.vy)
       this.speed.vy >= 0 ? this.count += 1 : this.count = 0
       console.log(this.count)
-      //多1~2 frame造成加速
+      //多1~2 frame造成加速, 在碰撞後，使用距離補正？
       if(!colliderRes) {
         this.move()
       } else {
+        this.x += this.speed.vx 
+        this.y += this.speed.vy 
         if(colliderRes.includes('right') || colliderRes.includes('left')) {
           this.speed.vx = this.speed.vx * -1
         }
