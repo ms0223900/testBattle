@@ -164,6 +164,12 @@ export class drawStaticImg {
     this.dir = true
     this.w = this.width
     this.h = this.height
+    this.obj = {
+      x: this.x,
+      y: this.y,
+      w: this.w,
+      h: this.h
+    }
     this.bounceStart = false
     this.bounceState = {
       bounceTimes: 4,

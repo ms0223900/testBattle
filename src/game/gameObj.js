@@ -48,3 +48,4 @@ export const freeIcon = {
   cheese: 'https://freeiconshop.com/wp-content/uploads/edd/cheese-flat.png',
   beer: 'https://freeiconshop.com/wp-content/uploads/edd/beer-flat.png',
 }
+export const tigerIcon = 'https://www.shareicon.net/download/128x128//2016/05/16/766068_tiger_512x512.png'

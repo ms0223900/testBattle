@@ -18,6 +18,7 @@ import { handleBlockLineBreak } from '../../functions'
 import ShopTabs from './shopTabs'
 import EffectNumberPopup from '../components/effectNumberPopup'
 import { DefaultTimer } from '../components/countDownTimer'
+import { WanderCat } from '../components/chracter'
 
 
 const { width: backW, height: backH, imgSrc: backImgSrc } = ShopUIConfig.backGround
@@ -93,6 +94,7 @@ export const shopContainerGroup = (x, y) => {
       shopItems2,
       ShopTabs(),
       CloseIcon,
+      WanderCat(),
       // ObjTimer,
     ]
   })

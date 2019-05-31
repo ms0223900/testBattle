@@ -17,11 +17,20 @@ export const checkObjInsideCollideWithWall = (obj, wall) => {
   // if collided return true
   const objTRBL = getTRBL(obj)
   const wallTRBL = getTRBL(wall)
-  console.log(objTRBL, wallTRBL)
-  if(objTRBL.l > wallTRBL.l && objTRBL.t > wallTRBL.t && objTRBL.r < wallTRBL.r && objTRBL.b > wallTRBL.b) {
+  const leftCondition = objTRBL.l >= wallTRBL.l
+  const rightCondition = objTRBL.r <= wallTRBL.r
+  const topCondition = objTRBL.t >= wallTRBL.t
+  const bottomCondition = objTRBL.b <= wallTRBL.b
+  // console.log(objTRBL, wallTRBL)
+  if(leftCondition && rightCondition && topCondition && bottomCondition) {
     return false
   } else {
-    return true
+    let collideRes = []
+    if(!leftCondition) { collideRes = [...collideRes, 'left'] }
+    if(!rightCondition) { collideRes = [...collideRes, 'right'] }
+    if(!topCondition) { collideRes = [...collideRes, 'top'] }
+    if(!bottomCondition) { collideRes = [...collideRes, 'bottom'] }
+    return collideRes
   }
 }
 export const getIntersection = (a, b, c, d) => {
